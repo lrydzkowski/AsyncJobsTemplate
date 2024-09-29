@@ -45,10 +45,12 @@ public class TriggerJobCommandHandler : IRequestHandler<TriggerJobCommand, Trigg
 
         Process process = new()
         {
-            JobId = Guid.NewGuid()
+            JobId = Guid.NewGuid(),
+            InputFile = request.File,
+            InputData = request.Data
         };
-        process = await SaveInputFileAsync(process, request, cancellationToken);
-        process = await CreateJobAsync(process, request, cancellationToken);
+        process = await SaveInputFileAsync(process, cancellationToken);
+        process = await CreateJobAsync(process, cancellationToken);
         process = await SendMessageAsync(process, cancellationToken);
         process = await SaveErrorsAsync(process, cancellationToken);
 
@@ -61,22 +63,18 @@ public class TriggerJobCommandHandler : IRequestHandler<TriggerJobCommand, Trigg
         return result;
     }
 
-    private async Task<Process> SaveInputFileAsync(
-        Process process,
-        TriggerJobRequest request,
-        CancellationToken cancellationToken
-    )
+    private async Task<Process> SaveInputFileAsync(Process process, CancellationToken cancellationToken)
     {
         try
         {
-            if (request.File is null)
+            if (process.InputFile is null)
             {
                 return process;
             }
 
             SaveFileResult saveFileResult = await _jobFileStorage.SaveFileAsync(
                 process.JobId,
-                request.File,
+                process.InputFile,
                 cancellationToken
             );
             process.InputFileReference = saveFileResult.FileReference;
@@ -96,18 +94,14 @@ public class TriggerJobCommandHandler : IRequestHandler<TriggerJobCommand, Trigg
         }
     }
 
-    private async Task<Process> CreateJobAsync(
-        Process process,
-        TriggerJobRequest request,
-        CancellationToken cancellationToken
-    )
+    private async Task<Process> CreateJobAsync(Process process, CancellationToken cancellationToken)
     {
         try
         {
             JobToCreate jobToCreate = new()
             {
                 JobId = process.JobId,
-                InputData = request.Data,
+                InputData = process.InputData,
                 InputFileReference = process.InputFileReference
             };
             await _jobsRepository.CreateJobAsync(jobToCreate, cancellationToken);

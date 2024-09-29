@@ -35,8 +35,11 @@ public class GetJobQueryHandler : IRequestHandler<GetJobQuery, GetJobResult>
 
     public async Task<GetJobResult> Handle(GetJobQuery query, CancellationToken cancellationToken)
     {
-        Process process = new();
-        process = GetJobId(process, query);
+        Process process = new()
+        {
+            JobIdToParse = query.Request.JobId ?? ""
+        };
+        process = GetJobId(process);
         process = await GetJobAsync(process, cancellationToken);
 
         GetJobResult result = BuildResult(process);
@@ -44,17 +47,16 @@ public class GetJobQueryHandler : IRequestHandler<GetJobQuery, GetJobResult>
         return result;
     }
 
-    private Process GetJobId(Process process, GetJobQuery query)
+    private Process GetJobId(Process process)
     {
-        string jobGuidToParse = query.Request.JobId ?? "";
-        bool parsingResult = Guid.TryParse(jobGuidToParse, out Guid jobId);
+        bool parsingResult = Guid.TryParse(process.JobIdToParse, out Guid jobId);
         if (!parsingResult)
         {
             process.HandleError(
                 _logger,
                 JobErrorCodes.GetJobFailure,
                 "An unexpected error has occured in parsing job guid = '{JobGuid}'",
-                jobGuidToParse
+                process.JobIdToParse
             );
 
             return process;
