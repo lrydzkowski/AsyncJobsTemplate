@@ -1,8 +1,10 @@
 ﻿using System.Net.Mime;
 using System.Text.Json.Nodes;
 using AsyncJobsTemplate.Core.Commands.TriggerJob;
+using AsyncJobsTemplate.Core.Commands.TriggerJob.Models;
 using AsyncJobsTemplate.Core.Models;
 using AsyncJobsTemplate.Core.Queries.GetJob;
+using AsyncJobsTemplate.Core.Queries.GetJob.Models;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
