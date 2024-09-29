@@ -3,6 +3,8 @@
 public enum JobStatus
 {
     Created,
+    Running,
     Finished,
-    Failed
+    Failed,
+    NotExist
 }

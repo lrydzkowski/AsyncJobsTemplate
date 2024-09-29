@@ -2,11 +2,11 @@
 using AsyncJobsTemplate.Core.Commands.TriggerJob.Models;
 using Microsoft.AspNetCore.Http;
 
-namespace AsyncJobsTemplate.Infrastructure.StorageAccount;
+namespace AsyncJobsTemplate.Infrastructure.Azure.StorageAccount;
 
 internal class JobsFileStorage : IJobsFileStorage
 {
-    public Task<SaveFileResult> SaveFileAsync(string fileName, IFormFile file, CancellationToken cancellationToken)
+    public Task<SaveFileResult> SaveFileAsync(Guid jobId, IFormFile file, CancellationToken cancellationToken)
     {
         throw new NotImplementedException();
     }

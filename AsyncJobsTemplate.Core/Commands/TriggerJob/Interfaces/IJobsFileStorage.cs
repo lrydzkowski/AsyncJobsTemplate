@@ -5,5 +5,5 @@ namespace AsyncJobsTemplate.Core.Commands.TriggerJob.Interfaces;
 
 public interface IJobsFileStorage
 {
-    Task<SaveFileResult> SaveFileAsync(string fileName, IFormFile file, CancellationToken cancellationToken);
+    Task<SaveFileResult> SaveFileAsync(Guid jobId, IFormFile file, CancellationToken cancellationToken);
 }

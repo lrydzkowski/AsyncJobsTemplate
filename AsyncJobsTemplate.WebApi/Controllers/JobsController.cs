@@ -1,6 +1,8 @@
 ﻿using System.Net.Mime;
 using System.Text.Json.Nodes;
 using AsyncJobsTemplate.Core.Commands.TriggerJob;
+using AsyncJobsTemplate.Core.Models;
+using AsyncJobsTemplate.Core.Queries.GetJob;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
@@ -69,6 +71,33 @@ public class JobsController : ControllerBase
         if (!result.Result)
         {
             return BadRequest(result);
+        }
+
+        return Ok(result);
+    }
+
+    [SwaggerOperation(Summary = "Get a job")]
+    [SwaggerResponse(
+        StatusCodes.Status200OK,
+        "Correct response",
+        typeof(GetJobResult),
+        MediaTypeNames.Application.Json
+    )]
+    [HttpGet("{jobId}")]
+    public async Task<IActionResult> GetJob(string jobId)
+    {
+        GetJobResult result = await _mediator.Send(
+            new GetJobQuery
+            {
+                Request = new GetJobQueryRequest
+                {
+                    JobId = jobId
+                }
+            }
+        );
+        if (result.Status == JobStatus.NotExist)
+        {
+            return NotFound(result);
         }
 
         return Ok(result);

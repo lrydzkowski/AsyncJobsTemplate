@@ -1,6 +1,7 @@
 ﻿using System.Text.Json.Nodes;
 using AsyncJobsTemplate.Core.Commands.TriggerJob.Interfaces;
 using AsyncJobsTemplate.Core.Commands.TriggerJob.Models;
+using AsyncJobsTemplate.Core.Extensions;
 using AsyncJobsTemplate.Core.Models;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -13,13 +14,6 @@ public class TriggerJobCommand : IRequest<TriggerJobResult>
     public TriggerJobRequest Request { get; init; } = new();
 }
 
-public class TriggerJobResult
-{
-    public bool Result { get; init; }
-
-    public Guid? JobId { get; init; }
-}
-
 public class TriggerJobRequest
 {
     public string? JobCategoryName { get; init; }
@@ -29,15 +23,11 @@ public class TriggerJobRequest
     public JsonObject? Data { get; init; }
 }
 
-public class Operation
+public class TriggerJobResult
 {
-    public Guid JobId { get; set; }
+    public bool Result { get; init; }
 
-    public string? InputFileReference { get; set; }
-
-    public List<JobError> Errors { get; set; } = [];
-
-    public bool HasErrors => Errors.Count > 0;
+    public Guid? JobId { get; init; }
 }
 
 public class TriggerJobCommandHandler : IRequestHandler<TriggerJobCommand, TriggerJobResult>
@@ -64,27 +54,26 @@ public class TriggerJobCommandHandler : IRequestHandler<TriggerJobCommand, Trigg
     {
         TriggerJobRequest request = command.Request;
 
-        Operation operation = new()
+        Process process = new()
         {
             JobId = Guid.NewGuid()
         };
-
-        operation = await SaveFileAsync(operation, request, cancellationToken);
-        operation = await CreateJobAsync(operation, request, cancellationToken);
-        operation = await SendMessageAsync(operation, cancellationToken);
-        operation = await SaveErrorsAsync(operation, cancellationToken);
+        process = await SaveInputFileAsync(process, request, cancellationToken);
+        process = await CreateJobAsync(process, request, cancellationToken);
+        process = await SendMessageAsync(process, cancellationToken);
+        process = await SaveErrorsAsync(process, cancellationToken);
 
         TriggerJobResult result = new()
         {
-            Result = !operation.HasErrors,
-            JobId = operation.JobId
+            Result = !process.HasErrors,
+            JobId = process.JobId
         };
 
         return result;
     }
 
-    private async Task<Operation> SaveFileAsync(
-        Operation operation,
+    private async Task<Process> SaveInputFileAsync(
+        Process process,
         TriggerJobRequest request,
         CancellationToken cancellationToken
     )
@@ -93,28 +82,33 @@ public class TriggerJobCommandHandler : IRequestHandler<TriggerJobCommand, Trigg
         {
             if (request.File is null)
             {
-                return operation;
+                return process;
             }
 
             SaveFileResult saveFileResult = await _jobFileStorage.SaveFileAsync(
-                operation.JobId.ToString(),
+                process.JobId,
                 request.File,
                 cancellationToken
             );
-            operation.InputFileReference = saveFileResult.FileReference;
+            process.InputFileReference = saveFileResult.FileReference;
 
-            return operation;
+            return process;
         }
         catch (Exception ex)
         {
-            HandleError(operation, ex, "An unexpected error has occured in saving a file.");
+            process.HandleError(
+                _logger,
+                JobErrorCodes.SaveFileFailure,
+                ex,
+                "An unexpected error has occured in saving a file."
+            );
 
-            return operation;
+            return process;
         }
     }
 
-    private async Task<Operation> CreateJobAsync(
-        Operation operation,
+    private async Task<Process> CreateJobAsync(
+        Process process,
         TriggerJobRequest request,
         CancellationToken cancellationToken
     )
@@ -123,64 +117,70 @@ public class TriggerJobCommandHandler : IRequestHandler<TriggerJobCommand, Trigg
         {
             JobToCreate jobToCreate = new()
             {
-                JobId = operation.JobId,
+                JobId = process.JobId,
                 InputData = request.Data,
-                InputFileReference = operation.InputFileReference,
-                Errors = operation.Errors
+                InputFileReference = process.InputFileReference
             };
             await _jobsRepository.CreateJobAsync(jobToCreate, cancellationToken);
         }
         catch (Exception ex)
         {
-            HandleError(operation, ex, "An unexpected error has occured in creating a job.");
+            process.HandleError(
+                _logger,
+                JobErrorCodes.CreateJobFailure,
+                ex,
+                "An unexpected error has occured in creating a job."
+            );
         }
 
-        return operation;
+        return process;
     }
 
-    private async Task<Operation> SendMessageAsync(Operation operation, CancellationToken cancellationToken)
+    private async Task<Process> SendMessageAsync(Process process, CancellationToken cancellationToken)
     {
-        if (operation.HasErrors)
+        if (process.HasErrors)
         {
-            return operation;
+            return process;
         }
 
         try
         {
-            await _jobsQueue.SendMessageAsync(operation.JobId, cancellationToken);
+            await _jobsQueue.SendMessageAsync(process.JobId, cancellationToken);
         }
         catch (Exception ex)
         {
-            HandleError(operation, ex, "An unexpected error has occured in sending a message.");
+            process.HandleError(
+                _logger,
+                JobErrorCodes.SendMessageFailure,
+                ex,
+                "An unexpected error has occured in sending a message."
+            );
         }
 
-        return operation;
+        return process;
     }
 
-    private async Task<Operation> SaveErrorsAsync(Operation operation, CancellationToken cancellationToken)
+    private async Task<Process> SaveErrorsAsync(Process process, CancellationToken cancellationToken)
     {
-        if (!operation.HasErrors)
+        if (!process.HasErrors)
         {
-            return operation;
+            return process;
         }
 
         try
         {
-            await _jobsRepository.SaveErrorsAsync(operation.JobId, operation.Errors, cancellationToken);
+            await _jobsRepository.SaveErrorsAsync(process.JobId, process.Errors, cancellationToken);
         }
         catch (Exception ex)
         {
-            HandleError(operation, ex, "An unexpected error has occured in saving errors.");
+            process.HandleError(
+                _logger,
+                JobErrorCodes.SaveErrorsFailure,
+                ex,
+                "An unexpected error has occured in saving errors."
+            );
         }
 
-        return operation;
-    }
-
-    private void HandleError(Operation operation, Exception ex, string errorMsg)
-    {
-        _logger.LogError(ex, errorMsg);
-        operation.Errors.Add(
-            new JobError { Message = ex.Message, Exception = ex, ErrorCode = JobErrorCodes.SaveErrorsFailure }
-        );
+        return process;
     }
 }

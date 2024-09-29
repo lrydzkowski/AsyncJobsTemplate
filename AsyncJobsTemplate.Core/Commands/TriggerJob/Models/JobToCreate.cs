@@ -10,6 +10,4 @@ public class JobToCreate
     public JsonObject? InputData { get; init; }
 
     public string? InputFileReference { get; init; }
-
-    public List<JobError> Errors { get; init; } = [];
 }

@@ -1,6 +1,6 @@
 ﻿using AsyncJobsTemplate.Core.Commands.TriggerJob.Interfaces;
 
-namespace AsyncJobsTemplate.Infrastructure.ServiceBus;
+namespace AsyncJobsTemplate.Infrastructure.Azure.ServiceBus;
 
 internal class JobsQueue : IJobsQueue
 {
