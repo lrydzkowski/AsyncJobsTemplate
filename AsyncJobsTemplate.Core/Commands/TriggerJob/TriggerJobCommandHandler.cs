@@ -1,8 +1,10 @@
 ﻿using System.Text.Json.Nodes;
 using AsyncJobsTemplate.Core.Commands.TriggerJob.Interfaces;
 using AsyncJobsTemplate.Core.Commands.TriggerJob.Models;
+using AsyncJobsTemplate.Core.Models;
 using MediatR;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 
 namespace AsyncJobsTemplate.Core.Commands.TriggerJob;
 
@@ -13,7 +15,9 @@ public class TriggerJobCommand : IRequest<TriggerJobResult>
 
 public class TriggerJobResult
 {
-    public Guid JobId { get; init; }
+    public bool Result { get; init; }
+
+    public Guid? JobId { get; init; }
 }
 
 public class TriggerJobRequest
@@ -25,74 +29,158 @@ public class TriggerJobRequest
     public JsonObject? Data { get; init; }
 }
 
+public class Operation
+{
+    public Guid JobId { get; set; }
+
+    public string? InputFileReference { get; set; }
+
+    public List<JobError> Errors { get; set; } = [];
+
+    public bool HasErrors => Errors.Count > 0;
+}
+
 public class TriggerJobCommandHandler : IRequestHandler<TriggerJobCommand, TriggerJobResult>
 {
     private readonly IJobsFileStorage _jobFileStorage;
     private readonly IJobsQueue _jobsQueue;
     private readonly IJobsRepository _jobsRepository;
+    private readonly ILogger<TriggerJobCommand> _logger;
 
     public TriggerJobCommandHandler(
         IJobsFileStorage jobFileStorage,
         IJobsRepository jobsRepository,
-        IJobsQueue jobsQueue
+        IJobsQueue jobsQueue,
+        ILogger<TriggerJobCommand> logger
     )
     {
         _jobFileStorage = jobFileStorage;
         _jobsRepository = jobsRepository;
         _jobsQueue = jobsQueue;
+        _logger = logger;
     }
 
     public async Task<TriggerJobResult> Handle(TriggerJobCommand command, CancellationToken cancellationToken)
     {
         TriggerJobRequest request = command.Request;
 
-        Guid jobId = Guid.NewGuid();
+        Operation operation = new()
+        {
+            JobId = Guid.NewGuid()
+        };
 
-        string? inputFileReference = await SaveFileAsync(cancellationToken, request, jobId);
-        await CreateJobAsync(cancellationToken, jobId, request, inputFileReference);
-        await _jobsQueue.SendMessageAsync(jobId, cancellationToken);
+        operation = await SaveFileAsync(operation, request, cancellationToken);
+        operation = await CreateJobAsync(operation, request, cancellationToken);
+        operation = await SendMessageAsync(operation, cancellationToken);
+        operation = await SaveErrorsAsync(operation, cancellationToken);
 
         TriggerJobResult result = new()
         {
-            JobId = jobId
+            Result = !operation.HasErrors,
+            JobId = operation.JobId
         };
 
         return result;
     }
 
-    private async Task<string?> SaveFileAsync(
-        CancellationToken cancellationToken,
+    private async Task<Operation> SaveFileAsync(
+        Operation operation,
         TriggerJobRequest request,
-        Guid jobId
+        CancellationToken cancellationToken
     )
     {
-        string? inputFileReference = null;
-        if (request.File is not null)
+        try
         {
+            if (request.File is null)
+            {
+                return operation;
+            }
+
             SaveFileResult saveFileResult = await _jobFileStorage.SaveFileAsync(
-                jobId.ToString(),
+                operation.JobId.ToString(),
                 request.File,
                 cancellationToken
             );
-            inputFileReference = saveFileResult.FileReference;
-        }
+            operation.InputFileReference = saveFileResult.FileReference;
 
-        return inputFileReference;
+            return operation;
+        }
+        catch (Exception ex)
+        {
+            HandleError(operation, ex, "An unexpected error has occured in saving a file.");
+
+            return operation;
+        }
     }
 
-    private async Task CreateJobAsync(
-        CancellationToken cancellationToken,
-        Guid jobId,
+    private async Task<Operation> CreateJobAsync(
+        Operation operation,
         TriggerJobRequest request,
-        string? inputFileReference
+        CancellationToken cancellationToken
     )
     {
-        JobToCreate jobToCreate = new()
+        try
         {
-            JobId = jobId,
-            InputData = request.Data,
-            InputFileReference = inputFileReference
-        };
-        await _jobsRepository.CreateJobAsync(jobToCreate, cancellationToken);
+            JobToCreate jobToCreate = new()
+            {
+                JobId = operation.JobId,
+                InputData = request.Data,
+                InputFileReference = operation.InputFileReference,
+                Errors = operation.Errors
+            };
+            await _jobsRepository.CreateJobAsync(jobToCreate, cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            HandleError(operation, ex, "An unexpected error has occured in creating a job.");
+        }
+
+        return operation;
+    }
+
+    private async Task<Operation> SendMessageAsync(Operation operation, CancellationToken cancellationToken)
+    {
+        if (operation.HasErrors)
+        {
+            return operation;
+        }
+
+        try
+        {
+            await _jobsQueue.SendMessageAsync(operation.JobId, cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            HandleError(operation, ex, "An unexpected error has occured in sending a message.");
+        }
+
+        return operation;
+    }
+
+    private async Task<Operation> SaveErrorsAsync(Operation operation, CancellationToken cancellationToken)
+    {
+        if (!operation.HasErrors)
+        {
+            return operation;
+        }
+
+        try
+        {
+            await _jobsRepository.SaveErrorsAsync(operation.JobId, operation.Errors, cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            HandleError(operation, ex, "An unexpected error has occured in saving errors.");
+        }
+
+        return operation;
+    }
+
+    private void HandleError(Operation operation, Exception ex, string errorMsg)
+    {
+        _logger.LogError(ex, errorMsg);
+        operation.Errors.Add(
+            new JobError { Message = ex.Message, Exception = ex, ErrorCode = JobErrorCodes.SaveErrorsFailure }
+        );
     }
 }

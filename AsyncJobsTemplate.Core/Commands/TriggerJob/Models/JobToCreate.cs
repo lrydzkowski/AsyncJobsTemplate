@@ -1,12 +1,15 @@
 ﻿using System.Text.Json.Nodes;
+using AsyncJobsTemplate.Core.Models;
 
 namespace AsyncJobsTemplate.Core.Commands.TriggerJob.Models;
 
 public class JobToCreate
 {
-    public Guid JobId { get; set; }
+    public Guid JobId { get; init; }
 
     public JsonObject? InputData { get; init; }
 
-    public string? InputFileReference { get; set; }
+    public string? InputFileReference { get; init; }
+
+    public List<JobError> Errors { get; init; } = [];
 }

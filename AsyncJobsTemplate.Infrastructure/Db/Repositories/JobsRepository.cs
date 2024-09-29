@@ -10,4 +10,9 @@ internal class JobsRepository : IJobsRepository
     {
         throw new NotImplementedException();
     }
+
+    public Task<Job> SaveErrorsAsync(Guid jobId, List<JobError> errors, CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
+    }
 }

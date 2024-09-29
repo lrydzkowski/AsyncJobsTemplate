@@ -38,6 +38,10 @@ public class JobsController : ControllerBase
                 }
             }
         );
+        if (!result.Result)
+        {
+            return BadRequest(result);
+        }
 
         return Ok(result);
     }
@@ -62,6 +66,10 @@ public class JobsController : ControllerBase
                 }
             }
         );
+        if (!result.Result)
+        {
+            return BadRequest(result);
+        }
 
         return Ok(result);
     }
