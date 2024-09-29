@@ -15,11 +15,11 @@ public class GetJobQuery : IRequest<GetJobResult>
 
 public class GetJobResult
 {
-    public JobStatus Status { get; init; }
+    public string Status { get; init; } = "";
 
-    public JsonObject? Data { get; init; }
+    public JsonObject? OutputData { get; init; }
 
-    public string? File { get; init; }
+    public string? OutputFile { get; init; }
 }
 
 public class GetJobQueryHandler : IRequestHandler<GetJobQuery, GetJobResult>
@@ -112,9 +112,9 @@ public class GetJobQueryHandler : IRequestHandler<GetJobQuery, GetJobResult>
     {
         GetJobResult result = new()
         {
-            Status = process.Job?.Status ?? JobStatus.NotExist,
-            Data = process.Job?.OutputData,
-            File = process.Job?.OutputFileReference
+            Status = process.Job?.Status.ToString() ?? JobStatus.NotExist.ToString(),
+            OutputData = process.Job?.OutputData,
+            OutputFile = process.Job?.OutputFileReference
         };
 
         return result;

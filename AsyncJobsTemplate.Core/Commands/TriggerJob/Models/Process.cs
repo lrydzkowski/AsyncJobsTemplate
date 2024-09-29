@@ -6,7 +6,9 @@ namespace AsyncJobsTemplate.Core.Commands.TriggerJob.Models;
 
 internal class Process : IProcess
 {
-    public Guid JobId { get; set; }
+    public Guid JobId { get; init; }
+
+    public string JobCategoryName { get; init; } = "";
 
     public IFormFile? InputFile { get; init; }
 

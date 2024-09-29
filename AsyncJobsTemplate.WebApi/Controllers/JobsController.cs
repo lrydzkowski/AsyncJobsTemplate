@@ -97,7 +97,7 @@ public class JobsController : ControllerBase
                 }
             }
         );
-        if (result.Status == JobStatus.NotExist)
+        if (result.Status == JobStatus.NotExist.ToString())
         {
             return NotFound(result);
         }

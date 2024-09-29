@@ -4,9 +4,13 @@ using AsyncJobsTemplate.Infrastructure.Azure.Authentication;
 using AsyncJobsTemplate.Infrastructure.Azure.Options;
 using AsyncJobsTemplate.Infrastructure.Azure.ServiceBus;
 using AsyncJobsTemplate.Infrastructure.Azure.StorageAccount;
+using AsyncJobsTemplate.Infrastructure.Db;
+using AsyncJobsTemplate.Infrastructure.Db.Mappers;
+using AsyncJobsTemplate.Infrastructure.Db.Options;
 using AsyncJobsTemplate.Infrastructure.Db.Repositories;
 using Azure.Core;
 using Azure.Storage.Blobs;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,27 +28,28 @@ public static class ServiceCollectionExtensions
         IConfiguration configuration
     )
     {
-        return services.AddServices().AddOptions(configuration).AddAzureBlobServiceClient();
+        return services.AddServices()
+            .AddOptions(configuration)
+            .AddAzureBlobServiceClient()
+            .AddAppDbContext();
     }
 
     private static IServiceCollection AddServices(this IServiceCollection services)
     {
-        services.AddScoped<IJobsRepositoryTriggerJob, JobsRepository>()
+        return services.AddScoped<IJobsRepositoryTriggerJob, JobsRepository>()
             .AddScoped<IJobsRepositoryRunJob, JobsRepository>()
             .AddScoped<IJobsRepositoryGetJob, JobsRepository>()
             .AddScoped<IJobsQueue, JobsQueue>()
             .AddScoped<IJobsFileStorage, JobsFileStorage>()
-            .AddSingleton<IAccessTokenProvider, AccessTokenProvider>();
-
-        return services;
+            .AddSingleton<IAccessTokenProvider, AccessTokenProvider>()
+            .AddScoped<IJobMapper, JobMapper>();
     }
 
     private static IServiceCollection AddOptions(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddOptionsType<AzureStorageAccountOptions>(configuration, AzureStorageAccountOptions.Position)
-            .AddOptionsType<AzureAdOptions>(configuration, AzureAdOptions.Position);
-
-        return services;
+        return services.AddOptionsType<AzureStorageAccountOptions>(configuration, AzureStorageAccountOptions.Position)
+            .AddOptionsType<AzureAdOptions>(configuration, AzureAdOptions.Position)
+            .AddOptionsType<AzureSqlOptions>(configuration, AzureSqlOptions.Position);
     }
 
     private static IServiceCollection AddAzureBlobServiceClient(this IServiceCollection services)
@@ -72,5 +77,17 @@ public static class ServiceCollectionExtensions
         );
 
         return services;
+    }
+
+    private static IServiceCollection AddAppDbContext(this IServiceCollection services)
+    {
+        return services.AddDbContext<AppDbContext>(
+            (serviceProvider, options) =>
+            {
+                AzureSqlOptions azureSqlOptions =
+                    serviceProvider.GetRequiredService<IOptions<AzureSqlOptions>>().Value;
+                options.UseSqlServer(azureSqlOptions.ConnectionString);
+            }
+        );
     }
 }

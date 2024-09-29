@@ -29,7 +29,7 @@ internal static class ProcessExtensions
     )
     {
         process.Errors.Add(
-            new JobError { Message = ex.Message, Exception = ex, ErrorCode = errorCode }
+            new JobError { Message = errorMsg, Exception = ex, ErrorCode = errorCode }
         );
         logger.LogError(ex, errorMsg, args);
     }

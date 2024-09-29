@@ -25,25 +25,19 @@ public static class ServiceCollectionExtensions
 
     private static IServiceCollection AddMediatR(this IServiceCollection services)
     {
-        services.AddMediatR(
+        return services.AddMediatR(
             cfg => cfg.RegisterServicesFromAssembly(typeof(ServiceCollectionExtensions).Assembly)
         );
-
-        return services;
     }
 
     private static IServiceCollection AddJobs(this IServiceCollection services)
     {
-        services.AddKeyedScoped<IJob, Job1Example>(Job1Example.Name)
+        return services.AddKeyedScoped<IJob, Job1Example>(Job1Example.Name)
             .AddKeyedScoped<IJob, Job2Example>(Job2Example.Name);
-
-        return services;
     }
 
     private static IServiceCollection AddServices(this IServiceCollection services)
     {
-        services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
-
-        return services;
+        return services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
     }
 }
