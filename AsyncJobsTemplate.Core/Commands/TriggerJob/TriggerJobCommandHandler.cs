@@ -1,10 +1,8 @@
-﻿using System.Text.Json.Nodes;
-using AsyncJobsTemplate.Core.Commands.TriggerJob.Interfaces;
+﻿using AsyncJobsTemplate.Core.Commands.TriggerJob.Interfaces;
 using AsyncJobsTemplate.Core.Commands.TriggerJob.Models;
 using AsyncJobsTemplate.Core.Extensions;
 using AsyncJobsTemplate.Core.Models;
 using MediatR;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
 namespace AsyncJobsTemplate.Core.Commands.TriggerJob;
@@ -12,15 +10,6 @@ namespace AsyncJobsTemplate.Core.Commands.TriggerJob;
 public class TriggerJobCommand : IRequest<TriggerJobResult>
 {
     public TriggerJobRequest Request { get; init; } = new();
-}
-
-public class TriggerJobRequest
-{
-    public string? JobCategoryName { get; init; }
-
-    public IFormFile? File { get; init; }
-
-    public JsonObject? Data { get; init; }
 }
 
 public class TriggerJobResult

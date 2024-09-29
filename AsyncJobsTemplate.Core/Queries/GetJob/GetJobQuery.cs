@@ -13,11 +13,6 @@ public class GetJobQuery : IRequest<GetJobResult>
     public GetJobQueryRequest Request { get; init; } = new();
 }
 
-public class GetJobQueryRequest
-{
-    public string? JobId { get; init; }
-}
-
 public class GetJobResult
 {
     public JobStatus Status { get; init; }
