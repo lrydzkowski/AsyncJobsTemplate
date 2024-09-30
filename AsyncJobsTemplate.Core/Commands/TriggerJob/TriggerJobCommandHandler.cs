@@ -43,7 +43,7 @@ public class TriggerJobCommandHandler : IRequestHandler<TriggerJobCommand, Trigg
     {
         TriggerJobRequest request = command.Request;
 
-        Process process = new()
+        ProcessContext process = new()
         {
             JobId = Guid.NewGuid(),
             JobCategoryName = request.JobCategoryName!,
@@ -64,7 +64,7 @@ public class TriggerJobCommandHandler : IRequestHandler<TriggerJobCommand, Trigg
         return result;
     }
 
-    private async Task<Process> SaveInputFileAsync(Process process, CancellationToken cancellationToken)
+    private async Task<ProcessContext> SaveInputFileAsync(ProcessContext process, CancellationToken cancellationToken)
     {
         try
         {
@@ -84,18 +84,15 @@ public class TriggerJobCommandHandler : IRequestHandler<TriggerJobCommand, Trigg
         }
         catch (Exception ex)
         {
-            process.HandleError(
-                _logger,
-                JobErrorCodes.SaveFileFailure,
-                ex,
-                "An unexpected error has occured in saving a file."
-            );
+            string errorCode = JobErrorCodes.SaveFileFailure;
+            string errorMessage = "An unexpected error has occured in saving a file.";
+            process.HandleError(_logger, errorCode, errorMessage, ex);
 
             return process;
         }
     }
 
-    private async Task<Process> CreateJobAsync(Process process, CancellationToken cancellationToken)
+    private async Task<ProcessContext> CreateJobAsync(ProcessContext process, CancellationToken cancellationToken)
     {
         try
         {
@@ -110,18 +107,15 @@ public class TriggerJobCommandHandler : IRequestHandler<TriggerJobCommand, Trigg
         }
         catch (Exception ex)
         {
-            process.HandleError(
-                _logger,
-                JobErrorCodes.CreateJobFailure,
-                ex,
-                "An unexpected error has occured in creating a job."
-            );
+            string errorCode = JobErrorCodes.CreateJobFailure;
+            string errorMessage = "An unexpected error has occured in creating a job.";
+            process.HandleError(_logger, errorCode, errorMessage, ex);
         }
 
         return process;
     }
 
-    private async Task<Process> SendMessageAsync(Process process, CancellationToken cancellationToken)
+    private async Task<ProcessContext> SendMessageAsync(ProcessContext process, CancellationToken cancellationToken)
     {
         if (process.HasErrors)
         {
@@ -134,18 +128,15 @@ public class TriggerJobCommandHandler : IRequestHandler<TriggerJobCommand, Trigg
         }
         catch (Exception ex)
         {
-            process.HandleError(
-                _logger,
-                JobErrorCodes.SendMessageFailure,
-                ex,
-                "An unexpected error has occured in sending a message."
-            );
+            string errorCode = JobErrorCodes.SendMessageFailure;
+            string errorMessage = "An unexpected error has occured in sending a message.";
+            process.HandleError(_logger, errorCode, errorMessage, ex);
         }
 
         return process;
     }
 
-    private async Task<Process> SaveErrorsAsync(Process process, CancellationToken cancellationToken)
+    private async Task<ProcessContext> SaveErrorsAsync(ProcessContext process, CancellationToken cancellationToken)
     {
         if (!process.HasErrors)
         {
@@ -158,12 +149,9 @@ public class TriggerJobCommandHandler : IRequestHandler<TriggerJobCommand, Trigg
         }
         catch (Exception ex)
         {
-            process.HandleError(
-                _logger,
-                JobErrorCodes.SaveErrorsFailure,
-                ex,
-                "An unexpected error has occured in saving errors."
-            );
+            string errorCode = JobErrorCodes.SaveErrorsFailure;
+            string errorMessage = "An unexpected error has occured in saving errors.";
+            process.HandleError(_logger, errorCode, errorMessage, ex);
         }
 
         return process;

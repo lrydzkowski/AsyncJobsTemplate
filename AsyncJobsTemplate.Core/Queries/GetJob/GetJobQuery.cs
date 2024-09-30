@@ -35,7 +35,7 @@ public class GetJobQueryHandler : IRequestHandler<GetJobQuery, GetJobResult>
 
     public async Task<GetJobResult> Handle(GetJobQuery query, CancellationToken cancellationToken)
     {
-        Process process = new()
+        ProcessContext process = new()
         {
             JobIdToParse = query.Request.JobId ?? ""
         };
@@ -47,17 +47,14 @@ public class GetJobQueryHandler : IRequestHandler<GetJobQuery, GetJobResult>
         return result;
     }
 
-    private Process GetJobId(Process process)
+    private ProcessContext GetJobId(ProcessContext process)
     {
         bool parsingResult = Guid.TryParse(process.JobIdToParse, out Guid jobId);
         if (!parsingResult)
         {
-            process.HandleError(
-                _logger,
-                JobErrorCodes.GetJobFailure,
-                "An unexpected error has occured in parsing job guid = '{JobGuid}'",
-                process.JobIdToParse
-            );
+            string errorCode = JobErrorCodes.GetJobFailure;
+            string errorMessage = "An unexpected error has occured in parsing a job GUID = '{JobGuid}'";
+            process.HandleError(_logger, errorCode, errorMessage, process.JobIdToParse);
 
             return process;
         }
@@ -67,7 +64,7 @@ public class GetJobQueryHandler : IRequestHandler<GetJobQuery, GetJobResult>
         return process;
     }
 
-    private async Task<Process> GetJobAsync(Process process, CancellationToken cancellationToken)
+    private async Task<ProcessContext> GetJobAsync(ProcessContext process, CancellationToken cancellationToken)
     {
         if (process.HasErrors || process.JobId is null)
         {
@@ -82,23 +79,18 @@ public class GetJobQueryHandler : IRequestHandler<GetJobQuery, GetJobResult>
         }
         catch (Exception ex)
         {
-            process.HandleError(
-                _logger,
-                JobErrorCodes.GetJobFailure,
-                ex,
-                "An unexpected error has occured in getting a job."
-            );
+            string errorCode = JobErrorCodes.GetJobFailure;
+            string errorMessage = "An unexpected error has occured in getting a job.";
+            process.HandleError(_logger, errorCode, errorMessage, ex);
 
             return process;
         }
 
         if (job is null)
         {
-            process.HandleError(
-                _logger,
-                JobErrorCodes.GetJobFailure,
-                "An unexpected error has occured in getting a job. Job doesn't exist."
-            );
+            string errorCode = JobErrorCodes.GetJobFailure;
+            string errorMessage = "An unexpected error has occured in getting a job. Job doesn't exist.";
+            process.HandleError(_logger, errorCode, errorMessage);
 
             return process;
         }
@@ -108,7 +100,7 @@ public class GetJobQueryHandler : IRequestHandler<GetJobQuery, GetJobResult>
         return process;
     }
 
-    private static GetJobResult BuildResult(Process process)
+    private static GetJobResult BuildResult(ProcessContext process)
     {
         GetJobResult result = new()
         {

@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace AsyncJobsTemplate.Core.Commands.TriggerJob.Models;
 
-internal class Process : IProcess
+internal class ProcessContext : ProcessContextBase
 {
     public Guid JobId { get; init; }
 
@@ -15,8 +15,4 @@ internal class Process : IProcess
     public JsonObject? InputData { get; init; }
 
     public string? InputFileReference { get; set; }
-
-    public List<JobError> Errors { get; init; } = [];
-
-    public bool HasErrors => Errors.Count > 0;
 }
