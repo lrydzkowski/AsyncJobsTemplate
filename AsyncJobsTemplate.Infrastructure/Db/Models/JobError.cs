@@ -5,4 +5,6 @@ internal class JobError
     public string Message { get; init; } = "";
 
     public string ErrorCode { get; init; } = "";
+
+    public string? ExceptionMessage { get; init; }
 }

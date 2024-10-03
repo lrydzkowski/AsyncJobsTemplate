@@ -8,7 +8,7 @@ public class JobToCreate
 
     public string JobCategoryName { get; init; } = "";
 
-    public JsonObject? InputData { get; init; }
+    public object? InputData { get; init; }
 
     public string? InputFileReference { get; init; }
 }

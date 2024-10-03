@@ -17,7 +17,7 @@ public class GetJobResult
 {
     public string Status { get; init; } = "";
 
-    public JsonObject? OutputData { get; init; }
+    public object? OutputData { get; init; }
 
     public string? OutputFile { get; init; }
 }

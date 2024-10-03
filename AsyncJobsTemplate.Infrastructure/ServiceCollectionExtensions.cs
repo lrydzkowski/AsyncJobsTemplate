@@ -49,7 +49,8 @@ public static class ServiceCollectionExtensions
     {
         return services.AddOptionsType<AzureStorageAccountOptions>(configuration, AzureStorageAccountOptions.Position)
             .AddOptionsType<AzureAdOptions>(configuration, AzureAdOptions.Position)
-            .AddOptionsType<AzureSqlOptions>(configuration, AzureSqlOptions.Position);
+            .AddOptionsType<AzureSqlOptions>(configuration, AzureSqlOptions.Position)
+            .AddOptionsType<AzureServiceBusOptions>(configuration, AzureServiceBusOptions.Position);
     }
 
     private static IServiceCollection AddAzureBlobServiceClient(this IServiceCollection services)

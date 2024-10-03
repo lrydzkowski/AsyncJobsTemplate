@@ -1,24 +1,22 @@
-﻿using System.Text.Json.Nodes;
-
-namespace AsyncJobsTemplate.Core.Models;
+﻿namespace AsyncJobsTemplate.Core.Models;
 
 public class Job
 {
-    public Guid JobId { get; init; }
+    public Guid JobId { get; set; }
 
-    public string JobCategoryName { get; init; } = "";
+    public string JobCategoryName { get; set; } = "";
 
-    public JobStatus Status { get; init; } = JobStatus.Created;
+    public JobStatus Status { get; set; } = JobStatus.Created;
 
-    public JsonObject? InputData { get; init; }
+    public object? InputData { get; set; }
 
     public string? InputFileReference { get; set; }
 
-    public JsonObject? OutputData { get; init; }
+    public object? OutputData { get; set; }
 
-    public string? OutputFileReference { get; init; }
+    public string? OutputFileReference { get; set; }
 
-    public List<JobError> Errors { get; init; } = [];
+    public List<JobError> Errors { get; set; } = [];
 
     public DateTime CreatedAtUtc { get; set; }
 

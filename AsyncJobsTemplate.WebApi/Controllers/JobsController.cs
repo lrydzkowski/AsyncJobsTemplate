@@ -22,7 +22,7 @@ public class JobsController : ControllerBase
         _mediator = mediator;
     }
 
-    [SwaggerOperation(Summary = "Trigger a job with JSON payload")]
+    [SwaggerOperation(Summary = "Trigger a job with a JSON payload")]
     [SwaggerResponse(
         StatusCodes.Status200OK,
         "Correct response",
@@ -50,7 +50,7 @@ public class JobsController : ControllerBase
         return Ok(result);
     }
 
-    [SwaggerOperation(Summary = "Trigger a job with file")]
+    [SwaggerOperation(Summary = "Trigger a job with a file")]
     [SwaggerResponse(
         StatusCodes.Status200OK,
         "Correct response",

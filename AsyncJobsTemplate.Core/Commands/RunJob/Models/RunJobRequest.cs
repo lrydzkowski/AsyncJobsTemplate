@@ -2,5 +2,5 @@
 
 public class RunJobRequest
 {
-    public string? JobId { get; init; }
+    public Guid JobId { get; init; }
 }

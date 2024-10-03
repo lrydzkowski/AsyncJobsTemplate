@@ -1,4 +1,5 @@
-﻿using AsyncJobsTemplate.Core.Models;
+﻿using AsyncJobsTemplate.Core.Commands.RunJob.Models;
+using AsyncJobsTemplate.Core.Models;
 
 namespace AsyncJobsTemplate.Core.Commands.RunJob.Interfaces;
 
@@ -8,5 +9,5 @@ public interface IJobsRepository
 
     Task SetJobStatusAsync(Guid jobId, JobStatus status, CancellationToken cancellationToken);
 
-    Task SetJobStatusAsync(Guid jobId, JobStatus status, List<JobError> errors, CancellationToken cancellationToken);
+    Task UpdateJobAsync(JobToUpdate jobToUpdate, CancellationToken cancellationToken);
 }

@@ -32,8 +32,8 @@ public static class ServiceCollectionExtensions
 
     private static IServiceCollection AddJobs(this IServiceCollection services)
     {
-        return services.AddKeyedScoped<IJob, Job1Example>(Job1Example.Name)
-            .AddKeyedScoped<IJob, Job2Example>(Job2Example.Name);
+        return services.AddKeyedScoped<IJobHandler, Job1Handler>(Job1Handler.Name)
+            .AddKeyedScoped<IJobHandler, Job2Handler>(Job2Handler.Name);
     }
 
     private static IServiceCollection AddServices(this IServiceCollection services)

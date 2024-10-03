@@ -27,7 +27,8 @@ internal class JobMapper
         return new JobError
         {
             ErrorCode = jobError.ErrorCode,
-            Message = jobError.Message
+            Message = jobError.Message,
+            ExceptionMessage = jobError.Exception?.Message
         };
     }
 

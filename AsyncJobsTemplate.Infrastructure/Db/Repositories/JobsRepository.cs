@@ -1,17 +1,17 @@
-﻿using System.Linq.Expressions;
-using System.Text.Json;
+﻿using System.Text.Json;
 using System.Text.Json.Nodes;
+using AsyncJobsTemplate.Core.Commands.RunJob.Models;
 using AsyncJobsTemplate.Core.Commands.TriggerJob.Models;
 using AsyncJobsTemplate.Core.Models;
 using AsyncJobsTemplate.Core.Services;
 using AsyncJobsTemplate.Infrastructure.Db.Entities;
 using AsyncJobsTemplate.Infrastructure.Db.Mappers;
 using Microsoft.EntityFrameworkCore;
-using JobErrorCore = AsyncJobsTemplate.Core.Models.JobError;
-using JobError = AsyncJobsTemplate.Infrastructure.Db.Models.JobError;
 using IJobsRepositoryGetJob = AsyncJobsTemplate.Core.Queries.GetJob.Interfaces.IJobsRepository;
 using IJobsRepositoryRunJob = AsyncJobsTemplate.Core.Commands.RunJob.Interfaces.IJobsRepository;
 using IJobsRepositoryTriggerJob = AsyncJobsTemplate.Core.Commands.TriggerJob.Interfaces.IJobsRepository;
+using JobError = AsyncJobsTemplate.Infrastructure.Db.Models.JobError;
+using JobErrorCore = AsyncJobsTemplate.Core.Models.JobError;
 
 namespace AsyncJobsTemplate.Infrastructure.Db.Repositories;
 
@@ -43,35 +43,21 @@ internal class JobsRepository : IJobsRepositoryTriggerJob, IJobsRepositoryRunJob
         return job;
     }
 
-    public async Task SetJobStatusAsync(Guid jobId, JobStatus status, CancellationToken cancellationToken)
+    public async Task UpdateJobAsync(JobToUpdate jobToUpdate, CancellationToken cancellationToken)
     {
-        JobEntity? jobEntity = await _appDbContext.Jobs.FirstOrDefaultAsync(x => x.JobId == jobId, cancellationToken);
-        if (jobEntity is null)
-        {
-            return;
-        }
+        string? serializedOutputData =
+            jobToUpdate.OutputData is null ? null : JsonSerializer.Serialize(jobToUpdate.OutputData);
+        string serializedErrors = JsonSerializer.Serialize(_jobMapper.Map(jobToUpdate.Errors));
 
-        jobEntity.Status = status.ToString();
-        await _appDbContext.SaveChangesAsync(cancellationToken);
-    }
-
-    public async Task SetJobStatusAsync(
-        Guid jobId,
-        JobStatus status,
-        List<JobErrorCore> errors,
-        CancellationToken cancellationToken
-    )
-    {
-        JobEntity? jobEntity = await _appDbContext.Jobs.FirstOrDefaultAsync(x => x.JobId == jobId, cancellationToken);
-        if (jobEntity is null)
-        {
-            return;
-        }
-
-        SetErrors(jobEntity, errors);
-        jobEntity.Status = status.ToString();
-
-        await _appDbContext.SaveChangesAsync(cancellationToken);
+        await _appDbContext.Jobs.Where(x => x.JobId == jobToUpdate.JobId)
+            .ExecuteUpdateAsync(
+                x => x.SetProperty(y => y.Status, jobToUpdate.Status.ToString())
+                    .SetProperty(y => y.OutputData, serializedOutputData)
+                    .SetProperty(y => y.OutputFileReference, jobToUpdate.OutputFileReference)
+                    .SetProperty(y => y.Errors, serializedErrors)
+                    .SetProperty(y => y.LastUpdatedAtUtc, _dateTimeProvider.UtcNow),
+                cancellationToken
+            );
     }
 
     public async Task<Job> CreateJobAsync(JobToCreate jobToCreate, CancellationToken cancellationToken)
@@ -87,57 +73,38 @@ internal class JobsRepository : IJobsRepositoryTriggerJob, IJobsRepositoryRunJob
         _appDbContext.Add(jobEntity);
         await _appDbContext.SaveChangesAsync(cancellationToken);
 
-        // TODO: improve it
-        Job? job = await GetJobAsync(jobToCreate.JobId, cancellationToken);
-        if (job is null)
-        {
-            throw new InvalidOperationException("Job doesn't exist.");
-        }
+        Job job = BuildJob(jobEntity);
 
         return job;
     }
 
-    public async Task<Job?> SaveErrorsAsync(Guid jobId, List<JobErrorCore> errors, CancellationToken cancellationToken)
+    public async Task SaveErrorsAsync(Guid jobId, List<JobErrorCore> errors, CancellationToken cancellationToken)
     {
-        JobEntity? jobEntity = await _appDbContext.Jobs.FirstOrDefaultAsync(x => x.JobId == jobId, cancellationToken);
-        if (jobEntity is null)
-        {
-            return null;
-        }
-
-        SetErrors(jobEntity, errors);
-        await _appDbContext.SaveChangesAsync(cancellationToken);
-
-        // TODO: improve it
-        Job? job = await GetJobAsync(jobId, cancellationToken);
-        if (job is null)
-        {
-            throw new InvalidOperationException("Job doesn't exist.");
-        }
-
-        return job;
+        string serializedErrors = JsonSerializer.Serialize(_jobMapper.Map(errors));
+        await _appDbContext.Jobs.Where(x => x.JobId == jobId)
+            .ExecuteUpdateAsync(
+                x => x.SetProperty(y => y.Errors, serializedErrors)
+                    .SetProperty(y => y.LastUpdatedAtUtc, _dateTimeProvider.UtcNow),
+                cancellationToken
+            );
     }
 
-    private JobEntity SetErrors(JobEntity jobEntity, List<JobErrorCore> errors)
+    public async Task SetJobStatusAsync(Guid jobId, JobStatus status, CancellationToken cancellationToken)
     {
-        List<JobError> errorsToSave = _jobMapper.Map(errors);
-        if (jobEntity.Errors is not null)
-        {
-            List<JobError> currentErrors = JsonSerializer.Deserialize<List<JobError>>(jobEntity.Errors) ?? [];
-            errorsToSave.AddRange(currentErrors);
-        }
-
-        jobEntity.Errors = JsonSerializer.Serialize(errorsToSave);
-
-        return jobEntity;
+        await _appDbContext.Jobs.Where(x => x.JobId == jobId)
+            .ExecuteUpdateAsync(
+                x => x.SetProperty(y => y.Status, status.ToString())
+                    .SetProperty(y => y.LastUpdatedAtUtc, _dateTimeProvider.UtcNow),
+                cancellationToken
+            );
     }
 
-    private Job? BuildJob(JobEntity jobEntity)
+    private Job BuildJob(JobEntity jobEntity)
     {
         bool parsingResult = Enum.TryParse(jobEntity.Status, out JobStatus status);
         if (!parsingResult)
         {
-            return null;
+            throw new InvalidOperationException($"Job entity has an incorrect status = '{jobEntity.Status}'.");
         }
 
         Job job = new()

@@ -26,7 +26,7 @@ internal static class ProcessExtensions
         params object?[] args
     )
     {
-        logger.LogError(errorMessage, args);
+        logger.LogError(ex, errorMessage, args);
         process.AddError(errorCode, string.Format(errorMessage, args), ex);
     }
 }

@@ -6,7 +6,6 @@ internal static class JobErrorCodes
     public const string CreateJobFailure = nameof(CreateJobFailure);
     public const string SendMessageFailure = nameof(SendMessageFailure);
     public const string SaveErrorsFailure = nameof(SaveErrorsFailure);
-    public const string ParseJobIdFailure = nameof(ParseJobIdFailure);
     public const string GetJobFailure = nameof(GetJobFailure);
     public const string GetJobTypeFailure = nameof(GetJobTypeFailure);
     public const string RunJobFailure = nameof(RunJobFailure);
