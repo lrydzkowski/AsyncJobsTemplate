@@ -1,5 +1,4 @@
 ﻿using System.Net.Mime;
-using System.Text.Json.Nodes;
 using AsyncJobsTemplate.Core.Commands.TriggerJob;
 using AsyncJobsTemplate.Core.Commands.TriggerJob.Models;
 using AsyncJobsTemplate.Core.Models;
@@ -30,7 +29,7 @@ public class JobsController : ControllerBase
         MediaTypeNames.Application.Json
     )]
     [HttpPost("{jobCategoryName}")]
-    public async Task<IActionResult> Trigger(string jobCategoryName, JsonObject? payload)
+    public async Task<IActionResult> Trigger(string jobCategoryName, object? payload)
     {
         TriggerJobResult result = await _mediator.Send(
             new TriggerJobCommand

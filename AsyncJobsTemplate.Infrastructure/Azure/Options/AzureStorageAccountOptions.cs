@@ -6,5 +6,7 @@ internal class AzureStorageAccountOptions
 
     public string Name { get; init; } = "";
 
-    public string ContainerName { get; init; } = "";
+    public string InputContainerName { get; init; } = "";
+
+    public string OutputContainerName { get; init; } = "";
 }

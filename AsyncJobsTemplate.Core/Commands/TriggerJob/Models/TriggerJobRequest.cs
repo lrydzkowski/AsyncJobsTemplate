@@ -9,5 +9,5 @@ public class TriggerJobRequest
 
     public IFormFile? File { get; init; }
 
-    public JsonObject? Data { get; init; }
+    public object? Data { get; init; }
 }

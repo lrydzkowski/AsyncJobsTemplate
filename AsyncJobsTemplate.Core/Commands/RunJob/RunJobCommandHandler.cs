@@ -1,12 +1,13 @@
 ﻿using AsyncJobsTemplate.Core.Commands.RunJob.Interfaces;
 using AsyncJobsTemplate.Core.Commands.RunJob.Models;
+using AsyncJobsTemplate.Core.Commands.TriggerJob.Models;
 using AsyncJobsTemplate.Core.Extensions;
 using AsyncJobsTemplate.Core.Jobs;
 using AsyncJobsTemplate.Core.Models;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+using ProcessContext = AsyncJobsTemplate.Core.Commands.RunJob.Models.ProcessContext;
 
 namespace AsyncJobsTemplate.Core.Commands.RunJob;
 
@@ -22,6 +23,7 @@ public class RunJobResult
 
 public class RunJobCommandHandler : IRequestHandler<RunJobCommand, RunJobResult>
 {
+    private readonly IJobsFileStorage _jobsFileStorage;
     private readonly IJobsRepository _jobsRepository;
     private readonly ILogger<RunJobCommandHandler> _logger;
     private readonly IServiceProvider _serviceProvider;
@@ -29,12 +31,14 @@ public class RunJobCommandHandler : IRequestHandler<RunJobCommand, RunJobResult>
     public RunJobCommandHandler(
         IJobsRepository jobsRepository,
         ILogger<RunJobCommandHandler> logger,
-        IServiceProvider serviceProvider
+        IServiceProvider serviceProvider,
+        IJobsFileStorage jobsFileStorage
     )
     {
         _jobsRepository = jobsRepository;
         _logger = logger;
         _serviceProvider = serviceProvider;
+        _jobsFileStorage = jobsFileStorage;
     }
 
     public async Task<RunJobResult> Handle(RunJobCommand command, CancellationToken cancellationToken)
@@ -97,14 +101,14 @@ public class RunJobCommandHandler : IRequestHandler<RunJobCommand, RunJobResult>
         CancellationToken cancellationToken
     )
     {
-        if (process.HasErrors || process.JobId is null)
+        if (process.HasErrors || process.Job is null)
         {
             return process;
         }
 
         try
         {
-            await _jobsRepository.SetJobStatusAsync((Guid)process.JobId, JobStatus.Running, cancellationToken);
+            await _jobsRepository.SetJobStatusAsync(process.Job.JobId, JobStatus.Running, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -135,7 +139,27 @@ public class RunJobCommandHandler : IRequestHandler<RunJobCommand, RunJobResult>
 
         try
         {
-            process.Job = await jobHandler.RunJobAsync(process.Job, cancellationToken);
+            JobExecutionInput input = new()
+            {
+                JobId = process.Job.JobId,
+                InputData = process.Job.InputData,
+                InputFile = process.Job.InputFileReference is null
+                    ? null
+                    : await _jobsFileStorage.GetInputFileAsync(process.Job.JobId, cancellationToken)
+            };
+
+            JobExecutionOutput output = await jobHandler.RunJobAsync(input, cancellationToken);
+
+            process.Job.OutputData = output.OutputData;
+            if (output.OutputFile is not null)
+            {
+                SaveFileResult result = await _jobsFileStorage.SaveOutputFileAsync(
+                    process.Job.JobId,
+                    output.OutputFile,
+                    cancellationToken
+                );
+                process.Job.OutputFileReference = result.FileReference;
+            }
         }
         catch (Exception ex)
         {
@@ -159,34 +183,8 @@ public class RunJobCommandHandler : IRequestHandler<RunJobCommand, RunJobResult>
 
         try
         {
-            if (process.HasErrors)
-            {
-                List<JobError> errors = process.Job?.Errors ?? [];
-                errors.AddRange(process.Errors);
-
-                JobToUpdate jobToUpdateWithErrors = new()
-                {
-                    JobId = (Guid)process.JobId,
-                    Status = JobStatus.Failed,
-                    OutputData = process.Job?.OutputData,
-                    OutputFileReference = process.Job?.OutputFileReference,
-                    Errors = errors
-                };
-
-                await _jobsRepository.UpdateJobAsync(jobToUpdateWithErrors, cancellationToken);
-
-                return process;
-            }
-
-            JobToUpdate jobToUpdate = new()
-            {
-                JobId = (Guid)process.JobId,
-                Status = JobStatus.Finished,
-                OutputData = process.Job?.OutputData,
-                OutputFileReference = process.Job?.OutputFileReference
-            };
-
-            await _jobsRepository.UpdateJobAsync(jobToUpdate, cancellationToken);
+            JobStatus status = process.HasErrors ? JobStatus.Failed : JobStatus.Finished;
+            await _jobsRepository.UpdateJobAsync(BuildJobToUpdate(process, status), cancellationToken);
         }
         catch (Exception ex)
         {
@@ -196,5 +194,22 @@ public class RunJobCommandHandler : IRequestHandler<RunJobCommand, RunJobResult>
         }
 
         return process;
+    }
+
+    private static JobToUpdate BuildJobToUpdate(ProcessContext process, JobStatus status)
+    {
+        List<JobError> errors = process.Job?.Errors ?? [];
+        errors.AddRange(process.Errors);
+
+        JobToUpdate jobToUpdate = new()
+        {
+            JobId = process.Job!.JobId,
+            Status = status,
+            OutputData = process.Job?.OutputData,
+            OutputFileReference = process.Job?.OutputFileReference,
+            Errors = errors
+        };
+
+        return jobToUpdate;
     }
 }

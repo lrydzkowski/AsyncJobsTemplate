@@ -12,7 +12,7 @@ internal class ProcessContext : ProcessContextBase
 
     public IFormFile? InputFile { get; init; }
 
-    public JsonObject? InputData { get; init; }
+    public object? InputData { get; init; }
 
     public string? InputFileReference { get; set; }
 }

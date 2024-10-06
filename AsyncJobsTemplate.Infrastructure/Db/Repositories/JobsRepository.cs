@@ -1,5 +1,4 @@
 ﻿using System.Text.Json;
-using System.Text.Json.Nodes;
 using AsyncJobsTemplate.Core.Commands.RunJob.Models;
 using AsyncJobsTemplate.Core.Commands.TriggerJob.Models;
 using AsyncJobsTemplate.Core.Models;
@@ -32,7 +31,7 @@ internal class JobsRepository : IJobsRepositoryTriggerJob, IJobsRepositoryRunJob
     public async Task<Job?> GetJobAsync(Guid jobId, CancellationToken cancellationToken)
     {
         JobEntity? jobEntity = await _appDbContext.Jobs.AsNoTracking()
-            .FirstOrDefaultAsync(x => x.JobId == jobId, cancellationToken);
+            .FirstOrDefaultAsync(jobEntity => jobEntity.JobId == jobId, cancellationToken);
         if (jobEntity is null)
         {
             return null;
@@ -49,13 +48,23 @@ internal class JobsRepository : IJobsRepositoryTriggerJob, IJobsRepositoryRunJob
             jobToUpdate.OutputData is null ? null : JsonSerializer.Serialize(jobToUpdate.OutputData);
         string serializedErrors = JsonSerializer.Serialize(_jobMapper.Map(jobToUpdate.Errors));
 
-        await _appDbContext.Jobs.Where(x => x.JobId == jobToUpdate.JobId)
+        await _appDbContext.Jobs.Where(jobEntity => jobEntity.JobId == jobToUpdate.JobId)
             .ExecuteUpdateAsync(
-                x => x.SetProperty(y => y.Status, jobToUpdate.Status.ToString())
-                    .SetProperty(y => y.OutputData, serializedOutputData)
-                    .SetProperty(y => y.OutputFileReference, jobToUpdate.OutputFileReference)
-                    .SetProperty(y => y.Errors, serializedErrors)
-                    .SetProperty(y => y.LastUpdatedAtUtc, _dateTimeProvider.UtcNow),
+                x => x.SetProperty(jobEntity => jobEntity.Status, jobToUpdate.Status.ToString())
+                    .SetProperty(jobEntity => jobEntity.OutputData, serializedOutputData)
+                    .SetProperty(jobEntity => jobEntity.OutputFileReference, jobToUpdate.OutputFileReference)
+                    .SetProperty(jobEntity => jobEntity.Errors, serializedErrors)
+                    .SetProperty(jobEntity => jobEntity.LastUpdatedAtUtc, _dateTimeProvider.UtcNow),
+                cancellationToken
+            );
+    }
+
+    public async Task SetJobStatusAsync(Guid jobId, JobStatus status, CancellationToken cancellationToken)
+    {
+        await _appDbContext.Jobs.Where(jobEntity => jobEntity.JobId == jobId)
+            .ExecuteUpdateAsync(
+                x => x.SetProperty(jobEntity => jobEntity.Status, status.ToString())
+                    .SetProperty(jobEntity => jobEntity.LastUpdatedAtUtc, _dateTimeProvider.UtcNow),
                 cancellationToken
             );
     }
@@ -81,20 +90,12 @@ internal class JobsRepository : IJobsRepositoryTriggerJob, IJobsRepositoryRunJob
     public async Task SaveErrorsAsync(Guid jobId, List<JobErrorCore> errors, CancellationToken cancellationToken)
     {
         string serializedErrors = JsonSerializer.Serialize(_jobMapper.Map(errors));
-        await _appDbContext.Jobs.Where(x => x.JobId == jobId)
+        await _appDbContext.Jobs.Where(
+                jobEntity => jobEntity.JobId == jobId
+            )
             .ExecuteUpdateAsync(
-                x => x.SetProperty(y => y.Errors, serializedErrors)
-                    .SetProperty(y => y.LastUpdatedAtUtc, _dateTimeProvider.UtcNow),
-                cancellationToken
-            );
-    }
-
-    public async Task SetJobStatusAsync(Guid jobId, JobStatus status, CancellationToken cancellationToken)
-    {
-        await _appDbContext.Jobs.Where(x => x.JobId == jobId)
-            .ExecuteUpdateAsync(
-                x => x.SetProperty(y => y.Status, status.ToString())
-                    .SetProperty(y => y.LastUpdatedAtUtc, _dateTimeProvider.UtcNow),
+                x => x.SetProperty(jobEntity => jobEntity.Errors, serializedErrors)
+                    .SetProperty(jobEntity => jobEntity.LastUpdatedAtUtc, _dateTimeProvider.UtcNow),
                 cancellationToken
             );
     }
@@ -114,11 +115,11 @@ internal class JobsRepository : IJobsRepositoryTriggerJob, IJobsRepositoryRunJob
             Status = status,
             InputData = jobEntity.InputData is null
                 ? null
-                : JsonSerializer.Deserialize<JsonObject>(jobEntity.InputData),
+                : JsonSerializer.Deserialize<object>(jobEntity.InputData),
             InputFileReference = jobEntity.InputFileReference,
             OutputData = jobEntity.OutputData is null
                 ? null
-                : JsonSerializer.Deserialize<JsonObject>(jobEntity.OutputData),
+                : JsonSerializer.Deserialize<object>(jobEntity.OutputData),
             OutputFileReference = jobEntity.OutputFileReference,
             Errors = jobEntity.Errors is null
                 ? []

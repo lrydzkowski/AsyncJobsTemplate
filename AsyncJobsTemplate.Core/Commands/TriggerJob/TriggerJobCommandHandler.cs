@@ -73,7 +73,7 @@ public class TriggerJobCommandHandler : IRequestHandler<TriggerJobCommand, Trigg
                 return process;
             }
 
-            SaveFileResult saveFileResult = await _jobFileStorage.SaveFileAsync(
+            SaveFileResult saveFileResult = await _jobFileStorage.SaveInputFileAsync(
                 process.JobId,
                 process.InputFile,
                 cancellationToken

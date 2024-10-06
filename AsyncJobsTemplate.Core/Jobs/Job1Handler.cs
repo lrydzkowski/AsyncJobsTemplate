@@ -6,6 +6,7 @@ namespace AsyncJobsTemplate.Core.Jobs;
 internal class Job1Handler : IJobHandler
 {
     public const string Name = "job1";
+
     private readonly ILogger<Job1Handler> _logger;
 
     public Job1Handler(ILogger<Job1Handler> logger)
@@ -13,15 +14,20 @@ internal class Job1Handler : IJobHandler
         _logger = logger;
     }
 
-    public async Task<Job> RunJobAsync(Job job, CancellationToken cancellationToken)
+    public string Description { get; } = "A simple job that generates JSON as output";
+
+    public async Task<JobExecutionOutput> RunJobAsync(JobExecutionInput input, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Start processing Job1 - JobId = {JobId}", job.JobId);
+        _logger.LogInformation("Start processing Job1 - JobId = {JobId}", input.JobId);
 
         await Task.Delay(TimeSpan.FromMinutes(1), cancellationToken);
-        job.OutputData = new { Result = true };
+        JobExecutionOutput output = new()
+        {
+            OutputData = new { Result = true }
+        };
 
-        _logger.LogInformation("Stop processing Job1 - JobId = {JobId}", job.JobId);
+        _logger.LogInformation("Stop processing Job1 - JobId = {JobId}", input.JobId);
 
-        return job;
+        return output;
     }
 }

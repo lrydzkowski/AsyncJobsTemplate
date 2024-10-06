@@ -18,6 +18,8 @@ using Microsoft.Extensions.Options;
 using IJobsRepositoryGetJob = AsyncJobsTemplate.Core.Queries.GetJob.Interfaces.IJobsRepository;
 using IJobsRepositoryRunJob = AsyncJobsTemplate.Core.Commands.RunJob.Interfaces.IJobsRepository;
 using IJobsRepositoryTriggerJob = AsyncJobsTemplate.Core.Commands.TriggerJob.Interfaces.IJobsRepository;
+using IJobsFileStorageRunJob = AsyncJobsTemplate.Core.Commands.RunJob.Interfaces.IJobsFileStorage;
+using IJobsFileStorageTriggerJob = AsyncJobsTemplate.Core.Commands.TriggerJob.Interfaces.IJobsFileStorage;
 
 namespace AsyncJobsTemplate.Infrastructure;
 
@@ -40,7 +42,8 @@ public static class ServiceCollectionExtensions
             .AddScoped<IJobsRepositoryRunJob, JobsRepository>()
             .AddScoped<IJobsRepositoryGetJob, JobsRepository>()
             .AddScoped<IJobsQueue, JobsQueue>()
-            .AddScoped<IJobsFileStorage, JobsFileStorage>()
+            .AddScoped<IJobsFileStorageRunJob, JobsFileStorage>()
+            .AddScoped<IJobsFileStorageTriggerJob, JobsFileStorage>()
             .AddSingleton<IAccessTokenProvider, AccessTokenProvider>()
             .AddScoped<IJobMapper, JobMapper>();
     }

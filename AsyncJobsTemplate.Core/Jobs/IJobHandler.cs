@@ -4,5 +4,7 @@ namespace AsyncJobsTemplate.Core.Jobs;
 
 internal interface IJobHandler
 {
-    Task<Job> RunJobAsync(Job job, CancellationToken cancellationToken);
+    string Description { get; }
+
+    Task<JobExecutionOutput> RunJobAsync(JobExecutionInput input, CancellationToken cancellationToken);
 }

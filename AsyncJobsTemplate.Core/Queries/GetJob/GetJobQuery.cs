@@ -1,5 +1,4 @@
-﻿using System.Text.Json.Nodes;
-using AsyncJobsTemplate.Core.Extensions;
+﻿using AsyncJobsTemplate.Core.Extensions;
 using AsyncJobsTemplate.Core.Models;
 using AsyncJobsTemplate.Core.Queries.GetJob.Interfaces;
 using AsyncJobsTemplate.Core.Queries.GetJob.Models;
@@ -19,7 +18,7 @@ public class GetJobResult
 
     public object? OutputData { get; init; }
 
-    public string? OutputFile { get; init; }
+    public string? OutputFileReference { get; init; }
 }
 
 public class GetJobQueryHandler : IRequestHandler<GetJobQuery, GetJobResult>
@@ -106,7 +105,7 @@ public class GetJobQueryHandler : IRequestHandler<GetJobQuery, GetJobResult>
         {
             Status = process.Job?.Status.ToString() ?? JobStatus.NotExist.ToString(),
             OutputData = process.Job?.OutputData,
-            OutputFile = process.Job?.OutputFileReference
+            OutputFileReference = process.Job?.OutputFileReference
         };
 
         return result;
