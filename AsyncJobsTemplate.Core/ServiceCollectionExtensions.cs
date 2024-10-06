@@ -38,6 +38,6 @@ public static class ServiceCollectionExtensions
 
     private static IServiceCollection AddServices(this IServiceCollection services)
     {
-        return services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
+        return services.AddSingleton<IDateTimeProvider, DateTimeProvider>().AddSingleton<ISerializer, Serializer>();
     }
 }

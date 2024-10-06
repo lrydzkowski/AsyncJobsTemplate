@@ -1,5 +1,4 @@
-﻿using System.Text.Json;
-using AsyncJobsTemplate.Core.Commands.RunJob.Models;
+﻿using AsyncJobsTemplate.Core.Commands.RunJob.Models;
 using AsyncJobsTemplate.Core.Commands.TriggerJob.Models;
 using AsyncJobsTemplate.Core.Models;
 using AsyncJobsTemplate.Core.Services;
@@ -18,14 +17,20 @@ internal class JobsRepository : IJobsRepositoryTriggerJob, IJobsRepositoryRunJob
 {
     private readonly AppDbContext _appDbContext;
     private readonly IDateTimeProvider _dateTimeProvider;
-
     private readonly IJobMapper _jobMapper;
+    private readonly ISerializer _serializer;
 
-    public JobsRepository(AppDbContext appDbContext, IDateTimeProvider dateTimeProvider, IJobMapper jobMapper)
+    public JobsRepository(
+        AppDbContext appDbContext,
+        IDateTimeProvider dateTimeProvider,
+        IJobMapper jobMapper,
+        ISerializer serializer
+    )
     {
         _appDbContext = appDbContext;
         _dateTimeProvider = dateTimeProvider;
         _jobMapper = jobMapper;
+        _serializer = serializer;
     }
 
     public async Task<Job?> GetJobAsync(Guid jobId, CancellationToken cancellationToken)
@@ -45,8 +50,8 @@ internal class JobsRepository : IJobsRepositoryTriggerJob, IJobsRepositoryRunJob
     public async Task UpdateJobAsync(JobToUpdate jobToUpdate, CancellationToken cancellationToken)
     {
         string? serializedOutputData =
-            jobToUpdate.OutputData is null ? null : JsonSerializer.Serialize(jobToUpdate.OutputData);
-        string serializedErrors = JsonSerializer.Serialize(_jobMapper.Map(jobToUpdate.Errors));
+            jobToUpdate.OutputData is null ? null : _serializer.Serialize(jobToUpdate.OutputData);
+        string serializedErrors = _serializer.Serialize(_jobMapper.Map(jobToUpdate.Errors)) ?? "";
 
         await _appDbContext.Jobs.Where(jobEntity => jobEntity.JobId == jobToUpdate.JobId)
             .ExecuteUpdateAsync(
@@ -75,7 +80,7 @@ internal class JobsRepository : IJobsRepositoryTriggerJob, IJobsRepositoryRunJob
         {
             JobId = jobToCreate.JobId,
             JobCategoryName = jobToCreate.JobCategoryName,
-            InputData = jobToCreate.InputData is null ? null : JsonSerializer.Serialize(jobToCreate.InputData),
+            InputData = jobToCreate.InputData is null ? null : _serializer.Serialize(jobToCreate.InputData),
             InputFileReference = jobToCreate.InputFileReference,
             CreatedAtUtc = _dateTimeProvider.UtcNow
         };
@@ -89,7 +94,7 @@ internal class JobsRepository : IJobsRepositoryTriggerJob, IJobsRepositoryRunJob
 
     public async Task SaveErrorsAsync(Guid jobId, List<JobErrorCore> errors, CancellationToken cancellationToken)
     {
-        string serializedErrors = JsonSerializer.Serialize(_jobMapper.Map(errors));
+        string serializedErrors = _serializer.Serialize(_jobMapper.Map(errors)) ?? "";
         await _appDbContext.Jobs.Where(
                 jobEntity => jobEntity.JobId == jobId
             )
@@ -115,15 +120,15 @@ internal class JobsRepository : IJobsRepositoryTriggerJob, IJobsRepositoryRunJob
             Status = status,
             InputData = jobEntity.InputData is null
                 ? null
-                : JsonSerializer.Deserialize<object>(jobEntity.InputData),
+                : _serializer.Deserialize<object>(jobEntity.InputData),
             InputFileReference = jobEntity.InputFileReference,
             OutputData = jobEntity.OutputData is null
                 ? null
-                : JsonSerializer.Deserialize<object>(jobEntity.OutputData),
+                : _serializer.Deserialize<object>(jobEntity.OutputData),
             OutputFileReference = jobEntity.OutputFileReference,
             Errors = jobEntity.Errors is null
                 ? []
-                : _jobMapper.Map(JsonSerializer.Deserialize<List<JobError>>(jobEntity.Errors) ?? []),
+                : _jobMapper.Map(_serializer.Deserialize<List<JobError>>(jobEntity.Errors) ?? []),
             CreatedAtUtc = jobEntity.CreatedAtUtc,
             LastUpdatedAtUtc = jobEntity.LastUpdatedAtUtc
         };
