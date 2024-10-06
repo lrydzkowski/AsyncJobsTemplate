@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace AsyncJobsTemplate.WebApi.Controllers;
 
@@ -6,6 +7,7 @@ namespace AsyncJobsTemplate.WebApi.Controllers;
 [Route("")]
 public class AppController : ControllerBase
 {
+    [SwaggerOperation(Summary = "Get basic information about the app")]
     [HttpGet]
     public IActionResult GetAppInfo()
     {

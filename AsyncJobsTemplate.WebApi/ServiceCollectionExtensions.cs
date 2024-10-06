@@ -2,6 +2,7 @@
 using AsyncJobsTemplate.WebApi.Consumers;
 using MassTransit;
 using Microsoft.Extensions.Options;
+using Microsoft.OpenApi.Models;
 
 namespace AsyncJobsTemplate.WebApi;
 
@@ -9,7 +10,22 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddWebApiServices(this IServiceCollection services)
     {
+        services.AddControllers();
+        services.AddEndpointsApiExplorer();
+        services.AddSwagger();
+
         return services.AddMassTransit();
+    }
+
+    private static IServiceCollection AddSwagger(this IServiceCollection services)
+    {
+        return services.AddSwaggerGen(
+            options =>
+            {
+                options.SwaggerDoc("v1", new OpenApiInfo { Title = "AsyncJobTemplate", Version = "1.0" });
+                options.EnableAnnotations();
+            }
+        );
     }
 
     private static IServiceCollection AddMassTransit(this IServiceCollection services)
