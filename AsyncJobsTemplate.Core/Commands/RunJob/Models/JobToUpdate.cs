@@ -12,5 +12,5 @@ public class JobToUpdate
 
     public string? OutputFileReference { get; init; }
 
-    public List<JobError> Errors { get; init; } = [];
+    public List<JobError>? Errors { get; init; }
 }

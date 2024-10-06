@@ -20,6 +20,7 @@ using IJobsRepositoryRunJob = AsyncJobsTemplate.Core.Commands.RunJob.Interfaces.
 using IJobsRepositoryTriggerJob = AsyncJobsTemplate.Core.Commands.TriggerJob.Interfaces.IJobsRepository;
 using IJobsFileStorageRunJob = AsyncJobsTemplate.Core.Commands.RunJob.Interfaces.IJobsFileStorage;
 using IJobsFileStorageTriggerJob = AsyncJobsTemplate.Core.Commands.TriggerJob.Interfaces.IJobsFileStorage;
+using IJobsFileStorageDownloadJobFile = AsyncJobsTemplate.Core.Queries.DownloadJobFile.Interfaces.IJobsFileStorage;
 
 namespace AsyncJobsTemplate.Infrastructure;
 
@@ -44,6 +45,7 @@ public static class ServiceCollectionExtensions
             .AddScoped<IJobsQueue, JobsQueue>()
             .AddScoped<IJobsFileStorageRunJob, JobsFileStorage>()
             .AddScoped<IJobsFileStorageTriggerJob, JobsFileStorage>()
+            .AddScoped<IJobsFileStorageDownloadJobFile, JobsFileStorage>()
             .AddSingleton<IAccessTokenProvider, AccessTokenProvider>()
             .AddScoped<IJobMapper, JobMapper>();
     }

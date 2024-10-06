@@ -1,6 +1,6 @@
 ﻿namespace AsyncJobsTemplate.Core.Queries.GetJob.Models;
 
-public class GetJobQueryRequest
+public class GetJobRequest
 {
     public string? JobId { get; init; }
 }

@@ -2,6 +2,8 @@
 using AsyncJobsTemplate.Core.Commands.TriggerJob;
 using AsyncJobsTemplate.Core.Commands.TriggerJob.Models;
 using AsyncJobsTemplate.Core.Models;
+using AsyncJobsTemplate.Core.Queries.DownloadJobFile;
+using AsyncJobsTemplate.Core.Queries.DownloadJobFile.Models;
 using AsyncJobsTemplate.Core.Queries.GetJob;
 using AsyncJobsTemplate.Core.Queries.GetJob.Models;
 using MediatR;
@@ -90,7 +92,7 @@ public class JobsController : ControllerBase
         GetJobResult result = await _mediator.Send(
             new GetJobQuery
             {
-                Request = new GetJobQueryRequest
+                Request = new GetJobRequest
                 {
                     JobId = jobId
                 }
@@ -102,5 +104,27 @@ public class JobsController : ControllerBase
         }
 
         return Ok(result);
+    }
+
+    [SwaggerOperation(Summary = "Download a job file")]
+    [SwaggerResponse(StatusCodes.Status200OK)]
+    [HttpGet("{jobId}/file")]
+    public async Task<IActionResult> DownloadJobFile(string jobId)
+    {
+        DownloadJobFileResult result = await _mediator.Send(
+            new DownloadJobFileQuery
+            {
+                Request = new DownloadJobFileRequest
+                {
+                    FileReference = jobId
+                }
+            }
+        );
+        if (result.File?.Content is null)
+        {
+            return NotFound();
+        }
+
+        return File(result.File.Content, result.File.ContentType, result.File.FileName);
     }
 }

@@ -36,12 +36,12 @@ internal class Job2Handler : IJobHandler
 
     private JobFile GetFile()
     {
-        string fileContent = "This is an example of a text file.";
-        byte[] data = Encoding.UTF8.GetBytes(fileContent);
+        string text = "This is an example of a text file.";
+        Stream content = new MemoryStream(Encoding.UTF8.GetBytes(text));
 
         return new JobFile
         {
-            Data = data,
+            Content = content,
             FileName = "test.txt",
             ContentType = MediaTypeNames.Text.Plain
         };

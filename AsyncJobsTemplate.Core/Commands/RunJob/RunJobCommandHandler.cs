@@ -207,7 +207,7 @@ public class RunJobCommandHandler : IRequestHandler<RunJobCommand, RunJobResult>
             Status = status,
             OutputData = process.Job?.OutputData,
             OutputFileReference = process.Job?.OutputFileReference,
-            Errors = errors
+            Errors = errors.Count > 0 ? errors : null
         };
 
         return jobToUpdate;

@@ -49,9 +49,12 @@ internal class JobsRepository : IJobsRepositoryTriggerJob, IJobsRepositoryRunJob
 
     public async Task UpdateJobAsync(JobToUpdate jobToUpdate, CancellationToken cancellationToken)
     {
-        string? serializedOutputData =
-            jobToUpdate.OutputData is null ? null : _serializer.Serialize(jobToUpdate.OutputData);
-        string serializedErrors = _serializer.Serialize(_jobMapper.Map(jobToUpdate.Errors)) ?? "";
+        string? serializedOutputData = jobToUpdate.OutputData is null
+            ? null
+            : _serializer.Serialize(jobToUpdate.OutputData);
+        string? serializedErrors = jobToUpdate.Errors is null
+            ? null
+            : _serializer.Serialize(_jobMapper.Map(jobToUpdate.Errors)) ?? "";
 
         await _appDbContext.Jobs.Where(jobEntity => jobEntity.JobId == jobToUpdate.JobId)
             .ExecuteUpdateAsync(

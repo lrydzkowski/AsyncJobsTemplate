@@ -9,7 +9,7 @@ namespace AsyncJobsTemplate.Core.Queries.GetJob;
 
 public class GetJobQuery : IRequest<GetJobResult>
 {
-    public GetJobQueryRequest Request { get; init; } = new();
+    public GetJobRequest Request { get; init; } = new();
 }
 
 public class GetJobResult
