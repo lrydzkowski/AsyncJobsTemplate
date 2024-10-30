@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Http;
-using System.Text.Json.Nodes;
 
 namespace AsyncJobsTemplate.Core.Commands.TriggerJob.Models;
 

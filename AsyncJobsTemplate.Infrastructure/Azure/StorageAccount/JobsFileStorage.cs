@@ -1,4 +1,5 @@
-﻿using AsyncJobsTemplate.Core.Commands.TriggerJob.Models;
+﻿using System.Net.Mime;
+using AsyncJobsTemplate.Core.Commands.TriggerJob.Models;
 using AsyncJobsTemplate.Core.Models;
 using AsyncJobsTemplate.Infrastructure.Azure.Options;
 using Azure.Storage.Blobs;
@@ -34,9 +35,11 @@ internal class JobsFileStorage : IJobsFileStorageTriggerJob, IJobsFileStorageRun
 
     public async Task<SaveFileResult> SaveOutputFileAsync(Guid jobId, JobFile file, CancellationToken cancellationToken)
     {
-        BlobContainerClient containerClient = _blobServiceClient.GetBlobContainerClient(_options.OutputContainerName);
+        ArgumentNullException.ThrowIfNull(file.Content);
+
+        BlobContainerClient containerClient = _blobServiceClient.GetBlobContainerClient(_options.OutputContainerName)!;
         string fileName = jobId.ToString();
-        BlobClient blobClient = containerClient.GetBlobClient(fileName);
+        BlobClient blobClient = containerClient.GetBlobClient(fileName)!;
         await blobClient.UploadAsync(
             file.Content,
             new BlobUploadOptions
@@ -48,7 +51,7 @@ internal class JobsFileStorage : IJobsFileStorageTriggerJob, IJobsFileStorageRun
                 }
             },
             cancellationToken
-        );
+        )!;
 
         SaveFileResult result = new()
         {
@@ -64,9 +67,9 @@ internal class JobsFileStorage : IJobsFileStorageTriggerJob, IJobsFileStorageRun
         CancellationToken cancellationToken
     )
     {
-        BlobContainerClient containerClient = _blobServiceClient.GetBlobContainerClient(_options.InputContainerName);
+        BlobContainerClient containerClient = _blobServiceClient.GetBlobContainerClient(_options.InputContainerName)!;
         string fileName = jobId.ToString();
-        BlobClient blobClient = containerClient.GetBlobClient(fileName);
+        BlobClient blobClient = containerClient.GetBlobClient(fileName)!;
         await using Stream stream = file.OpenReadStream();
         await blobClient.UploadAsync(
             stream,
@@ -79,7 +82,7 @@ internal class JobsFileStorage : IJobsFileStorageTriggerJob, IJobsFileStorageRun
                 }
             },
             cancellationToken
-        );
+        )!;
 
         SaveFileResult result = new()
         {
@@ -91,22 +94,22 @@ internal class JobsFileStorage : IJobsFileStorageTriggerJob, IJobsFileStorageRun
 
     private async Task<JobFile?> GetFileAsync(Guid jobId, string containerName, CancellationToken cancellationToken)
     {
-        BlobContainerClient containerClient = _blobServiceClient.GetBlobContainerClient(containerName);
+        BlobContainerClient containerClient = _blobServiceClient.GetBlobContainerClient(containerName)!;
         string fileName = jobId.ToString();
-        BlobClient blobClient = containerClient.GetBlobClient(fileName);
-        if (!await blobClient.ExistsAsync(cancellationToken))
+        BlobClient blobClient = containerClient.GetBlobClient(fileName)!;
+        if (!await blobClient.ExistsAsync(cancellationToken)!)
         {
             return null;
         }
 
-        Stream content = await blobClient.OpenReadAsync(new BlobOpenReadOptions(false), cancellationToken);
-        BlobProperties properties = await blobClient.GetPropertiesAsync(cancellationToken: cancellationToken);
+        Stream content = await blobClient.OpenReadAsync(new BlobOpenReadOptions(false), cancellationToken)!;
+        BlobProperties properties = await blobClient.GetPropertiesAsync(cancellationToken: cancellationToken)!;
 
         JobFile jobFile = new()
         {
             Content = content,
-            ContentType = properties.Metadata[FileMetadata.FileContentName],
-            FileName = properties.Metadata[FileMetadata.FileOriginalName]
+            ContentType = properties.Metadata?[FileMetadata.FileContentName] ?? MediaTypeNames.Application.Octet,
+            FileName = properties.Metadata?[FileMetadata.FileOriginalName] ?? "unknown"
         };
 
         return jobFile;

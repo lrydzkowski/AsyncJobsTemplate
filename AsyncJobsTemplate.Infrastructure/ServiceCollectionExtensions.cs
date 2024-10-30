@@ -73,6 +73,10 @@ public static class ServiceCollectionExtensions
 
                         IConfiguration configuration = serviceProvider.GetRequiredService<IConfiguration>();
                         TokenCredential? tokenCredential = TokenCredentialProvider.Provide(configuration);
+                        if (tokenCredential is null)
+                        {
+                            throw new InvalidOperationException("TokenCredential is not provided");
+                        }
 
                         BlobServiceClient client = new(blobUri, tokenCredential);
 

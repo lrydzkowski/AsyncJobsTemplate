@@ -1,6 +1,4 @@
-﻿using System.Text.Json.Nodes;
-
-namespace AsyncJobsTemplate.Core.Commands.TriggerJob.Models;
+﻿namespace AsyncJobsTemplate.Core.Commands.TriggerJob.Models;
 
 public class JobToCreate
 {

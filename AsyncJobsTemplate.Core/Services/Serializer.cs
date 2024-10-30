@@ -4,7 +4,7 @@ namespace AsyncJobsTemplate.Core.Services;
 
 public interface ISerializer
 {
-    string? Serialize(object? data);
+    string Serialize(object? data);
     T? Deserialize<T>(string? data) where T : class;
 }
 
@@ -16,7 +16,7 @@ internal class Serializer
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase
     };
 
-    public string? Serialize(object? data)
+    public string Serialize(object? data)
     {
         return JsonSerializer.Serialize(data, _options);
     }

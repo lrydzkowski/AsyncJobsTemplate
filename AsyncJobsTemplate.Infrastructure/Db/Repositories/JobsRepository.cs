@@ -42,7 +42,7 @@ internal class JobsRepository : IJobsRepositoryTriggerJob, IJobsRepositoryRunJob
             return null;
         }
 
-        Job? job = BuildJob(jobEntity);
+        Job job = BuildJob(jobEntity);
 
         return job;
     }
@@ -54,7 +54,7 @@ internal class JobsRepository : IJobsRepositoryTriggerJob, IJobsRepositoryRunJob
             : _serializer.Serialize(jobToUpdate.OutputData);
         string? serializedErrors = jobToUpdate.Errors is null
             ? null
-            : _serializer.Serialize(_jobMapper.Map(jobToUpdate.Errors)) ?? "";
+            : _serializer.Serialize(_jobMapper.Map(jobToUpdate.Errors));
 
         await _appDbContext.Jobs.Where(jobEntity => jobEntity.JobId == jobToUpdate.JobId)
             .ExecuteUpdateAsync(
@@ -97,7 +97,7 @@ internal class JobsRepository : IJobsRepositoryTriggerJob, IJobsRepositoryRunJob
 
     public async Task SaveErrorsAsync(Guid jobId, List<JobErrorCore> errors, CancellationToken cancellationToken)
     {
-        string serializedErrors = _serializer.Serialize(_jobMapper.Map(errors)) ?? "";
+        string serializedErrors = _serializer.Serialize(_jobMapper.Map(errors));
         await _appDbContext.Jobs.Where(
                 jobEntity => jobEntity.JobId == jobId
             )

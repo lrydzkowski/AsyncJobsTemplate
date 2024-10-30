@@ -1,5 +1,4 @@
-﻿using System.Text.Json.Nodes;
-using AsyncJobsTemplate.Core.Models;
+﻿using AsyncJobsTemplate.Core.Models;
 using Microsoft.AspNetCore.Http;
 
 namespace AsyncJobsTemplate.Core.Commands.TriggerJob.Models;

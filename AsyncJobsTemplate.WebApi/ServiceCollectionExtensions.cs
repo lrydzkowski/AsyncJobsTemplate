@@ -17,9 +17,9 @@ public static class ServiceCollectionExtensions
         return services.AddMassTransit();
     }
 
-    private static IServiceCollection AddSwagger(this IServiceCollection services)
+    private static void AddSwagger(this IServiceCollection services)
     {
-        return services.AddSwaggerGen(
+        services.AddSwaggerGen(
             options =>
             {
                 options.SwaggerDoc("v1", new OpenApiInfo { Title = "AsyncJobTemplate", Version = "1.0" });
@@ -54,6 +54,6 @@ public static class ServiceCollectionExtensions
                     }
                 );
             }
-        );
+        )!;
     }
 }
