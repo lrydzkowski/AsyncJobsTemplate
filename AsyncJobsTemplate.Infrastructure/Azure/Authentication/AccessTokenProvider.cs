@@ -25,7 +25,7 @@ internal class AccessTokenProvider : IAccessTokenProvider
         TokenCredential? credential = TokenCredentialProvider.Provide(_configuration);
         if (credential == null)
         {
-            _logger.LogError("TokenCredential is not available for generating an access token.");
+            _logger.LogError("TokenCredential is not available for generating an access token");
 
             return null;
         }

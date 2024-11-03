@@ -24,13 +24,13 @@ public class TriggerJobCommandHandler : IRequestHandler<TriggerJobCommand, Trigg
     private readonly IJobsFileStorage _jobFileStorage;
     private readonly IJobsQueue _jobsQueue;
     private readonly IJobsRepository _jobsRepository;
-    private readonly ILogger<TriggerJobCommand> _logger;
+    private readonly ILogger<TriggerJobCommandHandler> _logger;
 
     public TriggerJobCommandHandler(
         IJobsFileStorage jobFileStorage,
         IJobsRepository jobsRepository,
         IJobsQueue jobsQueue,
-        ILogger<TriggerJobCommand> logger
+        ILogger<TriggerJobCommandHandler> logger
     )
     {
         _jobFileStorage = jobFileStorage;

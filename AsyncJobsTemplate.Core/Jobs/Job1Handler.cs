@@ -14,7 +14,7 @@ internal class Job1Handler : IJobHandler
         _logger = logger;
     }
 
-    public string Description { get; } = "A simple job that generates JSON as output";
+    public string Description { get; } = "A simple job that generates JSON as the output";
 
     public async Task<JobExecutionOutput> RunJobAsync(JobExecutionInput input, CancellationToken cancellationToken)
     {

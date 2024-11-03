@@ -6,6 +6,7 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9A0D64D0-4843-4512-B420-969199303574}"
 	ProjectSection(SolutionItems) = preProject
 		README.md = README.md
+		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AsyncJobsTemplate.WebApi", "AsyncJobsTemplate.WebApi\AsyncJobsTemplate.WebApi.csproj", "{F75DF6D9-0F74-488C-A580-F8FAB901985B}"

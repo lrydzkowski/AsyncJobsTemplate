@@ -1,6 +1,7 @@
 ﻿using System.Net.Mime;
 using System.Text;
 using AsyncJobsTemplate.Core.Models;
+using AsyncJobsTemplate.Core.Services;
 using Microsoft.Extensions.Logging;
 
 namespace AsyncJobsTemplate.Core.Jobs;
@@ -10,13 +11,15 @@ internal class Job2Handler : IJobHandler
     public const string Name = "job2";
 
     private readonly ILogger<Job2Handler> _logger;
+    private readonly ISerializer _serializer;
 
-    public Job2Handler(ILogger<Job2Handler> logger)
+    public Job2Handler(ILogger<Job2Handler> logger, ISerializer serializer)
     {
         _logger = logger;
+        _serializer = serializer;
     }
 
-    public string Description { get; } = "A simple job that generates file as output";
+    public string Description => "A simple job that generates a file as the output";
 
     public async Task<JobExecutionOutput> RunJobAsync(JobExecutionInput input, CancellationToken cancellationToken)
     {
@@ -26,7 +29,7 @@ internal class Job2Handler : IJobHandler
 
         JobExecutionOutput output = new()
         {
-            OutputFile = GetFile()
+            OutputFile = GetFile(input.InputData ?? "")
         };
 
         _logger.LogInformation("Stop processing Job2 - JobId = {JobId}", input.JobId);
@@ -34,15 +37,15 @@ internal class Job2Handler : IJobHandler
         return output;
     }
 
-    private JobFile GetFile()
+    private JobFile GetFile(object inputData)
     {
-        string text = "This is an example of a text file.";
+        string text = $"This is an example of a text file. Input data: '{_serializer.Serialize(inputData)}'";
         Stream content = new MemoryStream(Encoding.UTF8.GetBytes(text));
 
         return new JobFile
         {
             Content = content,
-            FileName = "test.txt",
+            FileName = "test-output.txt",
             ContentType = MediaTypeNames.Text.Plain
         };
     }
