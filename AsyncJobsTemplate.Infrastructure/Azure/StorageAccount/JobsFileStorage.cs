@@ -25,7 +25,7 @@ internal class JobsFileStorage : IJobsFileStorageTriggerJob, IJobsFileStorageRun
 
     public async Task<JobFile?> GetOutputFileAsync(Guid jobId, CancellationToken cancellationToken)
     {
-        return await GetFileAsync(jobId, _options.InputContainerName, cancellationToken);
+        return await GetFileAsync(jobId, _options.OutputContainerName, cancellationToken);
     }
 
     public async Task<JobFile?> GetInputFileAsync(Guid jobId, CancellationToken cancellationToken)
