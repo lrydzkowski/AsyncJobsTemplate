@@ -44,8 +44,6 @@ public static class ServiceCollectionExtensions
                             options.JobQueueName,
                             e =>
                             {
-                                e.ConfigureConsumeTopology = false;
-                                e.PublishFaults = false;
                                 e.MaxAutoRenewDuration = TimeSpan.FromHours(1);
                                 e.ConfigureConsumer<JobsConsumer>(context);
                             }

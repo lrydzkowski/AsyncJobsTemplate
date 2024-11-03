@@ -1,25 +1,20 @@
 ﻿using AsyncJobsTemplate.Core.Commands.TriggerJob.Interfaces;
-using AsyncJobsTemplate.Infrastructure.Azure.Options;
 using MassTransit;
-using Microsoft.Extensions.Options;
 
 namespace AsyncJobsTemplate.Infrastructure.Azure.ServiceBus;
 
 internal class JobsQueue : IJobsQueue
 {
-    private readonly AzureServiceBusOptions _options;
-    private readonly ISendEndpointProvider _sendEndpointProvider;
+    private readonly IPublishEndpoint _publishEndpoint;
 
-    public JobsQueue(ISendEndpointProvider sendEndpointProvider, IOptions<AzureServiceBusOptions> options)
+    public JobsQueue(IPublishEndpoint publishEndpoint)
     {
-        _sendEndpointProvider = sendEndpointProvider;
-        _options = options.Value;
+        _publishEndpoint = publishEndpoint;
     }
 
     public async Task SendMessageAsync(Guid jobId, CancellationToken cancellationToken)
     {
         JobMessage message = new() { JobId = jobId };
-        ISendEndpoint endpoint = await _sendEndpointProvider.GetSendEndpoint(new Uri($"queue:{_options.JobQueueName}"));
-        await endpoint.Send(message, cancellationToken);
+        await _publishEndpoint.Publish(message, cancellationToken);
     }
 }
