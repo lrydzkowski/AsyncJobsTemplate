@@ -4,7 +4,7 @@ using AsyncJobsTemplate.WebApi;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddWebApiServices();
+builder.Services.AddWebApiServices(builder.Configuration);
 builder.Services.AddCoreServices();
 builder.Services.AddInfrastructureServices(builder.Configuration);
 
