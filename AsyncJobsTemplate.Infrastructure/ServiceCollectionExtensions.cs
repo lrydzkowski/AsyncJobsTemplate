@@ -10,11 +10,13 @@ using AsyncJobsTemplate.Infrastructure.Db.Options;
 using AsyncJobsTemplate.Infrastructure.Db.Repositories;
 using Azure.Core;
 using Azure.Storage.Blobs;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Microsoft.Identity.Web;
 using IJobsRepositoryGetJob = AsyncJobsTemplate.Core.Queries.GetJob.Interfaces.IJobsRepository;
 using IJobsRepositoryRunJob = AsyncJobsTemplate.Core.Commands.RunJob.Interfaces.IJobsRepository;
 using IJobsRepositoryTriggerJob = AsyncJobsTemplate.Core.Commands.TriggerJob.Interfaces.IJobsRepository;
@@ -34,7 +36,8 @@ public static class ServiceCollectionExtensions
         return services.AddServices()
             .AddOptions(configuration)
             .AddAzureBlobServiceClient()
-            .AddAppDbContext();
+            .AddAppDbContext()
+            .AddAuthentication(configuration);
     }
 
     private static IServiceCollection AddServices(this IServiceCollection services)
@@ -99,5 +102,13 @@ public static class ServiceCollectionExtensions
                 options.UseSqlServer(azureSqlOptions.ConnectionString);
             }
         );
+    }
+
+    private static IServiceCollection AddAuthentication(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddMicrosoftIdentityWebApi(configuration);
+
+        return services;
     }
 }

@@ -7,12 +7,14 @@ using AsyncJobsTemplate.Core.Queries.DownloadJobFile.Models;
 using AsyncJobsTemplate.Core.Queries.GetJob;
 using AsyncJobsTemplate.Core.Queries.GetJob.Models;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace AsyncJobsTemplate.WebApi.Controllers;
 
 [ApiController]
+[Authorize]
 [Route("jobs")]
 public class JobsController : ControllerBase
 {
