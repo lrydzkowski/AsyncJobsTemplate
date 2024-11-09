@@ -2,10 +2,12 @@
 using AsyncJobsTemplate.Core.Commands.TriggerJob;
 using AsyncJobsTemplate.Core.Commands.TriggerJob.Models;
 using AsyncJobsTemplate.Core.Models;
+using AsyncJobsTemplate.Core.Models.Lists;
 using AsyncJobsTemplate.Core.Queries.DownloadJobFile;
 using AsyncJobsTemplate.Core.Queries.DownloadJobFile.Models;
 using AsyncJobsTemplate.Core.Queries.GetJob;
 using AsyncJobsTemplate.Core.Queries.GetJob.Models;
+using AsyncJobsTemplate.Core.Queries.GetJobs;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -104,6 +106,26 @@ public class JobsController : ControllerBase
         {
             return NotFound(result);
         }
+
+        return Ok(result);
+    }
+
+    [SwaggerOperation(Summary = "Get jobs")]
+    [SwaggerResponse(
+        StatusCodes.Status200OK,
+        "Correct response",
+        typeof(GetJobsResult),
+        MediaTypeNames.Application.Json
+    )]
+    [HttpGet]
+    public async Task<IActionResult> GetJobs([FromQuery] ListRequest listRequest)
+    {
+        GetJobsResult result = await _mediator.Send(
+            new GetJobsQuery
+            {
+                Request = listRequest
+            }
+        );
 
         return Ok(result);
     }

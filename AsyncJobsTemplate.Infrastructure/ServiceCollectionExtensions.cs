@@ -18,6 +18,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.Identity.Web;
 using IJobsRepositoryGetJob = AsyncJobsTemplate.Core.Queries.GetJob.Interfaces.IJobsRepository;
+using IJobsRepositoryGetJobs = AsyncJobsTemplate.Core.Queries.GetJobs.Interfaces.IJobsRepository;
 using IJobsRepositoryRunJob = AsyncJobsTemplate.Core.Commands.RunJob.Interfaces.IJobsRepository;
 using IJobsRepositoryTriggerJob = AsyncJobsTemplate.Core.Commands.TriggerJob.Interfaces.IJobsRepository;
 using IJobsFileStorageRunJob = AsyncJobsTemplate.Core.Commands.RunJob.Interfaces.IJobsFileStorage;
@@ -45,6 +46,7 @@ public static class ServiceCollectionExtensions
         return services.AddScoped<IJobsRepositoryTriggerJob, JobsRepository>()
             .AddScoped<IJobsRepositoryRunJob, JobsRepository>()
             .AddScoped<IJobsRepositoryGetJob, JobsRepository>()
+            .AddScoped<IJobsRepositoryGetJobs, JobsRepository>()
             .AddScoped<IJobsQueue, JobsQueue>()
             .AddScoped<IJobsFileStorageRunJob, JobsFileStorage>()
             .AddScoped<IJobsFileStorageTriggerJob, JobsFileStorage>()

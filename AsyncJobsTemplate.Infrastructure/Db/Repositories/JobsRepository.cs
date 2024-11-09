@@ -1,11 +1,13 @@
 ﻿using AsyncJobsTemplate.Core.Commands.RunJob.Models;
 using AsyncJobsTemplate.Core.Commands.TriggerJob.Models;
 using AsyncJobsTemplate.Core.Models;
+using AsyncJobsTemplate.Core.Models.Lists;
 using AsyncJobsTemplate.Core.Services;
 using AsyncJobsTemplate.Infrastructure.Db.Entities;
 using AsyncJobsTemplate.Infrastructure.Db.Mappers;
 using Microsoft.EntityFrameworkCore;
 using IJobsRepositoryGetJob = AsyncJobsTemplate.Core.Queries.GetJob.Interfaces.IJobsRepository;
+using IJobsRepositoryGetJobs = AsyncJobsTemplate.Core.Queries.GetJobs.Interfaces.IJobsRepository;
 using IJobsRepositoryRunJob = AsyncJobsTemplate.Core.Commands.RunJob.Interfaces.IJobsRepository;
 using IJobsRepositoryTriggerJob = AsyncJobsTemplate.Core.Commands.TriggerJob.Interfaces.IJobsRepository;
 using JobError = AsyncJobsTemplate.Infrastructure.Db.Models.JobError;
@@ -13,7 +15,8 @@ using JobErrorCore = AsyncJobsTemplate.Core.Models.JobError;
 
 namespace AsyncJobsTemplate.Infrastructure.Db.Repositories;
 
-internal class JobsRepository : IJobsRepositoryTriggerJob, IJobsRepositoryRunJob, IJobsRepositoryGetJob
+internal class JobsRepository
+    : IJobsRepositoryTriggerJob, IJobsRepositoryRunJob, IJobsRepositoryGetJob, IJobsRepositoryGetJobs
 {
     private readonly AppDbContext _appDbContext;
     private readonly IDateTimeProvider _dateTimeProvider;
@@ -31,6 +34,29 @@ internal class JobsRepository : IJobsRepositoryTriggerJob, IJobsRepositoryRunJob
         _dateTimeProvider = dateTimeProvider;
         _jobMapper = jobMapper;
         _serializer = serializer;
+    }
+
+    public async Task<PaginatedList<Job>> GetJobsAsync(
+        ListParameters listParameters,
+        CancellationToken cancellationToken
+    )
+    {
+        IQueryable<JobEntity> query = _appDbContext.Jobs.AsNoTracking()
+            .Select(jobEntity => jobEntity);
+        List<JobEntity> jobEntities = await query
+            .OrderByDescending(x => x.CreatedAtUtc)
+            .Skip((listParameters.Pagination.Page - 1) * listParameters.Pagination.PageSize)
+            .Take(listParameters.Pagination.PageSize)
+            .ToListAsync(cancellationToken);
+        int count = await query.CountAsync(cancellationToken);
+
+        PaginatedList<Job> paginatedJobs = new()
+        {
+            Data = BuildJobs(jobEntities),
+            Count = count
+        };
+
+        return paginatedJobs;
     }
 
     public async Task<Job?> GetJobAsync(Guid jobId, CancellationToken cancellationToken)
@@ -106,6 +132,11 @@ internal class JobsRepository : IJobsRepositoryTriggerJob, IJobsRepositoryRunJob
                     .SetProperty(jobEntity => jobEntity.LastUpdatedAtUtc, _dateTimeProvider.UtcNow),
                 cancellationToken
             );
+    }
+
+    private IReadOnlyList<Job> BuildJobs(List<JobEntity> jobEntities)
+    {
+        return jobEntities.Select(BuildJob).ToList();
     }
 
     private Job BuildJob(JobEntity jobEntity)
