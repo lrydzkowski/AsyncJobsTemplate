@@ -1,6 +1,7 @@
 using AsyncJobsTemplate.Core;
 using AsyncJobsTemplate.Infrastructure;
 using AsyncJobsTemplate.WebApi;
+using AsyncJobsTemplate.WebApi.Middlewares;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +13,7 @@ WebApplication app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
+    app.UseSwaggerBasicAuth();
     app.UseSwagger();
     app.UseSwaggerUI();
 }
