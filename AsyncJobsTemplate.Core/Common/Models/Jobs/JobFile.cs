@@ -1,4 +1,4 @@
-﻿namespace AsyncJobsTemplate.Core.Models;
+﻿namespace AsyncJobsTemplate.Core.Common.Models.Jobs;
 
 public class JobFile
 {

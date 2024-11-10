@@ -1,5 +1,5 @@
-﻿using AsyncJobsTemplate.Core.Extensions;
-using AsyncJobsTemplate.Core.Models;
+﻿using AsyncJobsTemplate.Core.Common.Extensions;
+using AsyncJobsTemplate.Core.Common.Models.Jobs;
 using AsyncJobsTemplate.Core.Queries.GetJob.Interfaces;
 using AsyncJobsTemplate.Core.Queries.GetJob.Models;
 using MediatR;

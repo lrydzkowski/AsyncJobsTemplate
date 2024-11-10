@@ -1,7 +1,7 @@
 using FluentValidation;
 using FluentValidation.Results;
 
-namespace AsyncJobsTemplate.Core.Extensions;
+namespace AsyncJobsTemplate.Core.Common.Extensions;
 
 internal static class ValidationExtensions
 {
@@ -12,7 +12,7 @@ internal static class ValidationExtensions
             return;
         }
 
-        throw new ValidationException(validationResult.Errors);
+        throw new ValidationException(validationResult.Errors ?? []);
     }
 
     public static async Task ValidateAndThrowIfInvalidAsync<T>(

@@ -1,5 +1,5 @@
 ﻿using AsyncJobsTemplate.Core.Commands.TriggerJob.Models;
-using AsyncJobsTemplate.Core.Models;
+using AsyncJobsTemplate.Core.Common.Models.Jobs;
 
 namespace AsyncJobsTemplate.Core.Commands.RunJob.Interfaces;
 

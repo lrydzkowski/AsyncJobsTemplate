@@ -1,4 +1,4 @@
-﻿using AsyncJobsTemplate.Core.Models;
+﻿using AsyncJobsTemplate.Core.Common.Models.Jobs;
 using AsyncJobsTemplate.Core.Queries.DownloadJobFile.Interfaces;
 using AsyncJobsTemplate.Core.Queries.DownloadJobFile.Models;
 using MediatR;
@@ -38,7 +38,7 @@ public class DownloadJobFileQueryHandler : IRequestHandler<DownloadJobFileQuery,
         }
 
         JobFile? file = await _jobsFileStorage.GetOutputFileAsync(fileReference, cancellationToken);
-        DownloadJobFileResult result = new DownloadJobFileResult
+        DownloadJobFileResult result = new()
         {
             File = file
         };

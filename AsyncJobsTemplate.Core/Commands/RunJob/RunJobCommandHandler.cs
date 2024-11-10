@@ -1,9 +1,9 @@
 ﻿using AsyncJobsTemplate.Core.Commands.RunJob.Interfaces;
 using AsyncJobsTemplate.Core.Commands.RunJob.Models;
 using AsyncJobsTemplate.Core.Commands.TriggerJob.Models;
-using AsyncJobsTemplate.Core.Extensions;
+using AsyncJobsTemplate.Core.Common.Extensions;
+using AsyncJobsTemplate.Core.Common.Models.Jobs;
 using AsyncJobsTemplate.Core.Jobs;
-using AsyncJobsTemplate.Core.Models;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;

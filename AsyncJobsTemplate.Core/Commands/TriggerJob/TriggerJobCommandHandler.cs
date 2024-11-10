@@ -1,7 +1,7 @@
 ﻿using AsyncJobsTemplate.Core.Commands.TriggerJob.Interfaces;
 using AsyncJobsTemplate.Core.Commands.TriggerJob.Models;
-using AsyncJobsTemplate.Core.Extensions;
-using AsyncJobsTemplate.Core.Models;
+using AsyncJobsTemplate.Core.Common.Extensions;
+using AsyncJobsTemplate.Core.Common.Models.Jobs;
 using MediatR;
 using Microsoft.Extensions.Logging;
 

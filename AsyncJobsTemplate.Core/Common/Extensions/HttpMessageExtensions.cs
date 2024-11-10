@@ -1,6 +1,6 @@
 using System.Text.Json;
 
-namespace AsyncJobsTemplate.Core.Extensions;
+namespace AsyncJobsTemplate.Core.Common.Extensions;
 
 public static class HttpMessageExtensions
 {

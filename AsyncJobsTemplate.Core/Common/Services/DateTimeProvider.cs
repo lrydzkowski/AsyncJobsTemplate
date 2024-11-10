@@ -1,4 +1,4 @@
-﻿namespace AsyncJobsTemplate.Core.Services;
+﻿namespace AsyncJobsTemplate.Core.Common.Services;
 
 public interface IDateTimeProvider
 {

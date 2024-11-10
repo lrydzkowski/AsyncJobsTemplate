@@ -1,6 +1,6 @@
 ﻿using System.Text.Json;
 
-namespace AsyncJobsTemplate.Core.Services;
+namespace AsyncJobsTemplate.Core.Common.Services;
 
 public interface ISerializer
 {

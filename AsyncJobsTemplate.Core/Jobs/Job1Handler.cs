@@ -1,4 +1,4 @@
-﻿using AsyncJobsTemplate.Core.Models;
+﻿using AsyncJobsTemplate.Core.Common.Models.Jobs;
 using Microsoft.Extensions.Logging;
 
 namespace AsyncJobsTemplate.Core.Jobs;

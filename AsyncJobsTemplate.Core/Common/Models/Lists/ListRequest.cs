@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace AsyncJobsTemplate.Core.Models.Lists;
+namespace AsyncJobsTemplate.Core.Common.Models.Lists;
 
 public class ListRequest
 {

@@ -1,7 +1,7 @@
 ﻿using System.Net.Mime;
 using System.Text;
-using AsyncJobsTemplate.Core.Models;
-using AsyncJobsTemplate.Core.Services;
+using AsyncJobsTemplate.Core.Common.Models.Jobs;
+using AsyncJobsTemplate.Core.Common.Services;
 using Microsoft.Extensions.Logging;
 
 namespace AsyncJobsTemplate.Core.Jobs;

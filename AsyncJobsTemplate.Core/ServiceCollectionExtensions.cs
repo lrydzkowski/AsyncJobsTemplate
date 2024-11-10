@@ -1,5 +1,5 @@
-﻿using AsyncJobsTemplate.Core.Jobs;
-using AsyncJobsTemplate.Core.Services;
+﻿using AsyncJobsTemplate.Core.Common.Services;
+using AsyncJobsTemplate.Core.Jobs;
 using FluentValidation;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

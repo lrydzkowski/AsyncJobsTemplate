@@ -1,7 +1,7 @@
-﻿using AsyncJobsTemplate.Core.Models;
+﻿using AsyncJobsTemplate.Core.Common.Models.Jobs;
 using Microsoft.Extensions.Logging;
 
-namespace AsyncJobsTemplate.Core.Extensions;
+namespace AsyncJobsTemplate.Core.Common.Extensions;
 
 internal static class ProcessExtensions
 {

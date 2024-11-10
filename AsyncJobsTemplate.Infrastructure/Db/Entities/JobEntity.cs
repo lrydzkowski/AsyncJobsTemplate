@@ -1,4 +1,4 @@
-﻿using AsyncJobsTemplate.Core.Models;
+﻿using AsyncJobsTemplate.Core.Common.Models.Jobs;
 
 namespace AsyncJobsTemplate.Infrastructure.Db.Entities;
 
