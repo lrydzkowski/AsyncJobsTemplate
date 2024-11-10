@@ -1,5 +1,6 @@
 ﻿using AsyncJobsTemplate.Core.Jobs;
 using AsyncJobsTemplate.Core.Services;
+using FluentValidation;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -9,7 +10,7 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddCoreServices(this IServiceCollection services)
     {
-        return services.AddMediatR().AddJobs().AddServices();
+        return services.AddMediatR().AddJobs().ConfigureFluentValidation().AddServices();
     }
 
     public static IServiceCollection AddOptionsType<TOptions>(
@@ -34,6 +35,14 @@ public static class ServiceCollectionExtensions
     {
         return services.AddKeyedScoped<IJobHandler, Job1Handler>(Job1Handler.Name)
             .AddKeyedScoped<IJobHandler, Job2Handler>(Job2Handler.Name);
+    }
+
+    private static IServiceCollection ConfigureFluentValidation(this IServiceCollection services)
+    {
+        return services.AddValidatorsFromAssemblyContaining(
+            typeof(ServiceCollectionExtensions),
+            includeInternalTypes: true
+        )!;
     }
 
     private static IServiceCollection AddServices(this IServiceCollection services)

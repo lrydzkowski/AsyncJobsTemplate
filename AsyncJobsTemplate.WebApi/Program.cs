@@ -11,6 +11,8 @@ builder.Services.AddInfrastructureServices(builder.Configuration);
 
 WebApplication app = builder.Build();
 
+app.UseCustomExceptionHandler();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwaggerBasicAuth();

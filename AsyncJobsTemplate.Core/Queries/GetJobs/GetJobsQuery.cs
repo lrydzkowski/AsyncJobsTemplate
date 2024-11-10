@@ -1,3 +1,4 @@
+using AsyncJobsTemplate.Core.Extensions;
 using AsyncJobsTemplate.Core.Models;
 using AsyncJobsTemplate.Core.Models.Lists;
 using AsyncJobsTemplate.Core.Queries.GetJobs.Interfaces;
@@ -18,14 +19,18 @@ public class GetJobsResult
 public class GetJobsQueryHandler : IRequestHandler<GetJobsQuery, GetJobsResult>
 {
     private readonly IJobsRepository _jobsRepository;
+    private readonly GetJobsQueryValidator _validator;
 
-    public GetJobsQueryHandler(IJobsRepository jobsRepository)
+    public GetJobsQueryHandler(GetJobsQueryValidator validator, IJobsRepository jobsRepository)
     {
+        _validator = validator;
         _jobsRepository = jobsRepository;
     }
 
     public async Task<GetJobsResult> Handle(GetJobsQuery query, CancellationToken cancellationToken)
     {
+        await _validator.ValidateAndThrowIfInvalidAsync(query, cancellationToken);
+
         ListParameters listParameters = new()
         {
             Pagination = new Pagination
