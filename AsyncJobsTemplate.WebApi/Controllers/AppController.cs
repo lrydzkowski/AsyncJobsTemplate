@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AsyncJobsTemplate.WebApi.Models;
+using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace AsyncJobsTemplate.WebApi.Controllers;
@@ -12,7 +13,7 @@ public class AppController : ControllerBase
     public IActionResult GetAppInfo()
     {
         return Ok(
-            new
+            new GetAppInfoResponse
             {
                 Name = "AsyncJobsTemplate",
                 Version = "1.0"

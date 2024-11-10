@@ -399,3 +399,4 @@ FodyWeavers.xsd
 .idea
 
 /docker-compose.yml
+!*.tests.e2e

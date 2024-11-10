@@ -18,4 +18,8 @@
     <ProjectReference Include="..\AsyncJobsTemplate.Infrastructure\AsyncJobsTemplate.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="AsyncJobsTemplate.WebApi.Tests.E2E" />
+  </ItemGroup>
+
 </Project>
