@@ -1,4 +1,4 @@
-﻿using AsyncJobsTemplate.Core.Common.Models.Jobs;
+﻿using AsyncJobsTemplate.Core.Common.Models;
 using AsyncJobsTemplate.Core.Queries.DownloadJobFile.Interfaces;
 using AsyncJobsTemplate.Core.Queries.DownloadJobFile.Models;
 using MediatR;

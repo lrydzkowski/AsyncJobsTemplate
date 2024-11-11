@@ -1,7 +1,7 @@
 ﻿using AsyncJobsTemplate.Core;
-using AsyncJobsTemplate.Core.Common.Extensions;
 using AsyncJobsTemplate.Infrastructure.Azure.Authentication;
 using AsyncJobsTemplate.Infrastructure.Azure.Options;
+using AsyncJobsTemplate.Shared.Extensions;
 using AsyncJobsTemplate.WebApi.Consumers;
 using AsyncJobsTemplate.WebApi.Options;
 using Azure.Core;

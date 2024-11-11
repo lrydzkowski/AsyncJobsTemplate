@@ -1,5 +1,5 @@
-﻿using AsyncJobsTemplate.Core.Common.Models.Jobs;
-using AsyncJobsTemplate.Core.Common.Models.Lists;
+﻿using AsyncJobsTemplate.Core.Common.Models;
+using AsyncJobsTemplate.Shared.Models.Lists;
 
 namespace AsyncJobsTemplate.Core.Queries.GetJobs.Interfaces;
 

@@ -1,9 +1,9 @@
 using FluentValidation;
 using FluentValidation.Results;
 
-namespace AsyncJobsTemplate.Core.Common.Extensions;
+namespace AsyncJobsTemplate.Shared.Extensions;
 
-internal static class ValidationExtensions
+public static class ValidationExtensions
 {
     public static void ThrowIfInvalid(this ValidationResult validationResult)
     {

@@ -1,6 +1,6 @@
 ﻿using System.Net.Mime;
 using AsyncJobsTemplate.Core.Commands.TriggerJob.Models;
-using AsyncJobsTemplate.Core.Common.Models.Jobs;
+using AsyncJobsTemplate.Core.Common.Models;
 using AsyncJobsTemplate.Infrastructure.Azure.Options;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;

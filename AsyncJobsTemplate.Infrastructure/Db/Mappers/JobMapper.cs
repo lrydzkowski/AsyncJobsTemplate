@@ -1,5 +1,5 @@
 ﻿using AsyncJobsTemplate.Infrastructure.Db.Models;
-using JobErrorCore = AsyncJobsTemplate.Core.Common.Models.Jobs.JobError;
+using JobErrorCore = AsyncJobsTemplate.Core.Common.Models.JobError;
 
 namespace AsyncJobsTemplate.Infrastructure.Db.Mappers;
 

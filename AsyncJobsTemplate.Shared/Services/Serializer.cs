@@ -1,6 +1,6 @@
 ﻿using System.Text.Json;
 
-namespace AsyncJobsTemplate.Core.Common.Services;
+namespace AsyncJobsTemplate.Shared.Services;
 
 public interface ISerializer
 {
@@ -8,7 +8,7 @@ public interface ISerializer
     T? Deserialize<T>(string? data) where T : class;
 }
 
-internal class Serializer
+public class Serializer
     : ISerializer
 {
     private readonly JsonSerializerOptions _options = new()

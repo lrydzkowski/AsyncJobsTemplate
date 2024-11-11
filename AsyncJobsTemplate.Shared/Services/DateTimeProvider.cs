@@ -1,4 +1,4 @@
-﻿namespace AsyncJobsTemplate.Core.Common.Services;
+﻿namespace AsyncJobsTemplate.Shared.Services;
 
 public interface IDateTimeProvider
 {
@@ -7,7 +7,7 @@ public interface IDateTimeProvider
     DateTime UtcNow { get; }
 }
 
-internal class DateTimeProvider : IDateTimeProvider
+public class DateTimeProvider : IDateTimeProvider
 {
     public DateTime Now => DateTime.Now;
 

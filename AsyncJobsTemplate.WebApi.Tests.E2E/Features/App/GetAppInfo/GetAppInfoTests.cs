@@ -1,4 +1,4 @@
-using AsyncJobsTemplate.Core.Common.Extensions;
+using AsyncJobsTemplate.Shared.Extensions;
 using AsyncJobsTemplate.WebApi.Models;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Common;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Common.Models;

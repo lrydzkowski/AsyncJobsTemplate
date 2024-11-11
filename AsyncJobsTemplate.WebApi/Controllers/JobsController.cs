@@ -1,13 +1,13 @@
 ﻿using System.Net.Mime;
 using AsyncJobsTemplate.Core.Commands.TriggerJob;
 using AsyncJobsTemplate.Core.Commands.TriggerJob.Models;
-using AsyncJobsTemplate.Core.Common.Models.Jobs;
-using AsyncJobsTemplate.Core.Common.Models.Lists;
+using AsyncJobsTemplate.Core.Common.Models;
 using AsyncJobsTemplate.Core.Queries.DownloadJobFile;
 using AsyncJobsTemplate.Core.Queries.DownloadJobFile.Models;
 using AsyncJobsTemplate.Core.Queries.GetJob;
 using AsyncJobsTemplate.Core.Queries.GetJob.Models;
 using AsyncJobsTemplate.Core.Queries.GetJobs;
+using AsyncJobsTemplate.Shared.Models.Lists;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

@@ -1,11 +1,13 @@
 using AsyncJobsTemplate.Core;
 using AsyncJobsTemplate.Infrastructure;
+using AsyncJobsTemplate.Shared;
 using AsyncJobsTemplate.WebApi;
 using AsyncJobsTemplate.WebApi.Middlewares;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddWebApiServices(builder.Configuration);
+builder.Services.AddSharedServices();
 builder.Services.AddCoreServices();
 builder.Services.AddInfrastructureServices(builder.Configuration);
 

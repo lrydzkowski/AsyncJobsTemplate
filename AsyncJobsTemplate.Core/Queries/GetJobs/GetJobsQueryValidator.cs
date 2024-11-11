@@ -1,4 +1,4 @@
-using AsyncJobsTemplate.Core.Common.Validators;
+using AsyncJobsTemplate.Shared.Validators;
 using FluentValidation;
 
 namespace AsyncJobsTemplate.Core.Queries.GetJobs;

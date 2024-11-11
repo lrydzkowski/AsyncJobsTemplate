@@ -1,7 +1,7 @@
-using AsyncJobsTemplate.Core.Common.Extensions;
-using AsyncJobsTemplate.Core.Common.Models.Jobs;
-using AsyncJobsTemplate.Core.Common.Models.Lists;
+using AsyncJobsTemplate.Core.Common.Models;
 using AsyncJobsTemplate.Core.Queries.GetJobs.Interfaces;
+using AsyncJobsTemplate.Shared.Extensions;
+using AsyncJobsTemplate.Shared.Models.Lists;
 using MediatR;
 
 namespace AsyncJobsTemplate.Core.Queries.GetJobs;

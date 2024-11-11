@@ -1,17 +1,17 @@
 ﻿using AsyncJobsTemplate.Core.Commands.RunJob.Models;
 using AsyncJobsTemplate.Core.Commands.TriggerJob.Models;
-using AsyncJobsTemplate.Core.Common.Models.Jobs;
-using AsyncJobsTemplate.Core.Common.Models.Lists;
-using AsyncJobsTemplate.Core.Common.Services;
+using AsyncJobsTemplate.Core.Common.Models;
 using AsyncJobsTemplate.Infrastructure.Db.Entities;
 using AsyncJobsTemplate.Infrastructure.Db.Mappers;
+using AsyncJobsTemplate.Shared.Models.Lists;
+using AsyncJobsTemplate.Shared.Services;
 using Microsoft.EntityFrameworkCore;
 using IJobsRepositoryGetJob = AsyncJobsTemplate.Core.Queries.GetJob.Interfaces.IJobsRepository;
 using IJobsRepositoryGetJobs = AsyncJobsTemplate.Core.Queries.GetJobs.Interfaces.IJobsRepository;
 using IJobsRepositoryRunJob = AsyncJobsTemplate.Core.Commands.RunJob.Interfaces.IJobsRepository;
 using IJobsRepositoryTriggerJob = AsyncJobsTemplate.Core.Commands.TriggerJob.Interfaces.IJobsRepository;
 using JobError = AsyncJobsTemplate.Infrastructure.Db.Models.JobError;
-using JobErrorCore = AsyncJobsTemplate.Core.Common.Models.Jobs.JobError;
+using JobErrorCore = AsyncJobsTemplate.Core.Common.Models.JobError;
 
 namespace AsyncJobsTemplate.Infrastructure.Db.Repositories;
 

@@ -1,4 +1,4 @@
-﻿using AsyncJobsTemplate.Core.Common.Models.Jobs;
+﻿using AsyncJobsTemplate.Core.Common.Models;
 using Microsoft.AspNetCore.Http;
 
 namespace AsyncJobsTemplate.Core.Commands.TriggerJob.Models;

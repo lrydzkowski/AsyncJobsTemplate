@@ -21,6 +21,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{258BDD4E
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AsyncJobsTemplate.WebApi.Tests.E2E", "AsyncJobsTemplate.WebApi.Tests.E2E\AsyncJobsTemplate.WebApi.Tests.E2E.csproj", "{06DCDD94-3F03-4965-A417-1D11C63BBAA6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AsyncJobsTemplate.Shared", "AsyncJobsTemplate.Shared\AsyncJobsTemplate.Shared.csproj", "{63562500-D16F-4A58-9400-C79609299804}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -43,6 +45,10 @@ Global
 		{06DCDD94-3F03-4965-A417-1D11C63BBAA6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{06DCDD94-3F03-4965-A417-1D11C63BBAA6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{06DCDD94-3F03-4965-A417-1D11C63BBAA6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{63562500-D16F-4A58-9400-C79609299804}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{63562500-D16F-4A58-9400-C79609299804}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{63562500-D16F-4A58-9400-C79609299804}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{63562500-D16F-4A58-9400-C79609299804}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -55,5 +61,6 @@ Global
 		{4DE55E56-30C1-44B2-AD8E-B064D138AE98} = {B1545736-158D-4CA5-B8DD-DD390D64E310}
 		{F75DF6D9-0F74-488C-A580-F8FAB901985B} = {B1545736-158D-4CA5-B8DD-DD390D64E310}
 		{06DCDD94-3F03-4965-A417-1D11C63BBAA6} = {258BDD4E-B603-494B-85B8-EBB126E5B62A}
+		{63562500-D16F-4A58-9400-C79609299804} = {B1545736-158D-4CA5-B8DD-DD390D64E310}
 	EndGlobalSection
 EndGlobal

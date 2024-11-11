@@ -1,4 +1,4 @@
-﻿namespace AsyncJobsTemplate.Core.Common.Models.Jobs;
+﻿namespace AsyncJobsTemplate.Core.Common.Models;
 
 internal static class JobErrorCodes
 {

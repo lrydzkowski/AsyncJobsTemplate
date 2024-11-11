@@ -1,7 +1,7 @@
-using AsyncJobsTemplate.Core.Common.Models.Lists;
+using AsyncJobsTemplate.Shared.Models.Lists;
 using FluentValidation;
 
-namespace AsyncJobsTemplate.Core.Common.Validators;
+namespace AsyncJobsTemplate.Shared.Validators;
 
 public class ListRequestValidator : AbstractValidator<ListRequest>
 {

@@ -1,6 +1,6 @@
 using System.Net.Mime;
 using System.Text.Json;
-using AsyncJobsTemplate.Core.Common.Models.Errors;
+using AsyncJobsTemplate.Shared.Models.Errors;
 using FluentValidation;
 
 namespace AsyncJobsTemplate.WebApi.Middlewares;

@@ -1,4 +1,4 @@
-namespace AsyncJobsTemplate.Core.Common.Models.Errors;
+namespace AsyncJobsTemplate.Shared.Models.Errors;
 
 public class ErrorInfo
 {
