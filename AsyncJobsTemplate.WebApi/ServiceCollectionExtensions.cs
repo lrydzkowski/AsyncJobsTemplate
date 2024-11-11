@@ -1,4 +1,5 @@
 ﻿using AsyncJobsTemplate.Core;
+using AsyncJobsTemplate.Core.Common.Extensions;
 using AsyncJobsTemplate.Infrastructure.Azure.Authentication;
 using AsyncJobsTemplate.Infrastructure.Azure.Options;
 using AsyncJobsTemplate.WebApi.Consumers;
@@ -40,6 +41,13 @@ public static class ServiceCollectionExtensions
             x =>
             {
                 x.AddConsumer<JobsConsumer>();
+                if (configuration["QueueType"].EqualsIgnoreCase("InMemory"))
+                {
+                    x.UsingInMemory((context, cfg) => cfg.ConfigureEndpoints(context));
+
+                    return;
+                }
+
                 x.UsingAzureServiceBus(
                     (context, cfg) =>
                     {
