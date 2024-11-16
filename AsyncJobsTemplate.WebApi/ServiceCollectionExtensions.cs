@@ -1,7 +1,6 @@
 ﻿using AsyncJobsTemplate.Core;
 using AsyncJobsTemplate.Infrastructure.Azure.Authentication;
 using AsyncJobsTemplate.Infrastructure.Azure.Options;
-using AsyncJobsTemplate.Shared.Extensions;
 using AsyncJobsTemplate.WebApi.Consumers;
 using AsyncJobsTemplate.WebApi.Options;
 using Azure.Core;
@@ -41,7 +40,7 @@ public static class ServiceCollectionExtensions
             x =>
             {
                 x.AddConsumer<JobsConsumer>();
-                if (configuration["QueueType"].EqualsIgnoreCase("InMemory"))
+                if (QueueOptions.IsQueueInMemory(configuration))
                 {
                     x.UsingInMemory((context, cfg) => cfg.ConfigureEndpoints(context));
 
@@ -85,6 +84,7 @@ public static class ServiceCollectionExtensions
 
     private static IServiceCollection AddOptions(this IServiceCollection services, IConfiguration configuration)
     {
-        return services.AddOptionsType<SwaggerOptions>(configuration, SwaggerOptions.Position);
+        return services.AddOptionsType<SwaggerOptions>(configuration, SwaggerOptions.Position)
+            .AddOptionsType<QueueOptions>(configuration, QueueOptions.Position);
     }
 }

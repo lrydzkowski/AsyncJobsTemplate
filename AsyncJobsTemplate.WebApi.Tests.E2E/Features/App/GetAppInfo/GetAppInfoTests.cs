@@ -29,7 +29,7 @@ public class GetAppInfoTests
             .SendAsync(requestMessage);
         GetAppInfoResponse? response = await responseMessage.GetResponseAsync<GetAppInfoResponse>();
 
-        RequestResultWithPayload<GetAppInfoResponse>? result = new()
+        RequestResultWithPayload<GetAppInfoResponse> result = new()
         {
             TestCaseId = 1,
             StatusCode = responseMessage.StatusCode,

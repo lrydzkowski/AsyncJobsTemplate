@@ -74,6 +74,11 @@ public static class ServiceCollectionExtensions
                         AzureStorageAccountOptions options = serviceProvider
                             .GetRequiredService<IOptions<AzureStorageAccountOptions>>()
                             .Value;
+                        if (!string.IsNullOrWhiteSpace(options.ConnectionString))
+                        {
+                            return new BlobServiceClient(options.ConnectionString);
+                        }
+
                         Uri blobUri = new($"https://{options.Name}.blob.core.windows.net");
 
                         IConfiguration configuration = serviceProvider.GetRequiredService<IConfiguration>();
@@ -83,9 +88,7 @@ public static class ServiceCollectionExtensions
                             throw new InvalidOperationException("TokenCredential is not provided");
                         }
 
-                        BlobServiceClient client = new(blobUri, tokenCredential);
-
-                        return client;
+                        return new BlobServiceClient(blobUri, tokenCredential);
                     }
                 );
             }
