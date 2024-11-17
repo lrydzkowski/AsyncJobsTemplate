@@ -9,7 +9,7 @@ internal class RequestResult
     public HttpStatusCode StatusCode { get; init; }
 }
 
-internal class RequestResultWithPayload<TResponse> : RequestResult
+internal class RequestResultWithData<TData> : RequestResult
 {
-    public TResponse? Response { get; init; }
+    public TData? Data { get; init; }
 }
