@@ -75,7 +75,7 @@ public class WebApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
     private static void DisableUserSecrets(IWebHostBuilder builder)
     {
         builder.ConfigureAppConfiguration(
-            (context, configBuilder) =>
+            (_, configBuilder) =>
             {
                 IConfigurationSource? userSecretsSource = configBuilder.Sources.FirstOrDefault(
                     source => source is JsonConfigurationSource { Path: "secrets.json" }
