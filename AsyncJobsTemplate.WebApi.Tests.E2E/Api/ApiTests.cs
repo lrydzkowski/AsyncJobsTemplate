@@ -46,6 +46,28 @@ public class ApiTests
     }
 
     [Fact]
+    public async Task SendRequest_ShouldReturn401_WhenExpiredAccessToken()
+    {
+        IReadOnlyList<EndpointInfo> endpointsInfo = EndpointHelpers.GetEndpointsWithAuth(_endpointDataSource);
+        foreach (EndpointInfo endpointInfo in endpointsInfo)
+        {
+            _output.WriteLine($"{endpointInfo.HttpMethod} {endpointInfo.Path}");
+
+            string accessToken = EmbeddedFile.GetContent("Api/Assets/expired_access_token.txt");
+            HttpRequestMessage requestMessage = new(endpointInfo.HttpMethod, endpointInfo.Path);
+            requestMessage.Headers.Add(HeaderNames.Authorization, $"Bearer {accessToken}");
+
+            HttpResponseMessage responseMessage = await _webApiFactory.CreateClient().SendAsync(requestMessage);
+
+            responseMessage.StatusCode.Should()
+                ?.Be(
+                    HttpStatusCode.Unauthorized,
+                    $"endpoint {endpointInfo.HttpMethod} {endpointInfo.Path} should require authorization"
+                );
+        }
+    }
+
+    [Fact]
     public async Task SendRequest_ShouldReturn401_WhenWrongSignatureInAccessToken()
     {
         IReadOnlyList<EndpointInfo> endpointsInfo = EndpointHelpers.GetEndpointsWithAuth(_endpointDataSource);
