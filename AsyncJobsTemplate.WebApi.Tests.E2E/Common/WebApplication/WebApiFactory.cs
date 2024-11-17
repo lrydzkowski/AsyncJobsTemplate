@@ -19,7 +19,13 @@ public class WebApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
     private readonly AzuriteContainer _azuriteContainer = new AzuriteBuilder().Build()!;
     private readonly MsSqlContainer _dbContainer = new MsSqlBuilder().Build()!;
 
+    public WebApiFactory()
+    {
+        VerifySettings.ScrubInlineDateTimes("yyyy-MM-ddTHH:mm:ss.fffffffZ");
+    }
+
     public WireMockServer WireMockServer { get; } = WireMockServer.Start();
+    public VerifySettings VerifySettings { get; } = new();
 
     public async Task InitializeAsync()
     {

@@ -1,0 +1,38 @@
+﻿{
+  Data: {
+    Response: {
+      Result: true,
+      JobId: Guid_1
+    },
+    JobEntitiesDb: [
+      {
+        RecId: 1,
+        JobId: Guid_1,
+        JobCategoryName: TriggerJobWithData_ShouldTriggerJobProcessing_WhenCorrectData,
+        Status: Created,
+        InputData: {"key1":"Value1","key2":{"key3":"Value3","key4":4,"key5":true,"key6":"DateTime_1"}},
+        CreatedAtUtc: DateTime_2
+      }
+    ],
+    SendMessageCalls: [
+      {
+        MethodName: SendMessageAsync,
+        ReceivedArguments: [
+          Guid_1,
+          {
+            IsCancellationRequested: false,
+            CanBeCanceled: false,
+            WaitHandle: {
+              SafeWaitHandle: {
+                IsInvalid: false,
+                IsClosed: false
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  TestCaseId: 1,
+  StatusCode: OK
+}

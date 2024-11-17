@@ -25,7 +25,7 @@ internal static class WebApiFactoryBuilder
         return webApiFactory.DisableAuthentication();
     }
 
-    public static WebApplicationFactory<Program> DisableAuthentication(
+    private static WebApplicationFactory<Program> DisableAuthentication(
         this WebApplicationFactory<Program> webApiFactory
     )
     {
@@ -34,5 +34,81 @@ internal static class WebApiFactoryBuilder
                 services => services.AddSingleton<IAuthorizationHandler, AllowAnonymous>()
             )
         );
+    }
+
+    public static WebApplicationFactory<Program> ReplaceService<T>(
+        this WebApplicationFactory<Program> webApiFactory,
+        T instance,
+        ServiceLifetime serviceLifetime
+    ) where T : class
+    {
+        return webApiFactory.ReplaceService<T>(
+            new List<T>
+            {
+                instance
+            },
+            serviceLifetime
+        );
+    }
+
+    public static WebApplicationFactory<Program> ReplaceService<T>(
+        this WebApplicationFactory<Program> webApiFactory,
+        IReadOnlyCollection<T> instances,
+        ServiceLifetime serviceLifetime
+    ) where T : class
+    {
+        return webApiFactory.WithWebHostBuilder(
+            builder => builder.ConfigureServices(
+                services =>
+                {
+                    services.RemoveService(typeof(T));
+                    foreach (T instance in instances)
+                    {
+                        services.RegisterService(instance, serviceLifetime);
+                    }
+                }
+            )
+        );
+    }
+
+    private static void RemoveService(this IServiceCollection services, Type serviceType)
+    {
+        services.RemoveService(d => d.ServiceType == serviceType);
+    }
+
+    private static void RemoveService(this IServiceCollection services, Type serviceType, Type implementationType)
+    {
+        services.RemoveService(d => d.ServiceType == serviceType && d.ImplementationType == implementationType);
+    }
+
+    private static void RemoveService(this IServiceCollection services, Func<ServiceDescriptor, bool> condition)
+    {
+        List<ServiceDescriptor> serviceDescriptors = services.Where(condition).ToList();
+        foreach (ServiceDescriptor serviceDescriptor in serviceDescriptors)
+        {
+            services.Remove(serviceDescriptor);
+        }
+    }
+
+    private static void RegisterService<T>(
+        this IServiceCollection services,
+        T instance,
+        ServiceLifetime serviceLifetime
+    ) where T : class
+    {
+        switch (serviceLifetime)
+        {
+            case ServiceLifetime.Transient:
+                services.AddTransient<T>(_ => instance);
+                break;
+            case ServiceLifetime.Scoped:
+                services.AddScoped<T>(_ => instance);
+                break;
+            case ServiceLifetime.Singleton:
+                services.AddSingleton<T>(_ => instance);
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(serviceLifetime), serviceLifetime, null);
+        }
     }
 }
