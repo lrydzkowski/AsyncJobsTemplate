@@ -8,7 +8,7 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddWebApiServices(builder.Configuration);
 builder.Services.AddSharedServices();
-builder.Services.AddCoreServices();
+builder.Services.AddCoreServices(builder.Configuration);
 builder.Services.AddInfrastructureServices(builder.Configuration);
 
 WebApplication app = builder.Build();
