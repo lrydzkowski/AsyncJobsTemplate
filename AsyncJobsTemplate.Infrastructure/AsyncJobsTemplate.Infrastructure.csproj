@@ -25,4 +25,8 @@
     <PackageReference Include="Microsoft.Identity.Web" Version="3.3.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="AsyncJobsTemplate.WebApi.Tests.E2E" />
+  </ItemGroup>
+
 </Project>

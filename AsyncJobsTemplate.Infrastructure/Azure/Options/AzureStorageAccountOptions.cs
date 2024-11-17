@@ -4,6 +4,8 @@ internal class AzureStorageAccountOptions
 {
     public const string Position = "AzureStorageAccount";
 
+    public string ConnectionString { get; init; } = "";
+
     public string Name { get; init; } = "";
 
     public string InputContainerName { get; init; } = "";

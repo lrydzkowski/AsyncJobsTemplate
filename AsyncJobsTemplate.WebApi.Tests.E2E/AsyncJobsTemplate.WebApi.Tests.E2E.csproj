@@ -15,8 +15,10 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="FluentAssertions" Version="6.12.2" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="8.0.10" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
+    <PackageReference Include="Testcontainers.Azurite" Version="4.0.0" />
     <PackageReference Include="Testcontainers.MsSql" Version="4.0.0" />
     <PackageReference Include="Verify.Xunit" Version="28.1.3" />
     <PackageReference Include="WireMock.Net" Version="1.6.7" />
@@ -33,6 +35,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AsyncJobsTemplate.WebApi\AsyncJobsTemplate.WebApi.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Api\Assets\wrong_signature_access_token.txt" />
+    <EmbeddedResource Include="Api\Assets\wrong_signature_access_token.txt" />
   </ItemGroup>
 
 </Project>
