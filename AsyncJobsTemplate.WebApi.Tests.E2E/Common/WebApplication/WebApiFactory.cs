@@ -5,6 +5,7 @@ using AsyncJobsTemplate.WebApi.Options;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.Json;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Testcontainers.Azurite;
@@ -51,11 +52,28 @@ public class WebApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         DisableLogging(builder);
+        DisableUserSecrets(builder);
     }
 
     private void DisableLogging(IWebHostBuilder builder)
     {
         builder.ConfigureLogging(loggingBuilder => loggingBuilder.ClearProviders());
+    }
+
+    private static void DisableUserSecrets(IWebHostBuilder builder)
+    {
+        builder.ConfigureAppConfiguration(
+            (context, configBuilder) =>
+            {
+                IConfigurationSource? userSecretsSource = configBuilder.Sources.FirstOrDefault(
+                    source => source is JsonConfigurationSource { Path: "secrets.json" }
+                );
+                if (userSecretsSource is not null)
+                {
+                    configBuilder.Sources.Remove(userSecretsSource);
+                }
+            }
+        );
     }
 
     private void SetDatabaseConnectionString(IConfigurationBuilder configBuilder)
