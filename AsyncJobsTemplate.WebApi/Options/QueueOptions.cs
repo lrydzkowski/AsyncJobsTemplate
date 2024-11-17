@@ -1,3 +1,4 @@
+using AsyncJobsTemplate.Infrastructure.Azure.ServiceBus;
 using AsyncJobsTemplate.Shared.Extensions;
 
 namespace AsyncJobsTemplate.WebApi.Options;
@@ -10,6 +11,6 @@ public class QueueOptions
 
     public static bool IsQueueInMemory(IConfiguration configuration)
     {
-        return configuration.GetValue<string>($"{Position}:{nameof(Type)}").EqualsIgnoreCase("InMemory");
+        return configuration.GetValue<string>($"{Position}:{nameof(Type)}").EqualsIgnoreCase(QueueTypes.InMemory);
     }
 }

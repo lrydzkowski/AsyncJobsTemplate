@@ -1,4 +1,6 @@
+using AsyncJobsTemplate.Infrastructure.Azure;
 using AsyncJobsTemplate.Infrastructure.Azure.Options;
+using AsyncJobsTemplate.Infrastructure.Azure.ServiceBus;
 using AsyncJobsTemplate.Infrastructure.Db;
 using AsyncJobsTemplate.Infrastructure.Db.Options;
 using AsyncJobsTemplate.WebApi.Options;
@@ -16,7 +18,9 @@ namespace AsyncJobsTemplate.WebApi.Tests.E2E.Common.WebApplication;
 
 public class WebApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
 {
-    private readonly AzuriteContainer _azuriteContainer = new AzuriteBuilder().Build()!;
+    private readonly AzuriteContainer _azuriteContainer =
+        new AzuriteBuilder().WithImage("mcr.microsoft.com/azure-storage/azurite:3.33.0")?.Build()!;
+
     private readonly MsSqlContainer _dbContainer = new MsSqlBuilder().Build()!;
 
     public WebApiFactory()
@@ -31,7 +35,9 @@ public class WebApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
     {
         await _dbContainer.StartAsync()!;
         await _azuriteContainer.StartAsync()!;
+
         Services.ExecuteDbMigration();
+        Services.CreateStorageAccountContainers();
     }
 
     public new async Task DisposeAsync()
@@ -98,7 +104,7 @@ public class WebApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
         configBuilder.AddInMemoryCollection(
             new Dictionary<string, string?>
             {
-                [$"{QueueOptions.Position}:{nameof(QueueOptions.Type)}"] = "InMemory"
+                [$"{QueueOptions.Position}:{nameof(QueueOptions.Type)}"] = QueueTypes.InMemory
             }
         );
     }
