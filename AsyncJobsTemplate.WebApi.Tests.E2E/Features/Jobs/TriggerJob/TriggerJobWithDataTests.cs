@@ -40,12 +40,12 @@ public class TriggerJobWithDataTests
         IReadOnlyList<JobEntity> jobEntitiesDb = await JobsData.GetJobsAsync(dbScope);
         IReadOnlyList<ReceivedMethodCall> sendMessageCalls = QueueBuilder.JobsQueue?.GetReceivedMethodCalls() ?? [];
 
-        RequestResultWithData<TriggerJobWithDataTestResult> result = new()
+        TestResultWithData<TriggerJobWithDataTestResult> result = new()
         {
             TestCaseId = 1,
-            StatusCode = responseMessage.StatusCode,
             Data = new TriggerJobWithDataTestResult
             {
+                StatusCode = responseMessage.StatusCode,
                 Response = response,
                 JobEntitiesDb = jobEntitiesDb,
                 SendMessageCalls = sendMessageCalls
@@ -82,10 +82,8 @@ public class TriggerJobWithDataTests
         return _endpointUrlPath.Replace("{categoryName}", categoryName);
     }
 
-    private class TriggerJobWithDataTestResult
+    private class TriggerJobWithDataTestResult : TestResponseWithData<TriggerJobResult>
     {
-        public TriggerJobResult? Response { get; init; }
-
         public IReadOnlyList<JobEntity> JobEntitiesDb { get; init; } = [];
 
         public IReadOnlyList<ReceivedMethodCall> SendMessageCalls { get; init; } = [];

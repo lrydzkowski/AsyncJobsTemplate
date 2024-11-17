@@ -1,9 +1,5 @@
 ﻿{
   Data: {
-    Response: {
-      Result: true,
-      JobId: Guid_1
-    },
     JobEntitiesDb: [
       {
         RecId: 1,
@@ -31,8 +27,12 @@
           }
         ]
       }
-    ]
+    ],
+    Response: {
+      Result: true,
+      JobId: Guid_1
+    },
+    StatusCode: OK
   },
-  TestCaseId: 1,
-  StatusCode: OK
+  TestCaseId: 1
 }

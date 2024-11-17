@@ -3,8 +3,8 @@
     Response: {
       Name: AsyncJobsTemplate,
       Version: 1.0
-    }
+    },
+    StatusCode: OK
   },
-  TestCaseId: 1,
-  StatusCode: OK
+  TestCaseId: 1
 }

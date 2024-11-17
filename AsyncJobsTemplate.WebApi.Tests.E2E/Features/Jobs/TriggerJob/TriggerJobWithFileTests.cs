@@ -44,12 +44,12 @@ public class TriggerJobWithFileTests
         IReadOnlyList<StorageAccountFile> inputFiles = await StorageAccountFilesData.GetInputFilesAsync(_webApiFactory);
         IReadOnlyList<ReceivedMethodCall> sendMessageCalls = QueueBuilder.JobsQueue?.GetReceivedMethodCalls() ?? [];
 
-        RequestResultWithData<TriggerJobWithFileTestResult> result = new()
+        TestResultWithData<TriggerJobWithFileTestResult> result = new()
         {
             TestCaseId = 1,
-            StatusCode = responseMessage.StatusCode,
             Data = new TriggerJobWithFileTestResult
             {
+                StatusCode = responseMessage.StatusCode,
                 Response = response,
                 JobEntitiesDb = jobEntitiesDb,
                 InputFilesStorageAccount = inputFiles,
@@ -82,10 +82,8 @@ public class TriggerJobWithFileTests
         return _endpointUrlPath.Replace("{categoryName}", categoryName);
     }
 
-    private class TriggerJobWithFileTestResult
+    private class TriggerJobWithFileTestResult : TestResponseWithData<TriggerJobResult>
     {
-        public TriggerJobResult? Response { get; init; }
-
         public IReadOnlyList<JobEntity> JobEntitiesDb { get; init; } = [];
 
         public IReadOnlyList<StorageAccountFile> InputFilesStorageAccount { get; init; } = [];
