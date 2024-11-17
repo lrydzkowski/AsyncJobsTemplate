@@ -40,6 +40,8 @@
   <ItemGroup>
     <None Remove="Api\Assets\wrong_signature_access_token.txt" />
     <EmbeddedResource Include="Api\Assets\wrong_signature_access_token.txt" />
+    <None Remove="Api\Assets\expired_access_token.txt" />
+    <EmbeddedResource Include="Api\Assets\expired_access_token.txt" />
   </ItemGroup>
 
 </Project>
