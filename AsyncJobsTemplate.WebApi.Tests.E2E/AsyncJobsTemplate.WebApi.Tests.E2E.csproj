@@ -43,6 +43,12 @@
     <EmbeddedResource Include="Api\Assets\wrong_signature_access_token.txt" />
     <None Remove="Api\Assets\expired_access_token.txt" />
     <EmbeddedResource Include="Api\Assets\expired_access_token.txt" />
+    <None Update="Features\Jobs\TriggerJob\TriggerJobWithFileTests.TriggerJobWithData_ShouldTriggerJobProcessing_WhenCorrectData.verified.txt">
+      <ParentFile>TriggerJobWithDataTests</ParentFile>
+      <DependentUpon>TriggerJobWithFileTests.cs</DependentUpon>
+    </None>
+    <None Remove="Features\Jobs\TriggerJob\Assets\test_payload.csv" />
+    <EmbeddedResource Include="Features\Jobs\TriggerJob\Assets\test_payload.csv" />
   </ItemGroup>
 
 </Project>

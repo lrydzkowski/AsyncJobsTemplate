@@ -29,13 +29,21 @@ public class GetAppInfoTests
             .SendAsync(requestMessage);
         GetAppInfoResponse? response = await responseMessage.GetResponseAsync<GetAppInfoResponse>();
 
-        RequestResultWithData<GetAppInfoResponse> result = new()
+        RequestResultWithData<GetAppInfoTestResult> result = new()
         {
             TestCaseId = 1,
             StatusCode = responseMessage.StatusCode,
-            Data = response
+            Data = new GetAppInfoTestResult
+            {
+                Response = response
+            }
         };
 
         await Verify(result);
+    }
+
+    private class GetAppInfoTestResult
+    {
+        public GetAppInfoResponse? Response { get; init; }
     }
 }

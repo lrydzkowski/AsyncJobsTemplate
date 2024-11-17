@@ -1,7 +1,9 @@
 ﻿{
   Data: {
-    Name: AsyncJobsTemplate,
-    Version: 1.0
+    Response: {
+      Name: AsyncJobsTemplate,
+      Version: 1.0
+    }
   },
   TestCaseId: 1,
   StatusCode: OK
