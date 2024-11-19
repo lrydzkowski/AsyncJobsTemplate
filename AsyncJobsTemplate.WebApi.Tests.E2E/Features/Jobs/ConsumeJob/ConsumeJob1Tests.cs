@@ -4,6 +4,7 @@ using AsyncJobsTemplate.Infrastructure.Db.Entities;
 using AsyncJobsTemplate.WebApi.Consumers;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Common;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Common.Data;
+using AsyncJobsTemplate.WebApi.Tests.E2E.Common.Logging;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Common.Models;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Common.TestCollections;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Common.WebApplication;
@@ -19,6 +20,7 @@ namespace AsyncJobsTemplate.WebApi.Tests.E2E.Features.Jobs.ConsumeJob;
 [Trait(TestConstants.Category, MainTestsCollection.CollectionName)]
 public class ConsumeJob1Tests
 {
+    private readonly LogMessages _logMessages;
     private readonly VerifySettings _verifySettings;
 
     private readonly WebApplicationFactory<Program> _webApiFactory;
@@ -26,12 +28,14 @@ public class ConsumeJob1Tests
     public ConsumeJob1Tests(WebApiFactory webApiFactory)
     {
         _verifySettings = webApiFactory.VerifySettings;
+        _logMessages = webApiFactory.LogMessages;
         _webApiFactory = webApiFactory.DisableJobsSleep();
     }
 
     [Fact]
     public async Task ConsumeJob1Message_ShouldBeSuccessful_WhenCorrectData()
     {
+        _logMessages.Clear();
         Guid jobIb = Guid.NewGuid();
         string categoryName = Job1Handler.Name;
 
@@ -53,7 +57,8 @@ public class ConsumeJob1Tests
             TestCaseId = 1,
             Data = new ConsumeJobMessageTestResult
             {
-                JobEntitiesDb = jobEntitiesDb
+                JobEntitiesDb = jobEntitiesDb,
+                LogMessages = _logMessages.GetSerialized(6)
             }
         };
 
@@ -63,5 +68,7 @@ public class ConsumeJob1Tests
     private class ConsumeJobMessageTestResult
     {
         public IReadOnlyList<JobEntity> JobEntitiesDb { get; init; } = [];
+
+        public string LogMessages { get; init; } = "";
     }
 }

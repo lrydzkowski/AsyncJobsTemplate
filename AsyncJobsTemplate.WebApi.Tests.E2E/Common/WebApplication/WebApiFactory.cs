@@ -4,6 +4,7 @@ using AsyncJobsTemplate.Infrastructure.Azure.ServiceBus;
 using AsyncJobsTemplate.Infrastructure.Db;
 using AsyncJobsTemplate.Infrastructure.Db.Options;
 using AsyncJobsTemplate.WebApi.Options;
+using AsyncJobsTemplate.WebApi.Tests.E2E.Common.Logging;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
@@ -30,6 +31,7 @@ public class WebApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
 
     public WireMockServer WireMockServer { get; } = WireMockServer.Start();
     public VerifySettings VerifySettings { get; } = new();
+    public LogMessages LogMessages { get; } = new();
 
     public async Task InitializeAsync()
     {
@@ -69,7 +71,13 @@ public class WebApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
 
     private void DisableLogging(IWebHostBuilder builder)
     {
-        builder.ConfigureLogging(loggingBuilder => loggingBuilder.ClearProviders());
+        builder.ConfigureLogging(
+            loggingBuilder =>
+            {
+                loggingBuilder.ClearProviders();
+                loggingBuilder.AddProvider(new TestLoggerProvider(LogMessages.Get()));
+            }
+        );
     }
 
     private static void DisableUserSecrets(IWebHostBuilder builder)

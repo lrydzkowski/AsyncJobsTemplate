@@ -11,7 +11,10 @@
         CreatedAtUtc: DateTime_2,
         LastUpdatedAtUtc: DateTime_3
       }
-    ]
+    ],
+    LogMessages:
+      Information: Start processing Job1 - JobId = 2990e1e4-f57a-4738-92f0-e8fd9534790b
+      Information: Stop processing Job1 - JobId = 2990e1e4-f57a-4738-92f0-e8fd9534790b
   },
   TestCaseId: 1
 }
