@@ -11,6 +11,7 @@ using AsyncJobsTemplate.WebApi.Tests.E2E.Common.TestCollections;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Common.WebApplication;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Common.WebApplication.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Net.Http.Headers;
 
 namespace AsyncJobsTemplate.WebApi.Tests.E2E.Features.Jobs.TriggerJob;
@@ -33,7 +34,8 @@ public class TriggerJobWithFileTests
     [Fact]
     public async Task TriggerJobWithFile_ShouldTriggerJobProcessing_WhenCorrectData()
     {
-        using DbContextScope dbScope = new(_webApiFactory);
+        using IServiceScope serviceScope = _webApiFactory.Services.CreateScope();
+        using DbContextScope dbScope = new(serviceScope.ServiceProvider);
 
         HttpRequestMessage requestMessage = BuildRequestMessageWithDataPayload();
         HttpResponseMessage responseMessage =

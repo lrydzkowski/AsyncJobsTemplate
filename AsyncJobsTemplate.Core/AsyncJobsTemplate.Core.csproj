@@ -17,4 +17,8 @@
     <ProjectReference Include="..\AsyncJobsTemplate.Shared\AsyncJobsTemplate.Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="AsyncJobsTemplate.WebApi.Tests.E2E" />
+  </ItemGroup>
+
 </Project>

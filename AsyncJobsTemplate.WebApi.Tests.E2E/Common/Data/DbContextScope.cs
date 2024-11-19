@@ -1,6 +1,5 @@
 using AsyncJobsTemplate.Infrastructure.Db;
 using AsyncJobsTemplate.Infrastructure.Db.Entities;
-using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -8,28 +7,19 @@ namespace AsyncJobsTemplate.WebApi.Tests.E2E.Common.Data;
 
 internal class DbContextScope : IDisposable
 {
-    private readonly IServiceScope _scope;
-
-    public DbContextScope(WebApplicationFactory<Program> webApiFactory)
+    public DbContextScope(IServiceProvider serviceProvider)
     {
-        _scope = webApiFactory.Server.Services.CreateScope();
+        Context = serviceProvider.GetRequiredService<AppDbContext>();
     }
+
+    public AppDbContext Context { get; }
 
     public void Dispose()
     {
-        AppDbContext context = GetDbContext();
-
-        RemoveData(JobEntity.TableName, context);
-
-        _scope.Dispose();
+        RemoveData(JobEntity.TableName);
     }
 
-    public AppDbContext GetDbContext()
-    {
-        return _scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    }
-
-    private void RemoveData(string tableName, AppDbContext context)
+    private void RemoveData(string tableName)
     {
         string sql = $"""
                           IF EXISTS (SELECT 1 FROM [{tableName}])
@@ -38,6 +28,6 @@ internal class DbContextScope : IDisposable
                               DBCC CHECKIDENT('[{tableName}]', RESEED, 0);
                           END
                       """;
-        context.Database.ExecuteSqlRaw(sql);
+        Context.Database.ExecuteSqlRaw(sql);
     }
 }
