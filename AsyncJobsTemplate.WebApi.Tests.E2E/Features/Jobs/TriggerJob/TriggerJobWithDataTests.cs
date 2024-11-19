@@ -33,13 +33,14 @@ public class TriggerJobWithDataTests
     {
         using IServiceScope serviceScope = _webApiFactory.Services.CreateScope();
         using DbContextScope dbScope = new(serviceScope.ServiceProvider);
+        await using StorageAccountContextScope storageAccountScope = new(serviceScope.ServiceProvider);
 
         HttpRequestMessage requestMessage = BuildRequestMessageWithDataPayload();
         HttpResponseMessage responseMessage =
             await _webApiFactory.MockJobsQueue().CreateClient().SendAsync(requestMessage);
         TriggerJobResult? response = await responseMessage.GetResponseAsync<TriggerJobResult>();
 
-        IReadOnlyList<JobEntity> jobEntitiesDb = await JobsData.GetJobsAsync(dbScope);
+        IReadOnlyList<JobEntity> jobEntitiesDb = await DbJobsData.GetJobsAsync(dbScope);
         IReadOnlyList<ReceivedMethodCall> sendMessageCalls = QueueBuilder.JobsQueue?.GetReceivedMethodCalls() ?? [];
 
         TestResultWithData<TriggerJobWithDataTestResult> result = new()

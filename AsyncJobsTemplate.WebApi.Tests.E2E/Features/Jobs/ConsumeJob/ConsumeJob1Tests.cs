@@ -37,7 +37,8 @@ public class ConsumeJob1Tests
 
         using IServiceScope serviceScope = _webApiFactory.Services.CreateScope();
         using DbContextScope dbScope = new(serviceScope.ServiceProvider);
-        await JobsData.CreateJobAsync(dbScope, jobIb, categoryName);
+        await using StorageAccountContextScope storageAccountScope = new(serviceScope.ServiceProvider);
+        await DbJobsData.CreateJobAsync(dbScope, jobIb, categoryName);
 
         ConsumeContext<JobMessage>? context = Substitute.For<ConsumeContext<JobMessage>>()!;
         context.Message.Returns(new JobMessage { JobId = jobIb });
@@ -45,7 +46,7 @@ public class ConsumeJob1Tests
         JobsConsumer jobsConsumer = serviceScope.ServiceProvider.GetRequiredService<JobsConsumer>();
         await jobsConsumer.Consume(context);
 
-        IReadOnlyList<JobEntity> jobEntitiesDb = await JobsData.GetJobsAsync(dbScope);
+        IReadOnlyList<JobEntity> jobEntitiesDb = await DbJobsData.GetJobsAsync(dbScope);
 
         TestResultWithData<ConsumeJobMessageTestResult> result = new()
         {

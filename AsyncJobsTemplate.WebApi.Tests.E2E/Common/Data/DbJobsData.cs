@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AsyncJobsTemplate.WebApi.Tests.E2E.Common.Data;
 
-internal static class JobsData
+internal static class DbJobsData
 {
     public static async Task<IReadOnlyList<JobEntity>> GetJobsAsync(DbContextScope dbScope)
     {
