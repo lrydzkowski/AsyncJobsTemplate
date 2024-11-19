@@ -1,5 +1,6 @@
 using System.Text.Json;
 using AsyncJobsTemplate.Infrastructure.Db.Entities;
+using AsyncJobsTemplate.Shared.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace AsyncJobsTemplate.WebApi.Tests.E2E.Common.Data;
@@ -42,10 +43,7 @@ internal static class DbJobsData
             Key3 = true,
             Key4 = new { Key5 = "Value1", Key6 = DateTime.UtcNow }
         };
-        string serializedInputData = JsonSerializer.Serialize(
-            inputData,
-            new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }
-        );
+        string serializedInputData = JsonSerializer.Serialize(inputData, Serializer.Options);
         JobEntity jobEntity = new()
         {
             JobId = jobId,

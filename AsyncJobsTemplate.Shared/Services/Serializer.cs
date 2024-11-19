@@ -11,18 +11,19 @@ public interface ISerializer
 public class Serializer
     : ISerializer
 {
-    private readonly JsonSerializerOptions _options = new()
+    public static readonly JsonSerializerOptions Options = new()
     {
-        PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        Converters = { new DateTimeJsonConverter() }
     };
 
     public string Serialize(object? data)
     {
-        return JsonSerializer.Serialize(data, _options);
+        return JsonSerializer.Serialize(data, Options);
     }
 
     public T? Deserialize<T>(string? data) where T : class
     {
-        return data is null ? null : JsonSerializer.Deserialize<T>(data, _options);
+        return data is null ? null : JsonSerializer.Deserialize<T>(data, Options);
     }
 }

@@ -25,7 +25,7 @@ public class WebApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
 
     public WebApiFactory()
     {
-        VerifySettings.ScrubInlineDateTimes("yyyy-MM-ddTHH:mm:ss.fffffffZ");
+        VerifySettings.ScrubInlineDateTimes("yyyy-MM-ddTHH:mm:ss.fffZ");
     }
 
     public WireMockServer WireMockServer { get; } = WireMockServer.Start();
