@@ -4,6 +4,7 @@ using AsyncJobsTemplate.Infrastructure.Azure.ServiceBus;
 using AsyncJobsTemplate.Infrastructure.Db;
 using AsyncJobsTemplate.Infrastructure.Db.Options;
 using AsyncJobsTemplate.WebApi.Options;
+using AsyncJobsTemplate.WebApi.Tests.E2E.Common.Logging;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
@@ -25,11 +26,12 @@ public class WebApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
 
     public WebApiFactory()
     {
-        VerifySettings.ScrubInlineDateTimes("yyyy-MM-ddTHH:mm:ss.fffffffZ");
+        VerifySettings.ScrubInlineDateTimes("yyyy-MM-ddTHH:mm:ss.fffZ");
     }
 
     public WireMockServer WireMockServer { get; } = WireMockServer.Start();
     public VerifySettings VerifySettings { get; } = new();
+    public LogMessages LogMessages { get; } = new();
 
     public async Task InitializeAsync()
     {
@@ -69,13 +71,19 @@ public class WebApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
 
     private void DisableLogging(IWebHostBuilder builder)
     {
-        builder.ConfigureLogging(loggingBuilder => loggingBuilder.ClearProviders());
+        builder.ConfigureLogging(
+            loggingBuilder =>
+            {
+                loggingBuilder.ClearProviders();
+                loggingBuilder.AddProvider(new TestLoggerProvider(LogMessages.Get()));
+            }
+        );
     }
 
     private static void DisableUserSecrets(IWebHostBuilder builder)
     {
         builder.ConfigureAppConfiguration(
-            (context, configBuilder) =>
+            (_, configBuilder) =>
             {
                 IConfigurationSource? userSecretsSource = configBuilder.Sources.FirstOrDefault(
                     source => source is JsonConfigurationSource { Path: "secrets.json" }

@@ -12,7 +12,7 @@ internal static class NSubstituteExtensions
                        receivedCall => new ReceivedMethodCall
                        {
                            MethodName = receivedCall.GetMethodInfo().Name,
-                           ReceivedArguments = receivedCall.GetArguments().ToList() ?? []
+                           ReceivedArguments = receivedCall.GetArguments().ToList()
                        }
                    )
                    .ToList()

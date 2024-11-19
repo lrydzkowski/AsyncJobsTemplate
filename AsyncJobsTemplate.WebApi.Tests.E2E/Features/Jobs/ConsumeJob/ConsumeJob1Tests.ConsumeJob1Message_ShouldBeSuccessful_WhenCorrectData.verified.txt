@@ -1,0 +1,20 @@
+﻿{
+  Data: {
+    JobEntitiesDb: [
+      {
+        RecId: 1,
+        JobId: Guid_1,
+        JobCategoryName: job1,
+        Status: Finished,
+        InputData: {"key1":"Some data","key2":123,"key3":true,"key4":{"key5":"Value1","key6":"DateTime_1"}},
+        OutputData: {"result":true},
+        CreatedAtUtc: DateTime_2,
+        LastUpdatedAtUtc: DateTime_3
+      }
+    ],
+    LogMessages:
+      Information: Start processing Job1 - JobId = 2990e1e4-f57a-4738-92f0-e8fd9534790b
+      Information: Stop processing Job1 - JobId = 2990e1e4-f57a-4738-92f0-e8fd9534790b
+  },
+  TestCaseId: 1
+}

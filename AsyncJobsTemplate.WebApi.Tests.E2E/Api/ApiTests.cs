@@ -82,7 +82,7 @@ public class ApiTests
             HttpResponseMessage responseMessage = await _webApiFactory.CreateClient().SendAsync(requestMessage);
 
             responseMessage.StatusCode.Should()
-                .Be(
+                ?.Be(
                     HttpStatusCode.Unauthorized,
                     $"endpoint {endpointInfo.HttpMethod} {endpointInfo.Path} should require authorization"
                 );

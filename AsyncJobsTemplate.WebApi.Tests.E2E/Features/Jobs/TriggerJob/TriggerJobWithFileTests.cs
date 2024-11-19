@@ -11,6 +11,7 @@ using AsyncJobsTemplate.WebApi.Tests.E2E.Common.TestCollections;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Common.WebApplication;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Common.WebApplication.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Net.Http.Headers;
 
 namespace AsyncJobsTemplate.WebApi.Tests.E2E.Features.Jobs.TriggerJob;
@@ -33,23 +34,25 @@ public class TriggerJobWithFileTests
     [Fact]
     public async Task TriggerJobWithFile_ShouldTriggerJobProcessing_WhenCorrectData()
     {
-        using DbContextScope dbScope = new(_webApiFactory);
+        using IServiceScope serviceScope = _webApiFactory.Services.CreateScope();
+        using DbContextScope dbScope = new(serviceScope.ServiceProvider);
+        await using StorageAccountContextScope storageAccountScope = new(serviceScope.ServiceProvider);
 
         HttpRequestMessage requestMessage = BuildRequestMessageWithDataPayload();
         HttpResponseMessage responseMessage =
             await _webApiFactory.MockJobsQueue().CreateClient().SendAsync(requestMessage);
         TriggerJobResult? response = await responseMessage.GetResponseAsync<TriggerJobResult>();
 
-        IReadOnlyList<JobEntity> jobEntitiesDb = await JobsData.GetJobsAsync(dbScope);
+        IReadOnlyList<JobEntity> jobEntitiesDb = await DbJobsData.GetJobsAsync(dbScope);
         IReadOnlyList<StorageAccountFile> inputFiles = await StorageAccountFilesData.GetInputFilesAsync(_webApiFactory);
         IReadOnlyList<ReceivedMethodCall> sendMessageCalls = QueueBuilder.JobsQueue?.GetReceivedMethodCalls() ?? [];
 
-        RequestResultWithData<TriggerJobWithFileTestResult> result = new()
+        TestResultWithData<TriggerJobWithFileTestResult> result = new()
         {
             TestCaseId = 1,
-            StatusCode = responseMessage.StatusCode,
             Data = new TriggerJobWithFileTestResult
             {
+                StatusCode = responseMessage.StatusCode,
                 Response = response,
                 JobEntitiesDb = jobEntitiesDb,
                 InputFilesStorageAccount = inputFiles,
@@ -82,10 +85,8 @@ public class TriggerJobWithFileTests
         return _endpointUrlPath.Replace("{categoryName}", categoryName);
     }
 
-    private class TriggerJobWithFileTestResult
+    private class TriggerJobWithFileTestResult : TestResponseWithData<TriggerJobResult>
     {
-        public TriggerJobResult? Response { get; init; }
-
         public IReadOnlyList<JobEntity> JobEntitiesDb { get; init; } = [];
 
         public IReadOnlyList<StorageAccountFile> InputFilesStorageAccount { get; init; } = [];
