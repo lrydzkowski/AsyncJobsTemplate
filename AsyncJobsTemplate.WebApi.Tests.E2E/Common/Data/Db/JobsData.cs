@@ -3,13 +3,13 @@ using AsyncJobsTemplate.Infrastructure.Db.Entities;
 using AsyncJobsTemplate.Shared.Services;
 using Microsoft.EntityFrameworkCore;
 
-namespace AsyncJobsTemplate.WebApi.Tests.E2E.Common.Data;
+namespace AsyncJobsTemplate.WebApi.Tests.E2E.Common.Data.Db;
 
-internal static class DbJobsData
+internal static class JobsData
 {
-    public static async Task<IReadOnlyList<JobEntity>> GetJobsAsync(DbContextScope dbScope)
+    public static async Task<IReadOnlyList<JobEntity>> GetJobsAsync(TestContextScope scope)
     {
-        return await dbScope.Context.Jobs.Select(
+        return await scope.Db.Context.Jobs.Select(
                 job => new JobEntity
                 {
                     RecId = job.RecId,
@@ -30,7 +30,7 @@ internal static class DbJobsData
     }
 
     public static async Task CreateJobAsync(
-        DbContextScope dbScope,
+        TestContextScope scope,
         Guid jobId,
         string categoryName,
         string status = "Created"
@@ -53,7 +53,7 @@ internal static class DbJobsData
             CreatedAtUtc = DateTime.UtcNow
         };
         ;
-        dbScope.Context.Jobs.Add(jobEntity);
-        await dbScope.Context.SaveChangesAsync();
+        scope.Db.Context.Jobs.Add(jobEntity);
+        await scope.Db.Context.SaveChangesAsync();
     }
 }

@@ -3,11 +3,11 @@ using AsyncJobsTemplate.Infrastructure.Db.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace AsyncJobsTemplate.WebApi.Tests.E2E.Common.Data;
+namespace AsyncJobsTemplate.WebApi.Tests.E2E.Common.Data.Db;
 
-internal class DbContextScope : IDisposable
+internal class ContextScope : IDisposable
 {
-    public DbContextScope(IServiceProvider serviceProvider)
+    public ContextScope(IServiceProvider serviceProvider)
     {
         Context = serviceProvider.GetRequiredService<AppDbContext>();
     }

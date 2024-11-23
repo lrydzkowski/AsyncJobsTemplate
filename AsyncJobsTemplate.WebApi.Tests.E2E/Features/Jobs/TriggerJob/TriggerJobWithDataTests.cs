@@ -3,13 +3,13 @@ using AsyncJobsTemplate.Infrastructure.Db.Entities;
 using AsyncJobsTemplate.Shared.Extensions;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Common;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Common.Data;
+using AsyncJobsTemplate.WebApi.Tests.E2E.Common.Data.Db;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Common.Extensions;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Common.Models;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Common.TestCollections;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Common.WebApplication;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Common.WebApplication.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace AsyncJobsTemplate.WebApi.Tests.E2E.Features.Jobs.TriggerJob;
 
@@ -31,16 +31,14 @@ public class TriggerJobWithDataTests
     [Fact]
     public async Task TriggerJobWithData_ShouldTriggerJobProcessing_WhenCorrectData()
     {
-        using IServiceScope serviceScope = _webApiFactory.Services.CreateScope();
-        using DbContextScope dbScope = new(serviceScope.ServiceProvider);
-        await using StorageAccountContextScope storageAccountScope = new(serviceScope.ServiceProvider);
+        await using TestContextScope contextScope = new(_webApiFactory);
 
         HttpRequestMessage requestMessage = BuildRequestMessageWithDataPayload();
         HttpResponseMessage responseMessage =
             await _webApiFactory.MockJobsQueue().CreateClient().SendAsync(requestMessage);
         TriggerJobResult? response = await responseMessage.GetResponseAsync<TriggerJobResult>();
 
-        IReadOnlyList<JobEntity> jobEntitiesDb = await DbJobsData.GetJobsAsync(dbScope);
+        IReadOnlyList<JobEntity> jobEntitiesDb = await JobsData.GetJobsAsync(contextScope);
         IReadOnlyList<ReceivedMethodCall> sendMessageCalls = QueueBuilder.JobsQueue?.GetReceivedMethodCalls() ?? [];
 
         TestResultWithData<TriggerJobWithDataTestResult> result = new()
