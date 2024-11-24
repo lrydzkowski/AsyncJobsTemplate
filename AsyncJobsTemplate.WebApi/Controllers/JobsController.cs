@@ -8,6 +8,8 @@ using AsyncJobsTemplate.Core.Queries.GetJob;
 using AsyncJobsTemplate.Core.Queries.GetJob.Models;
 using AsyncJobsTemplate.Core.Queries.GetJobs;
 using AsyncJobsTemplate.Shared.Models.Lists;
+using AsyncJobsTemplate.WebApi.Mappers;
+using AsyncJobsTemplate.WebApi.Models;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -21,10 +23,12 @@ namespace AsyncJobsTemplate.WebApi.Controllers;
 public class JobsController : ControllerBase
 {
     private readonly IMediator _mediator;
+    private readonly ITriggerJobResponseMapper _triggerJobResponseMapper;
 
-    public JobsController(IMediator mediator)
+    public JobsController(IMediator mediator, ITriggerJobResponseMapper triggerJobResponseMapper)
     {
         _mediator = mediator;
+        _triggerJobResponseMapper = triggerJobResponseMapper;
     }
 
     [SwaggerOperation(Summary = "Trigger a job with a JSON payload")]
@@ -47,13 +51,15 @@ public class JobsController : ControllerBase
                 }
             }
         );
-
+        TriggerJobResponse response = _triggerJobResponseMapper.Map(result);
         if (!result.Result)
         {
-            return BadRequest(result);
+            return result.HasInternalErrors
+                ? StatusCode(StatusCodes.Status500InternalServerError, response)
+                : BadRequest(response);
         }
 
-        return Ok(result);
+        return Ok(response);
     }
 
     [SwaggerOperation(Summary = "Trigger a job with a file")]
@@ -76,12 +82,15 @@ public class JobsController : ControllerBase
                 }
             }
         );
+        TriggerJobResponse response = _triggerJobResponseMapper.Map(result);
         if (!result.Result)
         {
-            return BadRequest(result);
+            return result.HasInternalErrors
+                ? StatusCode(StatusCodes.Status500InternalServerError, response)
+                : BadRequest(response);
         }
 
-        return Ok(result);
+        return Ok(response);
     }
 
     [SwaggerOperation(Summary = "Get a job")]

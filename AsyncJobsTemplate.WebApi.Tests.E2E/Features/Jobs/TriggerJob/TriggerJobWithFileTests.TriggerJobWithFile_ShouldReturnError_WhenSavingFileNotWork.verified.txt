@@ -11,7 +11,7 @@
         LastUpdatedAtUtc: DateTime_4
       }
     ],
-    StatusCode: BadRequest,
+    StatusCode: InternalServerError,
     Response:
     {
       "result": false,
