@@ -1,10 +1,11 @@
 ﻿{
   Data: {
-    Response: {
-      Name: AsyncJobsTemplate,
-      Version: 1.0
-    },
-    StatusCode: OK
+    StatusCode: OK,
+    Response:
+    {
+      "name": "AsyncJobsTemplate",
+      "version": "1.0"
+    }
   },
   TestCaseId: 1
 }

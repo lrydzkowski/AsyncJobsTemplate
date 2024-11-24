@@ -40,11 +40,12 @@ val1,val2,val3,
         ]
       }
     ],
-    Response: {
-      Result: true,
-      JobId: Guid_1
-    },
-    StatusCode: OK
+    StatusCode: OK,
+    Response:
+    {
+      "result": true,
+      "jobId": "Guid_1"
+    }
   },
   TestCaseId: 1
 }

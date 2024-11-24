@@ -1,5 +1,4 @@
 using AsyncJobsTemplate.Shared.Extensions;
-using AsyncJobsTemplate.WebApi.Models;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Common;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Common.Models;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Common.TestCollections;
@@ -27,7 +26,7 @@ public class GetAppInfoTests
         HttpRequestMessage requestMessage = new(HttpMethod.Get, _endpointUrlPath);
         HttpResponseMessage responseMessage = await _webApiFactory.CreateClient()
             .SendAsync(requestMessage);
-        GetAppInfoResponse? response = await responseMessage.GetResponseAsync<GetAppInfoResponse>();
+        string response = await responseMessage.GetResponseMessageAsync();
 
         TestResultWithData<GetAppInfoTestResult> result = new()
         {
@@ -35,14 +34,14 @@ public class GetAppInfoTests
             Data = new GetAppInfoTestResult
             {
                 StatusCode = responseMessage.StatusCode,
-                Response = response
+                Response = response.PrettifyJson(4)
             }
         };
 
         await Verify(result);
     }
 
-    private class GetAppInfoTestResult : TestResponseWithData<GetAppInfoResponse>
+    private class GetAppInfoTestResult : HttpTestResult
     {
     }
 }

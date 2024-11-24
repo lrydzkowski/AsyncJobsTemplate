@@ -20,9 +20,14 @@ public static class HttpMessageExtensions
 
     public static async Task<T?> GetResponseAsync<T>(this HttpResponseMessage response)
     {
-        string message = await response.Content.ReadAsStringAsync();
+        string message = await response.GetResponseMessageAsync();
         T? payload = JsonSerializer.Deserialize<T>(message, Serializer.Options);
 
         return payload;
+    }
+
+    public static async Task<string> GetResponseMessageAsync(this HttpResponseMessage response)
+    {
+        return await response.Content.ReadAsStringAsync();
     }
 }

@@ -47,6 +47,7 @@ public class JobsController : ControllerBase
                 }
             }
         );
+
         if (!result.Result)
         {
             return BadRequest(result);

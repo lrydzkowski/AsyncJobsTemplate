@@ -1,5 +1,4 @@
 using System.Net.Mime;
-using AsyncJobsTemplate.Core.Commands.TriggerJob;
 using AsyncJobsTemplate.Infrastructure.Db.Entities;
 using AsyncJobsTemplate.Shared.Extensions;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Common;
@@ -40,7 +39,7 @@ public class TriggerJobWithFileTests
         HttpRequestMessage requestMessage = BuildRequestMessageWithDataPayload();
         HttpResponseMessage responseMessage =
             await _webApiFactory.MockJobsQueue().CreateClient().SendAsync(requestMessage);
-        TriggerJobResult? response = await responseMessage.GetResponseAsync<TriggerJobResult>();
+        string response = await responseMessage.GetResponseMessageAsync();
 
         IReadOnlyList<JobEntity> jobEntitiesDb = await JobsData.GetJobsAsync(contextScope);
         IReadOnlyList<StorageAccountFile> inputFiles = await FilesData.GetInputFilesAsync(_webApiFactory);
@@ -52,7 +51,7 @@ public class TriggerJobWithFileTests
             Data = new TriggerJobWithFileTestResult
             {
                 StatusCode = responseMessage.StatusCode,
-                Response = response,
+                Response = response.PrettifyJson(4),
                 JobEntitiesDb = jobEntitiesDb,
                 InputFilesStorageAccount = inputFiles,
                 SendMessageCalls = sendMessageCalls
@@ -84,7 +83,7 @@ public class TriggerJobWithFileTests
         return _endpointUrlPath.Replace("{categoryName}", categoryName);
     }
 
-    private class TriggerJobWithFileTestResult : TestResponseWithData<TriggerJobResult>
+    private class TriggerJobWithFileTestResult : HttpTestResult
     {
         public IReadOnlyList<JobEntity> JobEntitiesDb { get; init; } = [];
 
