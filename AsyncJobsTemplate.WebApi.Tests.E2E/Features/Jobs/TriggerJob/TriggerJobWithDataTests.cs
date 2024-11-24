@@ -9,7 +9,6 @@ using AsyncJobsTemplate.WebApi.Tests.E2E.Common.Models;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Common.TestCollections;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Common.WebApplication;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Common.WebApplication.Infrastructure;
-using AsyncJobsTemplate.WebApi.Tests.E2E.Features.Jobs.TriggerJob.DataBuilders;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Testcontainers.MsSql;
 

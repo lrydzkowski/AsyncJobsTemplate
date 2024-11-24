@@ -16,7 +16,14 @@ internal class ContextScope : IDisposable
 
     public void Dispose()
     {
-        RemoveData(JobEntity.TableName);
+        try
+        {
+            RemoveData(JobEntity.TableName);
+        }
+        catch
+        {
+            // ignored
+        }
     }
 
     private void RemoveData(string tableName)
