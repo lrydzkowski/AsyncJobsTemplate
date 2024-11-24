@@ -6,9 +6,9 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
-namespace AsyncJobsTemplate.WebApi.Tests.E2E.Common.Data;
+namespace AsyncJobsTemplate.WebApi.Tests.E2E.Common.Data.StorageAccount;
 
-internal static class StorageAccountFilesData
+internal static class FilesData
 {
     public static async Task<IReadOnlyList<StorageAccountFile>> GetInputFilesAsync(
         WebApplicationFactory<Program> webApplicationFactory

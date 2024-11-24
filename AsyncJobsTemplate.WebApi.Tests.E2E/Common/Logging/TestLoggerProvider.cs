@@ -14,7 +14,7 @@ internal class TestLoggerProvider : ILoggerProvider
 
     public ILogger CreateLogger(string categoryName)
     {
-        return new TestLogger(_logMessages);
+        return new TestLogger(_logMessages, categoryName);
     }
 
     public void Dispose()

@@ -4,14 +4,14 @@ using Azure.Storage.Blobs.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
-namespace AsyncJobsTemplate.WebApi.Tests.E2E.Common.Data;
+namespace AsyncJobsTemplate.WebApi.Tests.E2E.Common.Data.StorageAccount;
 
-internal class StorageAccountContextScope : IAsyncDisposable
+internal class ContextScope : IAsyncDisposable
 {
     private readonly BlobContainerClient _inputContainerClient;
     private readonly BlobContainerClient _outputContainerClient;
 
-    public StorageAccountContextScope(IServiceProvider serviceProvider)
+    public ContextScope(IServiceProvider serviceProvider)
     {
         AzureStorageAccountOptions options =
             serviceProvider.GetRequiredService<IOptions<AzureStorageAccountOptions>>().Value;

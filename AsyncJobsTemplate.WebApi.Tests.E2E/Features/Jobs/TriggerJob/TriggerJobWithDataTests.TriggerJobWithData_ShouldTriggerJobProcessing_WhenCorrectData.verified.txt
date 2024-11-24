@@ -28,11 +28,13 @@
         ]
       }
     ],
-    Response: {
-      Result: true,
-      JobId: Guid_1
+    StatusCode: OK,
+    Response:
+    {
+      "result": true,
+      "jobId": "Guid_1"
     },
-    StatusCode: OK
+    LogMessages: 
   },
   TestCaseId: 1
 }

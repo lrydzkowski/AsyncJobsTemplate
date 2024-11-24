@@ -2,6 +2,7 @@
 using AsyncJobsTemplate.Infrastructure.Azure.Authentication;
 using AsyncJobsTemplate.Infrastructure.Azure.Options;
 using AsyncJobsTemplate.WebApi.Consumers;
+using AsyncJobsTemplate.WebApi.Mappers;
 using AsyncJobsTemplate.WebApi.Options;
 using Azure.Core;
 using MassTransit;
@@ -19,6 +20,7 @@ public static class ServiceCollectionExtensions
         services.AddSwagger();
         services.AddMassTransit(configuration);
         services.AddOptions(configuration);
+        services.AddServices();
 
         return services;
     }
@@ -86,5 +88,10 @@ public static class ServiceCollectionExtensions
     {
         return services.AddOptionsType<SwaggerOptions>(configuration, SwaggerOptions.Position)
             .AddOptionsType<QueueOptions>(configuration, QueueOptions.Position);
+    }
+
+    private static IServiceCollection AddServices(this IServiceCollection services)
+    {
+        return services.AddSingleton<ITriggerJobResponseMapper, TriggerJobResponseMapper>();
     }
 }

@@ -16,6 +16,8 @@ public class TriggerJobResult
 {
     public bool Result { get; init; }
 
+    public bool HasInternalErrors { get; init; }
+
     public Guid? JobId { get; init; }
 }
 
@@ -58,6 +60,7 @@ public class TriggerJobCommandHandler : IRequestHandler<TriggerJobCommand, Trigg
         TriggerJobResult result = new()
         {
             Result = !process.HasErrors,
+            HasInternalErrors = process.HasInternalErrors,
             JobId = process.JobId
         };
 
