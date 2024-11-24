@@ -5,6 +5,7 @@ using AsyncJobsTemplate.WebApi.Consumers;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Common;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Common.Data;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Common.Data.Db;
+using AsyncJobsTemplate.WebApi.Tests.E2E.Common.Data.StorageAccount;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Common.Logging;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Common.Models;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Common.TestCollections;
@@ -18,13 +19,13 @@ namespace AsyncJobsTemplate.WebApi.Tests.E2E.Features.Jobs.ConsumeJob;
 
 [Collection(MainTestsCollection.CollectionName)]
 [Trait(TestConstants.Category, MainTestsCollection.CollectionName)]
-public class ConsumeJob1Tests
+public class ConsumeJob2Tests
 {
     private readonly LogMessages _logMessages;
     private readonly VerifySettings _verifySettings;
     private readonly WebApplicationFactory<Program> _webApiFactory;
 
-    public ConsumeJob1Tests(WebApiFactory webApiFactory)
+    public ConsumeJob2Tests(WebApiFactory webApiFactory)
     {
         _webApiFactory = webApiFactory.DisableJobsSleep();
         _logMessages = webApiFactory.LogMessages;
@@ -32,16 +33,16 @@ public class ConsumeJob1Tests
     }
 
     [Fact]
-    public async Task ConsumeJob1Message_ShouldBeSuccessful_WhenCorrectData()
+    public async Task ConsumeJob2Message_ShouldBeSuccessful_WhenCorrectData()
     {
         Guid jobIb = Guid.NewGuid();
-        string categoryName = Job1Handler.Name;
+        string categoryName = Job2Handler.Name;
 
         await using TestContextScope contextScope = new(_webApiFactory, _logMessages);
         await JobsData.CreateJobAsync(contextScope, jobIb, categoryName);
 
         await RunTestAsync(contextScope, jobIb);
-        TestResultWithData<ConsumeJob1MessageTestResult> result = await BuildTestResultAsync(contextScope);
+        TestResultWithData<ConsumeJob2MessageTestResult> result = await BuildTestResultAsync(contextScope);
 
         await Verify(result, _verifySettings);
     }
@@ -55,17 +56,19 @@ public class ConsumeJob1Tests
         await jobsConsumer.Consume(context);
     }
 
-    private async Task<TestResultWithData<ConsumeJob1MessageTestResult>> BuildTestResultAsync(
+    private async Task<TestResultWithData<ConsumeJob2MessageTestResult>> BuildTestResultAsync(
         TestContextScope contextScope
     )
     {
         IReadOnlyList<JobEntity> jobEntitiesDb = await JobsData.GetJobsAsync(contextScope);
-        TestResultWithData<ConsumeJob1MessageTestResult> result = new()
+        IReadOnlyList<StorageAccountFile> outputFiles = await FilesData.GetOutputFilesAsync(_webApiFactory);
+        TestResultWithData<ConsumeJob2MessageTestResult> result = new()
         {
             TestCaseId = 1,
-            Data = new ConsumeJob1MessageTestResult
+            Data = new ConsumeJob2MessageTestResult
             {
                 JobEntitiesDb = jobEntitiesDb,
+                OutputFilesStorageAccount = outputFiles,
                 LogMessages = _logMessages.GetSerialized(6)
             }
         };
@@ -73,9 +76,11 @@ public class ConsumeJob1Tests
         return result;
     }
 
-    private class ConsumeJob1MessageTestResult
+    private class ConsumeJob2MessageTestResult
     {
         public IReadOnlyList<JobEntity> JobEntitiesDb { get; init; } = [];
+
+        public IReadOnlyList<StorageAccountFile> OutputFilesStorageAccount { get; init; } = [];
 
         public string LogMessages { get; init; } = "";
     }

@@ -1,0 +1,30 @@
+﻿{
+  Data: {
+    JobEntitiesDb: [
+      {
+        RecId: 1,
+        JobId: Guid_1,
+        JobCategoryName: job2,
+        Status: Finished,
+        InputData: {"key1":"Some data","key2":123,"key3":true,"key4":{"key5":"Value1","key6":"DateTime_1"}},
+        OutputFileReference: Guid_1,
+        CreatedAtUtc: DateTime_2,
+        LastUpdatedAtUtc: DateTime_3
+      }
+    ],
+    OutputFilesStorageAccount: [
+      {
+        Name: Guid_1,
+        Content: This is an example of a text file. Input data: '{"key1":"Some data","key2":123,"key3":true,"key4":{"key5":"Value1","key6":"DateTime_1"}}',
+        Metadata: {
+          FileContentName: text/plain,
+          FileOriginalName: test-output.txt
+        }
+      }
+    ],
+    LogMessages:
+      Information: Start processing Job2 - JobId = Guid_1
+      Information: Stop processing Job2 - JobId = Guid_1
+  },
+  TestCaseId: 1
+}
