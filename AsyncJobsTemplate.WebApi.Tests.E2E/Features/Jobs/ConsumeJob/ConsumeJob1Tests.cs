@@ -13,6 +13,7 @@ using AsyncJobsTemplate.WebApi.Tests.E2E.Common.WebApplication.Infrastructure;
 using MassTransit;
 using Microsoft.AspNetCore.Mvc.Testing;
 using NSubstitute;
+using Testcontainers.MsSql;
 
 namespace AsyncJobsTemplate.WebApi.Tests.E2E.Features.Jobs.ConsumeJob;
 
@@ -20,6 +21,7 @@ namespace AsyncJobsTemplate.WebApi.Tests.E2E.Features.Jobs.ConsumeJob;
 [Trait(TestConstants.Category, MainTestsCollection.CollectionName)]
 public class ConsumeJob1Tests
 {
+    private readonly MsSqlContainer _dbContainer;
     private readonly LogMessages _logMessages;
     private readonly VerifySettings _verifySettings;
     private readonly WebApplicationFactory<Program> _webApiFactory;
@@ -29,6 +31,7 @@ public class ConsumeJob1Tests
         _webApiFactory = webApiFactory.DisableJobsSleep();
         _logMessages = webApiFactory.LogMessages;
         _verifySettings = webApiFactory.VerifySettings;
+        _dbContainer = webApiFactory.DbContainer;
     }
 
     [Fact]
@@ -46,6 +49,52 @@ public class ConsumeJob1Tests
         await Verify(result, _verifySettings);
     }
 
+    [Fact]
+    public async Task ConsumeJob1Message_ShouldBeUnsuccessful_WhenNoAccessToDatabase()
+    {
+        Guid jobId = Guid.NewGuid();
+
+        WebApplicationFactory<Program> webApiFactory =
+            _webApiFactory.MakeDbConnectionStringIncorrect(_dbContainer.GetConnectionString());
+        await using TestContextScope contextScope = new(webApiFactory, _logMessages);
+
+        await RunTestAsync(contextScope, jobId);
+        TestResultWithData<ConsumeJob1MessageTestResult> result = await BuildTestResultAsync(contextScope, false);
+
+        await Verify(result, _verifySettings);
+    }
+
+    [Fact]
+    public async Task ConsumeJob1Message_ShouldBeUnsuccessful_WhenJobNotExist()
+    {
+        Guid existingJobId = Guid.NewGuid();
+        Guid nonExistingJobId = Guid.NewGuid();
+        string categoryName = Job1Handler.Name;
+
+        await using TestContextScope contextScope = new(_webApiFactory, _logMessages);
+        await JobsData.CreateJobAsync(contextScope, existingJobId, categoryName);
+
+        await RunTestAsync(contextScope, nonExistingJobId);
+        TestResultWithData<ConsumeJob1MessageTestResult> result = await BuildTestResultAsync(contextScope);
+
+        await Verify(result, _verifySettings);
+    }
+
+    [Fact]
+    public async Task ConsumeJob1Message_ShouldBeUnsuccessful_WhenJobNotRegistered()
+    {
+        Guid jobId = Guid.NewGuid();
+        string incorrectCategoryName = Job1Handler.Name + "-Incorrect";
+
+        await using TestContextScope contextScope = new(_webApiFactory, _logMessages);
+        await JobsData.CreateJobAsync(contextScope, jobId, incorrectCategoryName);
+
+        await RunTestAsync(contextScope, jobId);
+        TestResultWithData<ConsumeJob1MessageTestResult> result = await BuildTestResultAsync(contextScope);
+
+        await Verify(result, _verifySettings);
+    }
+
     private static async Task RunTestAsync(TestContextScope contextScope, Guid jobIb)
     {
         ConsumeContext<JobMessage>? context = Substitute.For<ConsumeContext<JobMessage>>()!;
@@ -56,10 +105,11 @@ public class ConsumeJob1Tests
     }
 
     private async Task<TestResultWithData<ConsumeJob1MessageTestResult>> BuildTestResultAsync(
-        TestContextScope contextScope
+        TestContextScope contextScope,
+        bool withDbData = true
     )
     {
-        IReadOnlyList<JobEntity> jobEntitiesDb = await JobsData.GetJobsAsync(contextScope);
+        IReadOnlyList<JobEntity> jobEntitiesDb = withDbData ? await JobsData.GetJobsAsync(contextScope) : [];
         TestResultWithData<ConsumeJob1MessageTestResult> result = new()
         {
             TestCaseId = 1,

@@ -12,7 +12,6 @@ using AsyncJobsTemplate.WebApi.Tests.E2E.Common.Services;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Common.TestCollections;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Common.WebApplication;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Common.WebApplication.Infrastructure;
-using AsyncJobsTemplate.WebApi.Tests.E2E.Features.Jobs.TriggerJob.DataBuilders;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Net.Http.Headers;
 using Testcontainers.Azurite;
@@ -24,12 +23,12 @@ namespace AsyncJobsTemplate.WebApi.Tests.E2E.Features.Jobs.TriggerJob;
 [Trait(TestConstants.Category, MainTestsCollection.CollectionName)]
 public class TriggerJobWithFileTests
 {
+    private readonly AzuriteContainer _azuriteContainer;
+    private readonly MsSqlContainer _dbContainer;
     private readonly string _endpointUrlPath = "/jobs/{categoryName}/file";
     private readonly LogMessages _logMessages;
     private readonly VerifySettings _verifySettings;
     private readonly WebApplicationFactory<Program> _webApiFactory;
-    private readonly MsSqlContainer _dbContainer;
-    private readonly AzuriteContainer _azuriteContainer;
 
     public TriggerJobWithFileTests(WebApiFactory webApiFactory)
     {
@@ -79,7 +78,8 @@ public class TriggerJobWithFileTests
     {
         await using TestContextScope contextScope = new(_webApiFactory, _logMessages);
 
-        HttpClient client = _webApiFactory.MakeStorageAccountConnectionStringIncorrect(_azuriteContainer.GetConnectionString())
+        HttpClient client = _webApiFactory
+            .MakeStorageAccountConnectionStringIncorrect(_azuriteContainer.GetConnectionString())
             .MockJobsQueue()
             .CreateClient();
         (HttpResponseMessage responseMessage, string response) = await SendRequestAsync(client);

@@ -14,6 +14,7 @@ using AsyncJobsTemplate.WebApi.Tests.E2E.Common.WebApplication.Infrastructure;
 using MassTransit;
 using Microsoft.AspNetCore.Mvc.Testing;
 using NSubstitute;
+using Testcontainers.Azurite;
 
 namespace AsyncJobsTemplate.WebApi.Tests.E2E.Features.Jobs.ConsumeJob;
 
@@ -21,6 +22,7 @@ namespace AsyncJobsTemplate.WebApi.Tests.E2E.Features.Jobs.ConsumeJob;
 [Trait(TestConstants.Category, MainTestsCollection.CollectionName)]
 public class ConsumeJob2Tests
 {
+    private readonly AzuriteContainer _azuriteContainer;
     private readonly LogMessages _logMessages;
     private readonly VerifySettings _verifySettings;
     private readonly WebApplicationFactory<Program> _webApiFactory;
@@ -30,6 +32,7 @@ public class ConsumeJob2Tests
         _webApiFactory = webApiFactory.DisableJobsSleep();
         _logMessages = webApiFactory.LogMessages;
         _verifySettings = webApiFactory.VerifySettings;
+        _azuriteContainer = webApiFactory.AzuriteContainer;
     }
 
     [Fact]
@@ -39,6 +42,23 @@ public class ConsumeJob2Tests
         string categoryName = Job2Handler.Name;
 
         await using TestContextScope contextScope = new(_webApiFactory, _logMessages);
+        await JobsData.CreateJobAsync(contextScope, jobId, categoryName);
+
+        await RunTestAsync(contextScope, jobId);
+        TestResultWithData<ConsumeJob2MessageTestResult> result = await BuildTestResultAsync(contextScope);
+
+        await Verify(result, _verifySettings);
+    }
+
+    [Fact]
+    public async Task ConsumeJob2Message_ShouldBeUnsuccessful_WhenSavingOutputFileNotWork()
+    {
+        Guid jobId = Guid.NewGuid();
+        string categoryName = Job2Handler.Name;
+
+        WebApplicationFactory<Program> webApiFactory =
+            _webApiFactory.MakeStorageAccountConnectionStringIncorrect(_azuriteContainer.GetConnectionString());
+        await using TestContextScope contextScope = new(webApiFactory, _logMessages);
         await JobsData.CreateJobAsync(contextScope, jobId, categoryName);
 
         await RunTestAsync(contextScope, jobId);

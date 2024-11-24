@@ -22,8 +22,15 @@ internal class ContextScope : IAsyncDisposable
 
     public async ValueTask DisposeAsync()
     {
-        await RemoveAllFilesAsync(_inputContainerClient);
-        await RemoveAllFilesAsync(_outputContainerClient);
+        try
+        {
+            await RemoveAllFilesAsync(_inputContainerClient);
+            await RemoveAllFilesAsync(_outputContainerClient);
+        }
+        catch
+        {
+            // ignored
+        }
     }
 
     private async Task RemoveAllFilesAsync(BlobContainerClient containerClient)

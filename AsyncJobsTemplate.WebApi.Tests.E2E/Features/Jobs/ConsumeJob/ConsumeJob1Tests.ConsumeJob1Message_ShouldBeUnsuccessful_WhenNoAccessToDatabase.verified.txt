@@ -1,0 +1,8 @@
+﻿{
+  Data: {
+    LogMessages:
+      Error: An unexpected error has occured in getting a job.
+      Error: An unexpected error has occurred in saving a job status.
+  },
+  TestCaseId: 1
+}

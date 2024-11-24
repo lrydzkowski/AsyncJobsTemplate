@@ -26,10 +26,10 @@ internal class TestContextScope : IAsyncDisposable
 
     public async ValueTask DisposeAsync()
     {
+        LogMessages.Clear();
         await StorageAccount.DisposeAsync();
         Db.Dispose();
         ServiceScope.Dispose();
-        LogMessages.Clear();
     }
 
     public TService GetRequiredService<TService>() where TService : notnull

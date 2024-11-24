@@ -1,0 +1,18 @@
+﻿{
+  Data: {
+    JobEntitiesDb: [
+      {
+        RecId: 1,
+        JobId: Guid_1,
+        JobCategoryName: job1,
+        Status: Created,
+        InputData: {"key1":"Some data","key2":123,"key3":true,"key4":{"key5":"Value1","key6":"DateTime_1"}},
+        CreatedAtUtc: DateTime_2
+      }
+    ],
+    LogMessages:
+      Error: An unexpected error has occured in getting a job. Job doesn't exist.
+      Error: An unexpected error has occurred in saving a job status.
+  },
+  TestCaseId: 1
+}
