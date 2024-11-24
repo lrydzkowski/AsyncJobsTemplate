@@ -34,13 +34,13 @@ public class ConsumeJob1Tests
     [Fact]
     public async Task ConsumeJob1Message_ShouldBeSuccessful_WhenCorrectData()
     {
-        Guid jobIb = Guid.NewGuid();
+        Guid jobId = Guid.NewGuid();
         string categoryName = Job1Handler.Name;
 
         await using TestContextScope contextScope = new(_webApiFactory, _logMessages);
-        await JobsData.CreateJobAsync(contextScope, jobIb, categoryName);
+        await JobsData.CreateJobAsync(contextScope, jobId, categoryName);
 
-        await RunTestAsync(contextScope, jobIb);
+        await RunTestAsync(contextScope, jobId);
         TestResultWithData<ConsumeJob1MessageTestResult> result = await BuildTestResultAsync(contextScope);
 
         await Verify(result, _verifySettings);
