@@ -14,11 +14,28 @@ internal static class FilesData
         WebApplicationFactory<Program> webApplicationFactory
     )
     {
+        return await GetFilesAsync(webApplicationFactory, AzureStorageContainerType.Input);
+    }
+
+    public static async Task<IReadOnlyList<StorageAccountFile>> GetOutputFilesAsync(
+        WebApplicationFactory<Program> webApplicationFactory
+    )
+    {
+        return await GetFilesAsync(webApplicationFactory, AzureStorageContainerType.Output);
+    }
+
+    private static async Task<IReadOnlyList<StorageAccountFile>> GetFilesAsync(
+        WebApplicationFactory<Program> webApplicationFactory,
+        AzureStorageContainerType containerType
+    )
+    {
         AzureStorageAccountOptions options = webApplicationFactory.Server.Services
             .GetRequiredService<IOptions<AzureStorageAccountOptions>>()
             .Value;
         BlobServiceClient serviceClient = webApplicationFactory.Server.Services.GetRequiredService<BlobServiceClient>();
-        BlobContainerClient? containerClient = serviceClient.GetBlobContainerClient(options.InputContainerName);
+        BlobContainerClient? containerClient = serviceClient.GetBlobContainerClient(
+            containerType == AzureStorageContainerType.Input ? options.InputContainerName : options.OutputContainerName
+        );
         List<StorageAccountFile> files = [];
         if (containerClient is null)
         {
@@ -48,5 +65,11 @@ internal static class FilesData
         BlobDownloadResult result = await blobClient.DownloadContentAsync()!;
 
         return result.Content?.ToString() ?? "";
+    }
+
+    private enum AzureStorageContainerType
+    {
+        Input,
+        Output
     }
 }
