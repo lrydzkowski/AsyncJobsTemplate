@@ -9,7 +9,7 @@ public static class StringExtensions
         return string.Equals(str, value, StringComparison.InvariantCultureIgnoreCase);
     }
 
-    public static string? PrettifyJson(this string? json, int indentSize = 0)
+    public static string? PrettifyJson(this string? json, int indentSpaces = 0)
     {
         if (string.IsNullOrWhiteSpace(json))
         {
@@ -34,9 +34,9 @@ public static class StringExtensions
             }
         );
 
-        if (indentSize > 0)
+        if (indentSpaces > 0)
         {
-            string indent = new(' ', indentSize);
+            string indent = new(' ', indentSpaces);
             prettyJson = indent + prettyJson.Replace("\n", "\n" + indent);
         }
 

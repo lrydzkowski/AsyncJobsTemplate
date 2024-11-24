@@ -4,11 +4,14 @@ using AsyncJobsTemplate.Infrastructure.Azure.ServiceBus;
 using AsyncJobsTemplate.Infrastructure.Db;
 using AsyncJobsTemplate.Infrastructure.Db.Options;
 using AsyncJobsTemplate.WebApi.Options;
+using AsyncJobsTemplate.WebApi.Tests.E2E.Common.Extensions;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Common.Logging;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Json;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Testcontainers.Azurite;
@@ -19,25 +22,29 @@ namespace AsyncJobsTemplate.WebApi.Tests.E2E.Common.WebApplication;
 
 public class WebApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
 {
-    private readonly AzuriteContainer _azuriteContainer =
-        new AzuriteBuilder().WithImage("mcr.microsoft.com/azure-storage/azurite:3.33.0")?.Build()!;
-
-    private readonly MsSqlContainer _dbContainer = new MsSqlBuilder().Build()!;
-
     public WebApiFactory()
     {
         VerifySettings.ScrubInlineDateTimes("yyyy-MM-ddTHH:mm:ss.fffZ");
+        VerifySettings.ScrubInlineDateTimes("ddd, dd MMM yyyy HH:mm:ss 'GMT'");
         VerifySettings.ScrubInlineGuids();
+        VerifySettings.ScrubInlineSqlServerHost();
     }
 
+    public AzuriteContainer AzuriteContainer { get; } =
+        new AzuriteBuilder().WithImage("mcr.microsoft.com/azure-storage/azurite:3.33.0")?.Build()!;
+
+    public MsSqlContainer DbContainer { get; } = new MsSqlBuilder().Build()!;
+
     public WireMockServer WireMockServer { get; } = WireMockServer.Start();
+
     public VerifySettings VerifySettings { get; } = new();
+
     public LogMessages LogMessages { get; } = new();
 
     public async Task InitializeAsync()
     {
-        await _dbContainer.StartAsync()!;
-        await _azuriteContainer.StartAsync()!;
+        await DbContainer.StartAsync()!;
+        await AzuriteContainer.StartAsync()!;
 
         Services.ExecuteDbMigration();
         Services.CreateStorageAccountContainers();
@@ -45,9 +52,9 @@ public class WebApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
 
     public new async Task DisposeAsync()
     {
+        await AzuriteContainer.DisposeAsync();
+        await DbContainer.DisposeAsync();
         WireMockServer.Dispose();
-        await _dbContainer.DisposeAsync();
-        await _azuriteContainer.DisposeAsync();
     }
 
     protected override IHost CreateHost(IHostBuilder builder)
@@ -68,6 +75,7 @@ public class WebApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
     {
         DisableLogging(builder);
         DisableUserSecrets(builder);
+        ConfigureHttpPost(builder);
     }
 
     private void DisableLogging(IWebHostBuilder builder)
@@ -97,13 +105,20 @@ public class WebApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
         );
     }
 
+    private static void ConfigureHttpPost(IWebHostBuilder builder)
+    {
+        builder.ConfigureServices(
+            services => { services.PostConfigure<HttpsRedirectionOptions>(options => { options.HttpsPort = 443; }); }
+        );
+    }
+
     private void SetDatabaseConnectionString(IConfigurationBuilder configBuilder)
     {
         configBuilder.AddInMemoryCollection(
             new Dictionary<string, string?>
             {
                 [$"{AzureSqlOptions.Position}:{nameof(AzureSqlOptions.ConnectionString)}"] =
-                    _dbContainer.GetConnectionString()
+                    DbContainer.GetConnectionString()
             }
         );
     }
@@ -124,7 +139,7 @@ public class WebApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
             new Dictionary<string, string?>
             {
                 [$"{AzureStorageAccountOptions.Position}:{nameof(AzureStorageAccountOptions.ConnectionString)}"] =
-                    _azuriteContainer.GetConnectionString()
+                    AzuriteContainer.GetConnectionString()
             }
         );
     }

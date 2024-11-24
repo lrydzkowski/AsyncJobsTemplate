@@ -33,7 +33,8 @@
     {
       "result": true,
       "jobId": "Guid_1"
-    }
+    },
+    LogMessages: 
   },
   TestCaseId: 1
 }

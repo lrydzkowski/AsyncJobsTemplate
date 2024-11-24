@@ -1,0 +1,14 @@
+﻿{
+  Data: {
+    StatusCode: BadRequest,
+    Response:
+    {
+      "result": false,
+      "jobId": "Guid_1"
+    },
+    LogMessages:
+      Error: An unexpected error has occured in creating a job.
+      Error: An unexpected error has occured in saving errors.
+  },
+  TestCaseId: 1
+}

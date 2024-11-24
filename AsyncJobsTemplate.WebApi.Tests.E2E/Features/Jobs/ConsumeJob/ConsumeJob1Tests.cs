@@ -22,35 +22,44 @@ public class ConsumeJob1Tests
 {
     private readonly LogMessages _logMessages;
     private readonly VerifySettings _verifySettings;
-
     private readonly WebApplicationFactory<Program> _webApiFactory;
 
     public ConsumeJob1Tests(WebApiFactory webApiFactory)
     {
-        _verifySettings = webApiFactory.VerifySettings;
-        _logMessages = webApiFactory.LogMessages;
         _webApiFactory = webApiFactory.DisableJobsSleep();
+        _logMessages = webApiFactory.LogMessages;
+        _verifySettings = webApiFactory.VerifySettings;
     }
 
     [Fact]
     public async Task ConsumeJob1Message_ShouldBeSuccessful_WhenCorrectData()
     {
-        _logMessages.Clear();
         Guid jobIb = Guid.NewGuid();
         string categoryName = Job1Handler.Name;
 
-        await using TestContextScope contextScope = new(_webApiFactory);
-
+        await using TestContextScope contextScope = new(_webApiFactory, _logMessages);
         await JobsData.CreateJobAsync(contextScope, jobIb, categoryName);
 
+        await RunTestAsync(contextScope, jobIb);
+        TestResultWithData<ConsumeJobMessageTestResult> result = await BuildTestResultAsync(contextScope);
+
+        await Verify(result, _verifySettings);
+    }
+
+    private static async Task RunTestAsync(TestContextScope contextScope, Guid jobIb)
+    {
         ConsumeContext<JobMessage>? context = Substitute.For<ConsumeContext<JobMessage>>()!;
         context.Message.Returns(new JobMessage { JobId = jobIb });
 
         JobsConsumer jobsConsumer = contextScope.GetRequiredService<JobsConsumer>();
         await jobsConsumer.Consume(context);
+    }
 
+    private async Task<TestResultWithData<ConsumeJobMessageTestResult>> BuildTestResultAsync(
+        TestContextScope contextScope
+    )
+    {
         IReadOnlyList<JobEntity> jobEntitiesDb = await JobsData.GetJobsAsync(contextScope);
-
         TestResultWithData<ConsumeJobMessageTestResult> result = new()
         {
             TestCaseId = 1,
@@ -61,7 +70,7 @@ public class ConsumeJob1Tests
             }
         };
 
-        await Verify(result, _verifySettings);
+        return result;
     }
 
     private class ConsumeJobMessageTestResult

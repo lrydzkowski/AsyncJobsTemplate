@@ -5,7 +5,8 @@
     {
       "name": "AsyncJobsTemplate",
       "version": "1.0"
-    }
+    },
+    LogMessages: 
   },
   TestCaseId: 1
 }

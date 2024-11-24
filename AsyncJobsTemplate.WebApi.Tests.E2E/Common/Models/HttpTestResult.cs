@@ -7,4 +7,6 @@ internal abstract class HttpTestResult
     public HttpStatusCode StatusCode { get; init; }
 
     public string? Response { get; init; }
+
+    public string LogMessages { get; init; } = "";
 }
