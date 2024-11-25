@@ -67,10 +67,10 @@ public class ConsumeJob2Tests
         await Verify(result, _verifySettings);
     }
 
-    private static async Task RunTestAsync(TestContextScope contextScope, Guid jobIb)
+    private static async Task RunTestAsync(TestContextScope contextScope, Guid jobId)
     {
         ConsumeContext<JobMessage>? context = Substitute.For<ConsumeContext<JobMessage>>()!;
-        context.Message.Returns(new JobMessage { JobId = jobIb });
+        context.Message.Returns(new JobMessage { JobId = jobId });
 
         JobsConsumer jobsConsumer = contextScope.GetRequiredService<JobsConsumer>();
         await jobsConsumer.Consume(context);
