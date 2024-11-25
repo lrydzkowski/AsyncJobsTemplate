@@ -40,7 +40,7 @@ public class GetJobTests
             HttpClient client = _webApiFactory.CreateClient();
             (HttpResponseMessage responseMessage, string response) = await SendRequestAsync(client, testCaseData.JobId);
             TestResultWithData<GetJobTestResult> result = await BuildTestResultAsync(
-                testCaseData.JobId,
+                testCaseData,
                 contextScope,
                 responseMessage,
                 response
@@ -65,7 +65,7 @@ public class GetJobTests
     }
 
     private async Task<TestResultWithData<GetJobTestResult>> BuildTestResultAsync(
-        string jobId,
+        TestCaseData testCaseData,
         TestContextScope contextScope,
         HttpResponseMessage responseMessage,
         string response
@@ -74,12 +74,12 @@ public class GetJobTests
         IReadOnlyList<JobEntity> jobEntitiesDb = await JobsData.GetJobsAsync(contextScope);
         TestResultWithData<GetJobTestResult> result = new()
         {
-            TestCaseId = 1,
+            TestCaseId = testCaseData.TestCaseId,
             Data = new GetJobTestResult
             {
-                JobId = jobId,
+                JobId = testCaseData.JobId,
                 StatusCode = responseMessage.StatusCode,
-                Response = response.PrettifyJson(4),
+                Response = response.PrettifyJson(6),
                 JobEntitiesDb = jobEntitiesDb,
                 LogMessages = _logMessages.GetSerialized(6)
             }
