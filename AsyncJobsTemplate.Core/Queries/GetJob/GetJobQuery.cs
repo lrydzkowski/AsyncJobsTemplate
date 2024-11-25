@@ -52,7 +52,7 @@ public class GetJobQueryHandler : IRequestHandler<GetJobQuery, GetJobResult>
         if (!parsingResult)
         {
             string errorCode = JobErrorCodes.GetJobFailure;
-            string errorMessage = "An unexpected error has occured in parsing a job GUID = '{JobGuid}'";
+            string errorMessage = "An unexpected error has occured in parsing a job GUID = '{0}'";
             process.HandleError(_logger, errorCode, errorMessage, process.JobIdToParse);
 
             return process;
