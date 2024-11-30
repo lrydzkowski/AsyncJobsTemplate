@@ -2,6 +2,16 @@
   {
     Data: {
       JobId: 30d49143-3fee-4a5d-a150-1e18acb5f57d1,
+      JobEntitiesDb: [
+        {
+          RecId: 1,
+          JobId: Guid_1,
+          JobCategoryName: job1,
+          Status: Created,
+          InputData: {"key":"value"},
+          CreatedAtUtc: DateTime_1
+        }
+      ],
       StatusCode: NotFound,
       Response:
       {
@@ -15,7 +25,17 @@
   },
   {
     Data: {
-      JobId: Guid_1,
+      JobId: Guid_2,
+      JobEntitiesDb: [
+        {
+          RecId: 1,
+          JobId: Guid_1,
+          JobCategoryName: job1,
+          Status: Created,
+          InputData: {"key":"value"},
+          CreatedAtUtc: DateTime_1
+        }
+      ],
       StatusCode: NotFound,
       Response:
       {
@@ -29,15 +49,29 @@
   },
   {
     Data: {
-      JobId: Guid_2,
-      StatusCode: NotFound,
+      JobId: Guid_1,
+      JobEntitiesDb: [
+        {
+          RecId: 1,
+          JobId: Guid_1,
+          JobCategoryName: job1,
+          Status: Created,
+          InputData: {"key":"value"},
+          OutputData: {"key1":"value1"},
+          OutputFileReference: Guid_3,
+          CreatedAtUtc: DateTime_1
+        }
+      ],
+      StatusCode: OK,
       Response:
       {
-        "status": "NotExist",
-        "outputData": null,
-        "outputFileReference": null
+        "status": "Created",
+        "outputData": {
+          "key1": "value1"
+        },
+        "outputFileReference": "Guid_3"
       },
-      LogMessages:       Error: An unexpected error has occured in getting a job. Job doesn't exist.
+      LogMessages: 
     },
     TestCaseId: 3
   }

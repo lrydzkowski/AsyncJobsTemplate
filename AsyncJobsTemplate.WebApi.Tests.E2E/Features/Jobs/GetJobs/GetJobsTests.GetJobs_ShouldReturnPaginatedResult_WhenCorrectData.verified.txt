@@ -1,0 +1,287 @@
+﻿[
+  {
+    Data: {
+      StatusCode: OK,
+      Response:
+      {
+        "jobs": {
+          "data": [],
+          "count": 0
+        }
+      },
+      LogMessages: 
+    },
+    TestCaseId: 1
+  },
+  {
+    Data: {
+      JobEntitiesDb: [
+        {
+          RecId: 1,
+          JobId: Guid_1,
+          JobCategoryName: job1,
+          Status: Created,
+          InputData: {"key":"value"},
+          CreatedAtUtc: DateTime_1
+        },
+        {
+          RecId: 2,
+          JobId: Guid_2,
+          JobCategoryName: job2,
+          Status: Running,
+          InputData: {"key":"value"},
+          InputFileReference: Guid_3,
+          CreatedAtUtc: DateTime_1
+        },
+        {
+          RecId: 3,
+          JobId: Guid_4,
+          JobCategoryName: job2,
+          Status: Running,
+          InputData: {"key1":"value1"},
+          InputFileReference: Guid_5,
+          OutputData: {"key2":"value2"},
+          OutputFileReference: Guid_6,
+          Errors: [{"message":"Test message","errorCode":"error1","exceptionMessage":"Exception message"},{"message":"Test message 2","errorCode":"error2","exceptionMessage":"Exception message 2"}],
+          CreatedAtUtc: DateTime_1,
+          LastUpdatedAtUtc: DateTime_2
+        }
+      ],
+      StatusCode: OK,
+      Response:
+      {
+        "jobs": {
+          "data": [
+            {
+              "jobId": "Guid_1",
+              "jobCategoryName": "job1",
+              "status": 0,
+              "inputData": {
+                "key": "value"
+              },
+              "inputFileReference": null,
+              "outputData": null,
+              "outputFileReference": null,
+              "errors": [],
+              "createdAtUtc": "2024-12-01T00:00:00",
+              "lastUpdatedAtUtc": null
+            },
+            {
+              "jobId": "Guid_2",
+              "jobCategoryName": "job2",
+              "status": 1,
+              "inputData": {
+                "key": "value"
+              },
+              "inputFileReference": "Guid_3",
+              "outputData": null,
+              "outputFileReference": null,
+              "errors": [],
+              "createdAtUtc": "2024-12-01T00:00:00",
+              "lastUpdatedAtUtc": null
+            },
+            {
+              "jobId": "Guid_4",
+              "jobCategoryName": "job2",
+              "status": 1,
+              "inputData": {
+                "key1": "value1"
+              },
+              "inputFileReference": "Guid_5",
+              "outputData": {
+                "key2": "value2"
+              },
+              "outputFileReference": "Guid_6",
+              "errors": [
+                {
+                  "message": "Test message",
+                  "exception": null,
+                  "errorCode": "error1",
+                  "type": 1
+                },
+                {
+                  "message": "Test message 2",
+                  "exception": null,
+                  "errorCode": "error2",
+                  "type": 1
+                }
+              ],
+              "createdAtUtc": "2024-12-01T00:00:00",
+              "lastUpdatedAtUtc": "2024-12-02T00:00:00"
+            }
+          ],
+          "count": 3
+        }
+      },
+      LogMessages: 
+    },
+    TestCaseId: 2
+  },
+  {
+    Data: {
+      Page: 2,
+      PageSize: 1,
+      JobEntitiesDb: [
+        {
+          RecId: 1,
+          JobId: Guid_1,
+          JobCategoryName: job1,
+          Status: Created,
+          InputData: {"key":"value"},
+          CreatedAtUtc: DateTime_1
+        },
+        {
+          RecId: 2,
+          JobId: Guid_2,
+          JobCategoryName: job2,
+          Status: Running,
+          InputData: {"key":"value"},
+          InputFileReference: Guid_3,
+          CreatedAtUtc: DateTime_1
+        },
+        {
+          RecId: 3,
+          JobId: Guid_4,
+          JobCategoryName: job2,
+          Status: Running,
+          InputData: {"key1":"value1"},
+          InputFileReference: Guid_5,
+          OutputData: {"key2":"value2"},
+          OutputFileReference: Guid_6,
+          Errors: [{"message":"Test message","errorCode":"error1","exceptionMessage":"Exception message"},{"message":"Test message 2","errorCode":"error2","exceptionMessage":"Exception message 2"}],
+          CreatedAtUtc: DateTime_1,
+          LastUpdatedAtUtc: DateTime_2
+        }
+      ],
+      StatusCode: OK,
+      Response:
+      {
+        "jobs": {
+          "data": [
+            {
+              "jobId": "Guid_2",
+              "jobCategoryName": "job2",
+              "status": 1,
+              "inputData": {
+                "key": "value"
+              },
+              "inputFileReference": "Guid_3",
+              "outputData": null,
+              "outputFileReference": null,
+              "errors": [],
+              "createdAtUtc": "2024-12-01T00:00:00",
+              "lastUpdatedAtUtc": null
+            }
+          ],
+          "count": 3
+        }
+      },
+      LogMessages: 
+    },
+    TestCaseId: 3
+  },
+  {
+    Data: {
+      Page: 2,
+      PageSize: 2,
+      JobEntitiesDb: [
+        {
+          RecId: 1,
+          JobId: Guid_1,
+          JobCategoryName: job1,
+          Status: Created,
+          InputData: {"key":"value"},
+          CreatedAtUtc: DateTime_1
+        },
+        {
+          RecId: 2,
+          JobId: Guid_2,
+          JobCategoryName: job2,
+          Status: Running,
+          InputData: {"key":"value"},
+          InputFileReference: Guid_3,
+          CreatedAtUtc: DateTime_1
+        },
+        {
+          RecId: 3,
+          JobId: Guid_4,
+          JobCategoryName: job2,
+          Status: Running,
+          InputData: {"key1":"value1"},
+          InputFileReference: Guid_5,
+          OutputData: {"key2":"value2"},
+          OutputFileReference: Guid_6,
+          Errors: [{"message":"Test message","errorCode":"error1","exceptionMessage":"Exception message"},{"message":"Test message 2","errorCode":"error2","exceptionMessage":"Exception message 2"}],
+          CreatedAtUtc: DateTime_1,
+          LastUpdatedAtUtc: DateTime_2
+        },
+        {
+          RecId: 4,
+          JobId: Guid_7,
+          JobCategoryName: job2,
+          Status: Running,
+          InputData: {"key1":"value1"},
+          OutputData: {"key2":"value2"},
+          CreatedAtUtc: DateTime_1,
+          LastUpdatedAtUtc: DateTime_2
+        }
+      ],
+      StatusCode: OK,
+      Response:
+      {
+        "jobs": {
+          "data": [
+            {
+              "jobId": "Guid_4",
+              "jobCategoryName": "job2",
+              "status": 1,
+              "inputData": {
+                "key1": "value1"
+              },
+              "inputFileReference": "Guid_5",
+              "outputData": {
+                "key2": "value2"
+              },
+              "outputFileReference": "Guid_6",
+              "errors": [
+                {
+                  "message": "Test message",
+                  "exception": null,
+                  "errorCode": "error1",
+                  "type": 1
+                },
+                {
+                  "message": "Test message 2",
+                  "exception": null,
+                  "errorCode": "error2",
+                  "type": 1
+                }
+              ],
+              "createdAtUtc": "2024-12-01T00:00:00",
+              "lastUpdatedAtUtc": "2024-12-02T00:00:00"
+            },
+            {
+              "jobId": "Guid_7",
+              "jobCategoryName": "job2",
+              "status": 1,
+              "inputData": {
+                "key1": "value1"
+              },
+              "inputFileReference": null,
+              "outputData": {
+                "key2": "value2"
+              },
+              "outputFileReference": null,
+              "errors": [],
+              "createdAtUtc": "2024-12-01T00:00:00",
+              "lastUpdatedAtUtc": "2024-12-02T00:00:00"
+            }
+          ],
+          "count": 4
+        }
+      },
+      LogMessages: 
+    },
+    TestCaseId: 4
+  }
+]

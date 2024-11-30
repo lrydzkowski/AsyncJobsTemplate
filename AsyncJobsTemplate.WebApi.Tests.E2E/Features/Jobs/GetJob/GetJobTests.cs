@@ -32,12 +32,11 @@ public class GetJobTests
     public async Task GetJob_ShouldReturnCorrectAnswer()
     {
         List<TestResultWithData<GetJobTestResult>>? results = [];
-
-        foreach (TestCaseData testCaseData in GetJobTestCases.Get())
+        foreach (TestCaseData testCaseData in TestCasesGenerator.Get())
         {
             await using TestContextScope contextScope = new(_webApiFactory, _logMessages);
 
-            HttpClient client = _webApiFactory.CreateClient();
+            HttpClient client = (await _webApiFactory.BuildAsync(contextScope, testCaseData)).CreateClient();
             (HttpResponseMessage responseMessage, string response) = await SendRequestAsync(client, testCaseData.JobId);
             TestResultWithData<GetJobTestResult> result = await BuildTestResultAsync(
                 testCaseData,
