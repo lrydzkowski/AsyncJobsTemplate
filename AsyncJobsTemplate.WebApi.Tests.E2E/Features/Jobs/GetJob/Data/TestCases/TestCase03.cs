@@ -3,28 +3,14 @@ using AsyncJobsTemplate.Core.Jobs;
 using AsyncJobsTemplate.Infrastructure.Db.Entities;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Common.TestCases;
 
-namespace AsyncJobsTemplate.WebApi.Tests.E2E.Features.Jobs.GetJob.Data;
+namespace AsyncJobsTemplate.WebApi.Tests.E2E.Features.Jobs.GetJob.Data.TestCases;
 
-internal static class GetJobTestCases
+internal static class TestCase03
 {
-    public static IEnumerable<TestCaseData> Get()
+    public static TestCaseData Get()
     {
-        // Incorrect GUID as JobId
-        yield return new TestCaseData
-        {
-            TestCaseId = 1,
-            JobId = "30d49143-3fee-4a5d-a150-1e18acb5f57d1"
-        };
-
-        // Job doesn't exist
-        yield return new TestCaseData
-        {
-            TestCaseId = 2,
-            JobId = "17ba1bd4-2569-46be-a692-9c2dedfcfedc"
-        };
-
         // Job exists
-        yield return new TestCaseData
+        return new TestCaseData
         {
             TestCaseId = 3,
             JobId = "30d49143-3fee-4a5d-a150-1e18acb5f57d",
@@ -41,8 +27,8 @@ internal static class GetJobTestCases
                             Status = JobStatus.Created.ToString(),
                             InputData = "{\"key\":\"value\"}",
                             InputFileReference = null,
-                            OutputData = null,
-                            OutputFileReference = null,
+                            OutputData = "{\"key1\":\"value1\"}",
+                            OutputFileReference = "21BFDDB3-70E4-40CF-948B-355E071F4F47",
                             Errors = null,
                             CreatedAtUtc = new DateTime(2024, 12, 1),
                             LastUpdatedAtUtc = null

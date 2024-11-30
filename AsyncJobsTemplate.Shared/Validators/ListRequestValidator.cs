@@ -9,12 +9,13 @@ public class ListRequestValidator : AbstractValidator<ListRequest>
     {
         RuleFor(request => request)?.NotNull();
         RuleFor(request => request.Page)
-            ?.GreaterThanOrEqualTo(1)
-            ?.When(request => request != null)
-            ?.WithName(nameof(ListRequest.Page));
+            .GreaterThanOrEqualTo(1)
+            .When(request => request != null)
+            .WithName(nameof(ListRequest.Page));
         RuleFor(request => request.PageSize)
-            ?.LessThanOrEqualTo(200)
-            ?.When(request => request != null)
-            ?.WithName(nameof(ListRequest.PageSize));
+            .GreaterThanOrEqualTo(1)
+            .LessThanOrEqualTo(200)
+            .When(request => request != null)
+            .WithName(nameof(ListRequest.PageSize));
     }
 }
