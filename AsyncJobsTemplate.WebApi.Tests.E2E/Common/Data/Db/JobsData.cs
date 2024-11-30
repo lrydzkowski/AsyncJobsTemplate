@@ -52,8 +52,18 @@ internal static class JobsData
             InputData = serializedInputData,
             CreatedAtUtc = DateTime.UtcNow
         };
-        ;
+        await CreateJobAsync(scope, jobEntity);
+    }
+
+    public static async Task CreateJobAsync(TestContextScope scope, JobEntity jobEntity)
+    {
         scope.Db.Context.Jobs.Add(jobEntity);
+        await scope.Db.Context.SaveChangesAsync();
+    }
+
+    public static async Task CreateJobAsync(TestContextScope scope, List<JobEntity> jobEntities)
+    {
+        scope.Db.Context.Jobs.AddRange(jobEntities);
         await scope.Db.Context.SaveChangesAsync();
     }
 }
