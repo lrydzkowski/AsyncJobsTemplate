@@ -42,11 +42,6 @@ internal static class EndpointHelpers
             .Any(x => x.Policy?.Equals(policyName, StringComparison.InvariantCultureIgnoreCase) == true);
     }
 
-    // private static bool IsFallbackEndpoint(RouteEndpoint endpoint)
-    // {
-    //     return endpoint.DisplayName?.StartsWith("Fallback") == true;
-    // }
-
     private static IEnumerable<EndpointInfo> MapToEndpointsInfo(RouteEndpoint endpoint)
     {
         List<EndpointInfo> endpointsInfo = [];
