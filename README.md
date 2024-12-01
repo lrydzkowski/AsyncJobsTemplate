@@ -83,4 +83,4 @@ Project with tests: `AsyncJobsTemplate.WebApi.Tests.E2E`.
 - [ ] Add correlation between jobs and users.
 - [ ] Add load tests in Grafana K6.
 - [ ] Migrate to .NET 9.
-- [ ] Add ingetration with Application Insights.
+- [ ] Add integration with Application Insights.
