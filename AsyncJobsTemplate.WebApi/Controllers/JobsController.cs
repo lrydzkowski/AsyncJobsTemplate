@@ -156,7 +156,7 @@ public class JobsController : ControllerBase
         );
         if (result.File?.Content is null)
         {
-            return NotFound();
+            return NotFound(null);
         }
 
         return File(result.File.Content, result.File.ContentType, result.File.FileName);

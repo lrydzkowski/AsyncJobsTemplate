@@ -1,0 +1,33 @@
+﻿[
+  {
+    Data: {
+      JobId: Guid_1,
+      StatusCode: NotFound,
+      Response: ,
+      LogMessages: 
+    },
+    TestCaseId: 1
+  },
+  {
+    Data: {
+      JobId: 21CB9FB1-8FE9-45B9-89CB-45BAAF90CF5E1,
+      StatusCode: NotFound,
+      Response: ,
+      LogMessages: 
+    },
+    TestCaseId: 2
+  },
+  {
+    Data: {
+      JobId: Guid_2,
+      StatusCode: OK,
+      Response:
+      {
+        "key1": "value1",
+        "key2": "value2"
+      },
+      LogMessages: 
+    },
+    TestCaseId: 3
+  }
+]
