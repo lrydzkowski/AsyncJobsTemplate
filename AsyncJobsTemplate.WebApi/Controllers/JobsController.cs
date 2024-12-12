@@ -35,7 +35,19 @@ public class JobsController : ControllerBase
     [SwaggerResponse(
         StatusCodes.Status200OK,
         "Correct response",
-        typeof(TriggerJobResult),
+        typeof(TriggerJobResponse),
+        MediaTypeNames.Application.Json
+    )]
+    [SwaggerResponse(
+        StatusCodes.Status400BadRequest,
+        "Incorrect request",
+        typeof(TriggerJobResponse),
+        MediaTypeNames.Application.Json
+    )]
+    [SwaggerResponse(
+        StatusCodes.Status500InternalServerError,
+        "Internal error",
+        typeof(TriggerJobResponse),
         MediaTypeNames.Application.Json
     )]
     [HttpPost("{jobCategoryName}")]
@@ -66,7 +78,19 @@ public class JobsController : ControllerBase
     [SwaggerResponse(
         StatusCodes.Status200OK,
         "Correct response",
-        typeof(TriggerJobResult),
+        typeof(TriggerJobResponse),
+        MediaTypeNames.Application.Json
+    )]
+    [SwaggerResponse(
+        StatusCodes.Status400BadRequest,
+        "Incorrect request",
+        typeof(TriggerJobResponse),
+        MediaTypeNames.Application.Json
+    )]
+    [SwaggerResponse(
+        StatusCodes.Status500InternalServerError,
+        "Internal error",
+        typeof(TriggerJobResponse),
         MediaTypeNames.Application.Json
     )]
     [HttpPost("{jobCategoryName}/file")]
@@ -97,6 +121,12 @@ public class JobsController : ControllerBase
     [SwaggerResponse(
         StatusCodes.Status200OK,
         "Correct response",
+        typeof(GetJobResult),
+        MediaTypeNames.Application.Json
+    )]
+    [SwaggerResponse(
+        StatusCodes.Status404NotFound,
+        "Job doesn't exist",
         typeof(GetJobResult),
         MediaTypeNames.Application.Json
     )]
@@ -142,6 +172,10 @@ public class JobsController : ControllerBase
 
     [SwaggerOperation(Summary = "Download a job file")]
     [SwaggerResponse(StatusCodes.Status200OK)]
+    [SwaggerResponse(
+        StatusCodes.Status404NotFound,
+        "Job file doesn't exist"
+    )]
     [HttpGet("{jobId}/file")]
     public async Task<IActionResult> DownloadJobFile(string jobId)
     {
