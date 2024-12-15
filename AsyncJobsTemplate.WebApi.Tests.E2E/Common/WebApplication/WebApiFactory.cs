@@ -117,7 +117,7 @@ public class WebApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
         configBuilder.AddInMemoryCollection(
             new Dictionary<string, string?>
             {
-                [$"{AzureSqlOptions.Position}:{nameof(AzureSqlOptions.ConnectionString)}"] =
+                [$"{SqlServerOptions.Position}:{nameof(SqlServerOptions.ConnectionString)}"] =
                     DbContainer.GetConnectionString()
             }
         );

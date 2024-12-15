@@ -20,7 +20,7 @@ internal class AppDbContextFactory : IDesignTimeDbContextFactory<AppDbContext>
         DbContextOptionsBuilder<AppDbContext> builder = new();
         string? sqlServerConnectionString = GetConnectionString(
             secretProvider,
-            nameof(AzureSqlOptions.ConnectionString)
+            nameof(SqlServerOptions.ConnectionString)
         );
         if (IsConnectionStringCorrect(sqlServerConnectionString))
         {
@@ -36,7 +36,7 @@ internal class AppDbContextFactory : IDesignTimeDbContextFactory<AppDbContext>
 
     private string? GetConnectionString(IConfigurationProvider secretProvider, string optionName)
     {
-        secretProvider.TryGet($"{AzureSqlOptions.Position}:{optionName}", out string? connectionString);
+        secretProvider.TryGet($"{SqlServerOptions.Position}:{optionName}", out string? connectionString);
 
         return connectionString;
     }

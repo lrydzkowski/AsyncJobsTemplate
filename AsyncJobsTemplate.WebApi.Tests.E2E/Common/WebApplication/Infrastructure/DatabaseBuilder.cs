@@ -19,7 +19,7 @@ internal static class DatabaseBuilder
         return webApiFactory.WithCustomOptions(
             new Dictionary<string, string?>
             {
-                [$"{AzureSqlOptions.Position}:{nameof(AzureSqlOptions.ConnectionString)}"] =
+                [$"{SqlServerOptions.Position}:{nameof(SqlServerOptions.ConnectionString)}"] =
                     ReplacePassword(currentConnectionString, "123")
             }
         );

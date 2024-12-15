@@ -1,33 +1,10 @@
-﻿using AsyncJobsTemplate.Core;
-using AsyncJobsTemplate.Core.Commands.TriggerJob.Interfaces;
-using AsyncJobsTemplate.Core.Jobs.Job3.Services;
-using AsyncJobsTemplate.Infrastructure.Azure.Authentication;
-using AsyncJobsTemplate.Infrastructure.Azure.Options;
-using AsyncJobsTemplate.Infrastructure.Azure.ServiceBus;
-using AsyncJobsTemplate.Infrastructure.Azure.StorageAccount;
+﻿using AsyncJobsTemplate.Infrastructure.Azure;
 using AsyncJobsTemplate.Infrastructure.Db;
-using AsyncJobsTemplate.Infrastructure.Db.Mappers;
-using AsyncJobsTemplate.Infrastructure.Db.Options;
-using AsyncJobsTemplate.Infrastructure.Db.Repositories;
 using AsyncJobsTemplate.Infrastructure.JsonPlaceholderApi;
-using AsyncJobsTemplate.Infrastructure.JsonPlaceholderApi.Options;
-using AsyncJobsTemplate.Infrastructure.JsonPlaceholderApi.Services;
-using Azure.Core;
-using Azure.Storage.Blobs;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using Microsoft.Identity.Web;
-using IJobsRepositoryGetJob = AsyncJobsTemplate.Core.Queries.GetJob.Interfaces.IJobsRepository;
-using IJobsRepositoryGetJobs = AsyncJobsTemplate.Core.Queries.GetJobs.Interfaces.IJobsRepository;
-using IJobsRepositoryRunJob = AsyncJobsTemplate.Core.Commands.RunJob.Interfaces.IJobsRepository;
-using IJobsRepositoryTriggerJob = AsyncJobsTemplate.Core.Commands.TriggerJob.Interfaces.IJobsRepository;
-using IJobsFileStorageRunJob = AsyncJobsTemplate.Core.Commands.RunJob.Interfaces.IJobsFileStorage;
-using IJobsFileStorageTriggerJob = AsyncJobsTemplate.Core.Commands.TriggerJob.Interfaces.IJobsFileStorage;
-using IJobsFileStorageDownloadJobFile = AsyncJobsTemplate.Core.Queries.DownloadJobFile.Interfaces.IJobsFileStorage;
 
 namespace AsyncJobsTemplate.Infrastructure;
 
@@ -38,83 +15,10 @@ public static class ServiceCollectionExtensions
         IConfiguration configuration
     )
     {
-        return services.AddServices()
-            .AddOptions(configuration)
-            .AddAzureBlobServiceClient()
-            .AddAppDbContext()
-            .AddAuthentication(configuration)
-            .AddJsonPlaceholderApi();
-    }
-
-    private static IServiceCollection AddServices(this IServiceCollection services)
-    {
-        return services.AddScoped<IJobsRepositoryTriggerJob, JobsRepository>()
-            .AddScoped<IJobsRepositoryRunJob, JobsRepository>()
-            .AddScoped<IJobsRepositoryGetJob, JobsRepository>()
-            .AddScoped<IJobsRepositoryGetJobs, JobsRepository>()
-            .AddScoped<IJobsQueue, JobsQueue>()
-            .AddScoped<IJobsFileStorageRunJob, JobsFileStorage>()
-            .AddScoped<IJobsFileStorageTriggerJob, JobsFileStorage>()
-            .AddScoped<IJobsFileStorageDownloadJobFile, JobsFileStorage>()
-            .AddSingleton<IAccessTokenProvider, AccessTokenProvider>()
-            .AddScoped<IJobMapper, JobMapper>()
-            .AddScoped<ITodoClient, TodoClient>()
-            .AddScoped<ITodoRepository, TodoRepository>();
-    }
-
-    private static IServiceCollection AddOptions(this IServiceCollection services, IConfiguration configuration)
-    {
-        return services.AddOptionsType<AzureStorageAccountOptions>(configuration, AzureStorageAccountOptions.Position)
-            .AddOptionsType<AzureAdOptions>(configuration, AzureAdOptions.Position)
-            .AddOptionsType<AzureSqlOptions>(configuration, AzureSqlOptions.Position)
-            .AddOptionsType<AzureServiceBusOptions>(configuration, AzureServiceBusOptions.Position)
-            .AddOptionsType<JsonPlaceholderOptions>(configuration, JsonPlaceholderOptions.Position);
-    }
-
-    private static IServiceCollection AddAzureBlobServiceClient(this IServiceCollection services)
-    {
-        services.AddAzureClients(
-            azureClientFactoryBuilder =>
-            {
-                azureClientFactoryBuilder.AddClient<BlobServiceClient, BlobClientOptions>(
-                    (_, serviceProvider) =>
-                    {
-                        AzureStorageAccountOptions options = serviceProvider
-                            .GetRequiredService<IOptions<AzureStorageAccountOptions>>()
-                            .Value;
-                        if (!string.IsNullOrWhiteSpace(options.ConnectionString))
-                        {
-                            return new BlobServiceClient(options.ConnectionString);
-                        }
-
-                        Uri blobUri = new($"https://{options.Name}.blob.core.windows.net");
-
-                        IConfiguration configuration = serviceProvider.GetRequiredService<IConfiguration>();
-                        TokenCredential? tokenCredential = TokenCredentialProvider.Provide(configuration);
-                        if (tokenCredential is null)
-                        {
-                            throw new InvalidOperationException("TokenCredential is not provided");
-                        }
-
-                        return new BlobServiceClient(blobUri, tokenCredential);
-                    }
-                );
-            }
-        );
-
-        return services;
-    }
-
-    private static IServiceCollection AddAppDbContext(this IServiceCollection services)
-    {
-        return services.AddDbContext<AppDbContext>(
-            (serviceProvider, options) =>
-            {
-                AzureSqlOptions azureSqlOptions =
-                    serviceProvider.GetRequiredService<IOptions<AzureSqlOptions>>().Value;
-                options.UseSqlServer(azureSqlOptions.ConnectionString);
-            }
-        );
+        return services.AddAzureServices(configuration)
+            .AddDbServices(configuration)
+            .AddJsonPlaceholderApiServices(configuration)
+            .AddAuthentication(configuration);
     }
 
     private static IServiceCollection AddAuthentication(this IServiceCollection services, IConfiguration configuration)
@@ -123,10 +27,5 @@ public static class ServiceCollectionExtensions
             .AddMicrosoftIdentityWebApi(configuration);
 
         return services;
-    }
-
-    private static IServiceCollection AddJsonPlaceholderApi(this IServiceCollection services)
-    {
-        return services.AddJsonPlaceholderApiHttpClient();
     }
 }
