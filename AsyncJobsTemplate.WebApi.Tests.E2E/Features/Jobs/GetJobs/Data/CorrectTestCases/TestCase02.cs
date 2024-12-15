@@ -1,5 +1,6 @@
 using AsyncJobsTemplate.Core.Common.Models;
-using AsyncJobsTemplate.Core.Jobs;
+using AsyncJobsTemplate.Core.Jobs.Job1;
+using AsyncJobsTemplate.Core.Jobs.Job2;
 using AsyncJobsTemplate.Infrastructure.Db.Entities;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Common.TestCases;
 

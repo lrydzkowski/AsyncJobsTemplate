@@ -82,5 +82,7 @@ Project with tests: `AsyncJobsTemplate.WebApi.Tests.E2E`.
 - [ ] Add frontend tests in Playwright.
 - [ ] Add correlation between jobs and users.
 - [ ] Add load tests in Grafana K6.
-- [ ] Migrate to .NET 9.
+- [x] Migrate to .NET 9.
 - [ ] Add integration with Application Insights.
+- [ ] Add example of using an external API.
+- [ ] Add health check.

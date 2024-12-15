@@ -1,5 +1,6 @@
 ﻿using AsyncJobsTemplate.Core;
 using AsyncJobsTemplate.Core.Commands.TriggerJob.Interfaces;
+using AsyncJobsTemplate.Core.Jobs.Job3.Services;
 using AsyncJobsTemplate.Infrastructure.Azure.Authentication;
 using AsyncJobsTemplate.Infrastructure.Azure.Options;
 using AsyncJobsTemplate.Infrastructure.Azure.ServiceBus;
@@ -8,6 +9,9 @@ using AsyncJobsTemplate.Infrastructure.Db;
 using AsyncJobsTemplate.Infrastructure.Db.Mappers;
 using AsyncJobsTemplate.Infrastructure.Db.Options;
 using AsyncJobsTemplate.Infrastructure.Db.Repositories;
+using AsyncJobsTemplate.Infrastructure.JsonPlaceholderApi;
+using AsyncJobsTemplate.Infrastructure.JsonPlaceholderApi.Options;
+using AsyncJobsTemplate.Infrastructure.JsonPlaceholderApi.Services;
 using Azure.Core;
 using Azure.Storage.Blobs;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -38,7 +42,8 @@ public static class ServiceCollectionExtensions
             .AddOptions(configuration)
             .AddAzureBlobServiceClient()
             .AddAppDbContext()
-            .AddAuthentication(configuration);
+            .AddAuthentication(configuration)
+            .AddJsonPlaceholderApi();
     }
 
     private static IServiceCollection AddServices(this IServiceCollection services)
@@ -52,7 +57,9 @@ public static class ServiceCollectionExtensions
             .AddScoped<IJobsFileStorageTriggerJob, JobsFileStorage>()
             .AddScoped<IJobsFileStorageDownloadJobFile, JobsFileStorage>()
             .AddSingleton<IAccessTokenProvider, AccessTokenProvider>()
-            .AddScoped<IJobMapper, JobMapper>();
+            .AddScoped<IJobMapper, JobMapper>()
+            .AddScoped<ITodoClient, TodoClient>()
+            .AddScoped<ITodoRepository, TodoRepository>();
     }
 
     private static IServiceCollection AddOptions(this IServiceCollection services, IConfiguration configuration)
@@ -60,7 +67,8 @@ public static class ServiceCollectionExtensions
         return services.AddOptionsType<AzureStorageAccountOptions>(configuration, AzureStorageAccountOptions.Position)
             .AddOptionsType<AzureAdOptions>(configuration, AzureAdOptions.Position)
             .AddOptionsType<AzureSqlOptions>(configuration, AzureSqlOptions.Position)
-            .AddOptionsType<AzureServiceBusOptions>(configuration, AzureServiceBusOptions.Position);
+            .AddOptionsType<AzureServiceBusOptions>(configuration, AzureServiceBusOptions.Position)
+            .AddOptionsType<JsonPlaceholderOptions>(configuration, JsonPlaceholderOptions.Position);
     }
 
     private static IServiceCollection AddAzureBlobServiceClient(this IServiceCollection services)
@@ -115,5 +123,10 @@ public static class ServiceCollectionExtensions
             .AddMicrosoftIdentityWebApi(configuration);
 
         return services;
+    }
+
+    private static IServiceCollection AddJsonPlaceholderApi(this IServiceCollection services)
+    {
+        return services.AddJsonPlaceholderApiHttpClient();
     }
 }

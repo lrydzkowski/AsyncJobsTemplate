@@ -1,5 +1,8 @@
 ﻿using AsyncJobsTemplate.Core.Common.Options;
 using AsyncJobsTemplate.Core.Jobs;
+using AsyncJobsTemplate.Core.Jobs.Job1;
+using AsyncJobsTemplate.Core.Jobs.Job2;
+using AsyncJobsTemplate.Core.Jobs.Job3;
 using AsyncJobsTemplate.Shared.Services;
 using FluentValidation;
 using Microsoft.Extensions.Configuration;
@@ -35,7 +38,8 @@ public static class ServiceCollectionExtensions
     private static IServiceCollection AddJobs(this IServiceCollection services)
     {
         return services.AddKeyedScoped<IJobHandler, Job1Handler>(Job1Handler.Name)
-            .AddKeyedScoped<IJobHandler, Job2Handler>(Job2Handler.Name);
+            .AddKeyedScoped<IJobHandler, Job2Handler>(Job2Handler.Name)
+            .AddKeyedScoped<IJobHandler, Job3Handler>(Job3Handler.Name);
     }
 
     private static IServiceCollection ConfigureFluentValidation(this IServiceCollection services)
