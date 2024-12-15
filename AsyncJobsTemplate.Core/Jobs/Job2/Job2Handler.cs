@@ -6,7 +6,7 @@ using AsyncJobsTemplate.Shared.Services;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace AsyncJobsTemplate.Core.Jobs;
+namespace AsyncJobsTemplate.Core.Jobs.Job2;
 
 internal class Job2Handler : IJobHandler
 {

@@ -3,7 +3,7 @@ using AsyncJobsTemplate.Core.Common.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace AsyncJobsTemplate.Core.Jobs;
+namespace AsyncJobsTemplate.Core.Jobs.Job1;
 
 internal class Job1Handler : IJobHandler
 {

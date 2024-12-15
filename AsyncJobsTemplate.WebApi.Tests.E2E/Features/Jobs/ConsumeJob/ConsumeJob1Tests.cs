@@ -1,4 +1,4 @@
-using AsyncJobsTemplate.Core.Jobs;
+using AsyncJobsTemplate.Core.Jobs.Job1;
 using AsyncJobsTemplate.Infrastructure.Azure.ServiceBus;
 using AsyncJobsTemplate.Infrastructure.Db.Entities;
 using AsyncJobsTemplate.WebApi.Consumers;
