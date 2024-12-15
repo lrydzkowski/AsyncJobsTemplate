@@ -49,6 +49,38 @@
     </None>
     <None Remove="Features\Jobs\TriggerJob\Assets\test_payload.csv" />
     <EmbeddedResource Include="Features\Jobs\TriggerJob\Assets\test_payload.csv" />
+    <None Update="Features\Jobs\ConsumeJob\Job1\ConsumeJob1Tests.ConsumeJob1Message_ShouldBeSuccessful_WhenCorrectData.verified.txt">
+      <ParentFile>ConsumeJob1Tests</ParentFile>
+      <DependentUpon>ConsumeJob1Tests.cs</DependentUpon>
+    </None>
+    <None Update="Features\Jobs\ConsumeJob\Job1\ConsumeJob1Tests.ConsumeJob1Message_ShouldBeUnsuccessful_WhenJobNotExist.verified.txt">
+      <ParentFile>ConsumeJob1Tests</ParentFile>
+      <DependentUpon>ConsumeJob1Tests.cs</DependentUpon>
+    </None>
+    <None Update="Features\Jobs\ConsumeJob\Job1\ConsumeJob1Tests.ConsumeJob1Message_ShouldBeUnsuccessful_WhenJobNotRegistered.verified.txt">
+      <ParentFile>ConsumeJob1Tests</ParentFile>
+      <DependentUpon>ConsumeJob1Tests.cs</DependentUpon>
+    </None>
+    <None Update="Features\Jobs\ConsumeJob\Job1\ConsumeJob1Tests.ConsumeJob1Message_ShouldBeUnsuccessful_WhenNoAccessToDatabase.verified.txt">
+      <ParentFile>ConsumeJob1Tests</ParentFile>
+      <DependentUpon>ConsumeJob1Tests.cs</DependentUpon>
+    </None>
+    <None Update="Features\Jobs\ConsumeJob\Job2\ConsumeJob2Tests.ConsumeJob1Message_ShouldBeUnsuccessful_WhenSavingOutputFileNotWork.received.txt">
+      <ParentFile>ConsumeJob2Tests</ParentFile>
+      <DependentUpon>ConsumeJob2Tests.cs</DependentUpon>
+    </None>
+    <None Update="Features\Jobs\ConsumeJob\Job2\ConsumeJob2Tests.ConsumeJob1Message_ShouldBeUnsuccessful_WhenSavingOutputFileNotWork.verified.txt">
+      <ParentFile>ConsumeJob2Tests</ParentFile>
+      <DependentUpon>ConsumeJob2Tests.cs</DependentUpon>
+    </None>
+    <None Update="Features\Jobs\ConsumeJob\Job2\ConsumeJob2Tests.ConsumeJob2Message_ShouldBeSuccessful_WhenCorrectData.verified.txt">
+      <ParentFile>ConsumeJob2Tests</ParentFile>
+      <DependentUpon>ConsumeJob2Tests.cs</DependentUpon>
+    </None>
+    <None Update="Features\Jobs\ConsumeJob\Job2\ConsumeJob2Tests.ConsumeJob2Message_ShouldBeUnsuccessful_WhenSavingOutputFileNotWork.verified.txt">
+      <ParentFile>ConsumeJob2Tests</ParentFile>
+      <DependentUpon>ConsumeJob2Tests.cs</DependentUpon>
+    </None>
   </ItemGroup>
 
 </Project>

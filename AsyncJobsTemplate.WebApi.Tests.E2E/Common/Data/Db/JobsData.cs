@@ -43,6 +43,17 @@ internal static class JobsData
             Key3 = true,
             Key4 = new { Key5 = "Value1", Key6 = DateTime.UtcNow }
         };
+        await CreateJobAsync(scope, jobId, categoryName, inputData, status);
+    }
+
+    public static async Task CreateJobAsync(
+        TestContextScope scope,
+        Guid jobId,
+        string categoryName,
+        object inputData,
+        string status = "Created"
+    )
+    {
         string serializedInputData = JsonSerializer.Serialize(inputData, Serializer.Options);
         JobEntity jobEntity = new()
         {

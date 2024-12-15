@@ -15,7 +15,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using NSubstitute;
 using Testcontainers.MsSql;
 
-namespace AsyncJobsTemplate.WebApi.Tests.E2E.Features.Jobs.ConsumeJob;
+namespace AsyncJobsTemplate.WebApi.Tests.E2E.Features.Jobs.ConsumeJob.Job1;
 
 [Collection(MainTestsCollection.CollectionName)]
 [Trait(TestConstants.Category, MainTestsCollection.CollectionName)]
