@@ -1,4 +1,3 @@
-using AsyncJobsTemplate.Core.Jobs.Job3;
 using AsyncJobsTemplate.Infrastructure.Azure.ServiceBus;
 using AsyncJobsTemplate.Infrastructure.Db.Entities;
 using AsyncJobsTemplate.Infrastructure.JsonPlaceholderApi.Dtos;
@@ -12,10 +11,13 @@ using AsyncJobsTemplate.WebApi.Tests.E2E.Common.Models;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Common.TestCollections;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Common.WebApplication;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Common.WebApplication.Infrastructure;
+using AsyncJobsTemplate.WebApi.Tests.E2E.Features.Jobs.ConsumeJob.Job3.Data;
 using MassTransit;
 using Microsoft.AspNetCore.Mvc.Testing;
 using NSubstitute;
 using WireMock.Server;
+using CorrectTestCasesGenerator =
+    AsyncJobsTemplate.WebApi.Tests.E2E.Features.Jobs.ConsumeJob.Job3.Data.CorrectTestCases.TestCasesGenerator;
 
 namespace AsyncJobsTemplate.WebApi.Tests.E2E.Features.Jobs.ConsumeJob.Job3;
 
@@ -39,28 +41,36 @@ public class ConsumeJob3Tests
     [Fact]
     public async Task ConsumeJob3Message_ShouldBeSuccessful_WhenCorrectData()
     {
-        Guid jobId = Guid.NewGuid();
-        string categoryName = Job3Handler.Name;
-        GetTodoResponseDto getTodoResponseDto = new()
+        List<TestResultWithData<ConsumeJob3MessageTestResult>> results = [];
+        WebApplicationFactory<Program> webApiFactory = _webApiFactory;
+        foreach (TestCaseData testCaseData in CorrectTestCasesGenerator.Get())
         {
-            Id = 1,
-            UserId = 2,
-            Title = "title2",
-            Completed = true
-        };
+            webApiFactory = MockData(testCaseData, webApiFactory);
+            await using TestContextScope contextScope = new(webApiFactory, _logMessages);
+            await JobsData.CreateJobAsync(contextScope, testCaseData.JobId, testCaseData.CategoryName, new object());
 
-        WebApplicationFactory<Program> webApiFactory = _webApiFactory.MockGetTodo(
-            _wireMockServer,
-            1,
-            getTodoResponseDto
-        );
-        await using TestContextScope contextScope = new(webApiFactory, _logMessages);
-        await JobsData.CreateJobAsync(contextScope, jobId, categoryName, new object());
+            await RunTestAsync(contextScope, testCaseData.JobId);
+            results.Add(await BuildTestResultAsync(contextScope));
+        }
 
-        await RunTestAsync(contextScope, jobId);
-        TestResultWithData<ConsumeJob3MessageTestResult> result = await BuildTestResultAsync(contextScope);
+        await Verify(results, _verifySettings);
+    }
 
-        await Verify(result, _verifySettings);
+    private WebApplicationFactory<Program> MockData(
+        TestCaseData testCaseData,
+        WebApplicationFactory<Program> webApiFactory
+    )
+    {
+        foreach (KeyValuePair<int, GetTodoResponseDto> todoResponse in testCaseData.Data.JsonPlaceholderApi.TodoData)
+        {
+            webApiFactory = _webApiFactory.MockGetTodo(
+                _wireMockServer,
+                todoResponse.Key,
+                todoResponse.Value
+            );
+        }
+
+        return webApiFactory;
     }
 
     private static async Task RunTestAsync(TestContextScope contextScope, Guid jobId)
