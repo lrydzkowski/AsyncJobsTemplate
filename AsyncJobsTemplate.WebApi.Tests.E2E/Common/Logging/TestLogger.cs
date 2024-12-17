@@ -3,6 +3,7 @@ using AsyncJobsTemplate.Core.Commands.RunJob;
 using AsyncJobsTemplate.Core.Commands.TriggerJob;
 using AsyncJobsTemplate.Core.Jobs.Job1;
 using AsyncJobsTemplate.Core.Jobs.Job2;
+using AsyncJobsTemplate.Core.Jobs.Job3;
 using AsyncJobsTemplate.Core.Queries.GetJob;
 using Microsoft.Extensions.Logging;
 
@@ -16,6 +17,7 @@ internal class TestLogger : ILogger
         typeof(RunJobCommandHandler).FullName!,
         typeof(Job1Handler).FullName!,
         typeof(Job2Handler).FullName!,
+        typeof(Job3Handler).FullName!,
         typeof(GetJobQueryHandler).FullName!
     ];
 
