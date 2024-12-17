@@ -1,6 +1,5 @@
 using AsyncJobsTemplate.Infrastructure.Azure.ServiceBus;
 using AsyncJobsTemplate.Infrastructure.Db.Entities;
-using AsyncJobsTemplate.Infrastructure.JsonPlaceholderApi.Dtos;
 using AsyncJobsTemplate.WebApi.Consumers;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Common;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Common.Data;
@@ -61,14 +60,7 @@ public class ConsumeJob3Tests
         WebApplicationFactory<Program> webApiFactory
     )
     {
-        foreach (KeyValuePair<int, GetTodoResponseDto> todoResponse in testCaseData.Data.JsonPlaceholderApi.TodoData)
-        {
-            webApiFactory = _webApiFactory.MockGetTodo(
-                _wireMockServer,
-                todoResponse.Key,
-                todoResponse.Value
-            );
-        }
+        webApiFactory = webApiFactory.MockGetTodo(_wireMockServer, testCaseData);
 
         return webApiFactory;
     }
