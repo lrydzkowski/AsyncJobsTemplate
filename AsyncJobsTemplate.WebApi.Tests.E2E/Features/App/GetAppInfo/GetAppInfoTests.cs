@@ -1,3 +1,4 @@
+using System.Net;
 using AsyncJobsTemplate.Shared.Extensions;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Common;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Common.Data;
@@ -31,28 +32,26 @@ public class GetAppInfoTests
         await using TestContextScope contextScope = new(_webApiFactory, _logMessages);
 
         HttpClient client = _webApiFactory.CreateClient();
-        (HttpResponseMessage responseMessage, string response) = await SendRequestAsync(client);
+        (HttpStatusCode responseStatusCode, string response) = await SendRequestAsync(client);
         TestResultWithData<GetAppInfoTestResult> result = BuildTestResult(
-            contextScope,
-            responseMessage,
+            responseStatusCode,
             response
         );
 
         await Verify(result, _verifySettings);
     }
 
-    private async Task<(HttpResponseMessage responseMessage, string response)> SendRequestAsync(HttpClient client)
+    private async Task<(HttpStatusCode responseStatusCode, string response)> SendRequestAsync(HttpClient client)
     {
-        HttpRequestMessage requestMessage = new(HttpMethod.Get, _endpointUrlPath);
-        HttpResponseMessage responseMessage = await client.SendAsync(requestMessage);
+        using HttpRequestMessage requestMessage = new(HttpMethod.Get, _endpointUrlPath);
+        using HttpResponseMessage responseMessage = await client.SendAsync(requestMessage);
         string response = await responseMessage.GetResponseMessageAsync();
 
-        return (responseMessage, response);
+        return (responseMessage.StatusCode, response);
     }
 
     private TestResultWithData<GetAppInfoTestResult> BuildTestResult(
-        TestContextScope contextScope,
-        HttpResponseMessage responseMessage,
+        HttpStatusCode responseStatusCode,
         string response
     )
     {
@@ -61,7 +60,7 @@ public class GetAppInfoTests
             TestCaseId = 1,
             Data = new GetAppInfoTestResult
             {
-                StatusCode = responseMessage.StatusCode,
+                StatusCode = responseStatusCode,
                 Response = response.PrettifyJson(4),
                 LogMessages = _logMessages.GetSerialized(6)
             }

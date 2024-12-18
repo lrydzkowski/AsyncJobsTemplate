@@ -31,10 +31,10 @@ internal class TodoClient
     )
     {
         string path = _options.TodoPath.Replace("{id}", id.ToString());
-        HttpRequestMessage httpRequestMessage = new(HttpMethod.Get, path);
+        using HttpRequestMessage httpRequestMessage = new(HttpMethod.Get, path);
 
         HttpClient client = _httpClientFactory.CreateClient(nameof(JsonPlaceholderApiHttpClient));
-        HttpResponseMessage responseMessage = await client.SendAsync(httpRequestMessage, cancellationToken);
+        using HttpResponseMessage responseMessage = await client.SendAsync(httpRequestMessage, cancellationToken);
         await responseMessage.ThrowIfNotSuccessAsync();
         GetTodoResponseDto? response = await responseMessage.GetResponseAsync<GetTodoResponseDto?>();
 

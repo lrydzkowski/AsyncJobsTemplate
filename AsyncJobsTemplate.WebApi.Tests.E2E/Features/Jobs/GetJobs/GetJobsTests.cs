@@ -1,3 +1,4 @@
+using System.Net;
 using AsyncJobsTemplate.Infrastructure.Db.Entities;
 using AsyncJobsTemplate.Shared.Extensions;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Common;
@@ -41,11 +42,11 @@ public class GetJobsTests
             await using TestContextScope contextScope = new(_webApiFactory, _logMessages);
 
             HttpClient client = (await _webApiFactory.BuildAsync(contextScope, testCaseData)).CreateClient();
-            (HttpResponseMessage responseMessage, string response) = await SendRequestAsync(client, testCaseData);
+            (HttpStatusCode responseStatusCode, string response) = await SendRequestAsync(client, testCaseData);
             TestResultWithData<GetJobsTestResult> result = await BuildTestResultAsync(
                 testCaseData,
                 contextScope,
-                responseMessage,
+                responseStatusCode,
                 response
             );
 
@@ -64,11 +65,11 @@ public class GetJobsTests
             await using TestContextScope contextScope = new(_webApiFactory, _logMessages);
 
             HttpClient client = (await _webApiFactory.BuildAsync(contextScope, testCaseData)).CreateClient();
-            (HttpResponseMessage responseMessage, string response) = await SendRequestAsync(client, testCaseData);
+            (HttpStatusCode responseStatusCode, string response) = await SendRequestAsync(client, testCaseData);
             TestResultWithData<GetJobsTestResult> result = await BuildTestResultAsync(
                 testCaseData,
                 contextScope,
-                responseMessage,
+                responseStatusCode,
                 response
             );
 
@@ -78,17 +79,18 @@ public class GetJobsTests
         await Verify(results, _verifySettings);
     }
 
-    private async Task<(HttpResponseMessage responseMessage, string response)> SendRequestAsync(
+    private async Task<(HttpStatusCode responseStatusCode, string response)> SendRequestAsync(
         HttpClient client,
         TestCaseData testCaseData
     )
     {
         string url = BuildUrl(testCaseData);
-        HttpRequestMessage requestMessage = new(HttpMethod.Get, url);
-        HttpResponseMessage responseMessage = await client.SendAsync(requestMessage);
+        using HttpRequestMessage requestMessage = new(HttpMethod.Get, url);
+        using HttpResponseMessage responseMessage = await client.SendAsync(requestMessage);
+        HttpStatusCode responseStatusCode = responseMessage.StatusCode;
         string response = await responseMessage.GetResponseMessageAsync();
 
-        return (responseMessage, response);
+        return (responseStatusCode, response);
     }
 
     private string BuildUrl(TestCaseData testCaseData)
@@ -116,7 +118,7 @@ public class GetJobsTests
     private async Task<TestResultWithData<GetJobsTestResult>> BuildTestResultAsync(
         TestCaseData testCaseData,
         TestContextScope contextScope,
-        HttpResponseMessage responseMessage,
+        HttpStatusCode responseStatusCode,
         string response
     )
     {
@@ -128,7 +130,7 @@ public class GetJobsTests
             {
                 Page = testCaseData.Page,
                 PageSize = testCaseData.PageSize,
-                StatusCode = responseMessage.StatusCode,
+                StatusCode = responseStatusCode,
                 Response = response.PrettifyJson(6),
                 JobEntitiesDb = jobEntitiesDb,
                 LogMessages = _logMessages.GetSerialized(6)
