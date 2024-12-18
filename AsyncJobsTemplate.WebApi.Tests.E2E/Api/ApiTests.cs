@@ -34,8 +34,8 @@ public class ApiTests
         {
             _output.WriteLine($"{endpointInfo.HttpMethod} {endpointInfo.Path}");
 
-            HttpRequestMessage requestMessage = new(endpointInfo.HttpMethod, endpointInfo.Path);
-            HttpResponseMessage responseMessage = await _webApiFactory.CreateClient().SendAsync(requestMessage);
+            using HttpRequestMessage requestMessage = new(endpointInfo.HttpMethod, endpointInfo.Path);
+            using HttpResponseMessage responseMessage = await _webApiFactory.CreateClient().SendAsync(requestMessage);
 
             responseMessage.StatusCode.Should()
                 ?.Be(
@@ -54,10 +54,10 @@ public class ApiTests
             _output.WriteLine($"{endpointInfo.HttpMethod} {endpointInfo.Path}");
 
             string accessToken = EmbeddedFile.GetContent("Api/Assets/expired_access_token.txt");
-            HttpRequestMessage requestMessage = new(endpointInfo.HttpMethod, endpointInfo.Path);
+            using HttpRequestMessage requestMessage = new(endpointInfo.HttpMethod, endpointInfo.Path);
             requestMessage.Headers.Add(HeaderNames.Authorization, $"Bearer {accessToken}");
 
-            HttpResponseMessage responseMessage = await _webApiFactory.CreateClient().SendAsync(requestMessage);
+            using HttpResponseMessage responseMessage = await _webApiFactory.CreateClient().SendAsync(requestMessage);
 
             responseMessage.StatusCode.Should()
                 ?.Be(
@@ -76,10 +76,10 @@ public class ApiTests
             _output.WriteLine($"{endpointInfo.HttpMethod} {endpointInfo.Path}");
 
             string accessToken = EmbeddedFile.GetContent("Api/Assets/wrong_signature_access_token.txt");
-            HttpRequestMessage requestMessage = new(endpointInfo.HttpMethod, endpointInfo.Path);
+            using HttpRequestMessage requestMessage = new(endpointInfo.HttpMethod, endpointInfo.Path);
             requestMessage.Headers.Add(HeaderNames.Authorization, $"Bearer {accessToken}");
 
-            HttpResponseMessage responseMessage = await _webApiFactory.CreateClient().SendAsync(requestMessage);
+            using HttpResponseMessage responseMessage = await _webApiFactory.CreateClient().SendAsync(requestMessage);
 
             responseMessage.StatusCode.Should()
                 ?.Be(

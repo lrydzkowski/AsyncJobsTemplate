@@ -1,3 +1,4 @@
+using System.Net;
 using AsyncJobsTemplate.Infrastructure.Db.Entities;
 using AsyncJobsTemplate.Shared.Extensions;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Common;
@@ -38,10 +39,10 @@ public class TriggerJobWithDataTests
         await using TestContextScope contextScope = new(_webApiFactory, _logMessages);
 
         HttpClient client = _webApiFactory.MockJobsQueue().CreateClient();
-        (HttpResponseMessage responseMessage, string response) = await SendRequestAsync(client);
+        (HttpStatusCode responseStatusCode, string response) = await SendRequestAsync(client);
         TestResultWithData<TriggerJobWithDataTestResult> result = await BuildTestResultAsync(
             contextScope,
-            responseMessage,
+            responseStatusCode,
             response
         );
 
@@ -56,23 +57,24 @@ public class TriggerJobWithDataTests
         HttpClient client = _webApiFactory.MakeDbConnectionStringIncorrect(_dbContainer.GetConnectionString())
             .MockJobsQueue()
             .CreateClient();
-        (HttpResponseMessage responseMessage, string response) = await SendRequestAsync(client);
+        (HttpStatusCode responseStatusCode, string response) = await SendRequestAsync(client);
         TestResultWithData<TriggerJobWithDataTestResult> result = await BuildTestResultAsync(
             contextScope,
-            responseMessage,
+            responseStatusCode,
             response
         );
 
         await Verify(result, _verifySettings);
     }
 
-    private async Task<(HttpResponseMessage responseMessage, string response)> SendRequestAsync(HttpClient client)
+    private async Task<(HttpStatusCode responseStatusCode, string response)> SendRequestAsync(HttpClient client)
     {
-        HttpRequestMessage requestMessage = BuildRequestMessage();
-        HttpResponseMessage responseMessage = await client.SendAsync(requestMessage);
+        using HttpRequestMessage requestMessage = BuildRequestMessage();
+        using HttpResponseMessage responseMessage = await client.SendAsync(requestMessage);
+        HttpStatusCode responseStatusCode = responseMessage.StatusCode;
         string response = await responseMessage.GetResponseMessageAsync();
 
-        return (responseMessage, response);
+        return (responseStatusCode, response);
     }
 
     private HttpRequestMessage BuildRequestMessage()
@@ -99,7 +101,7 @@ public class TriggerJobWithDataTests
 
     private async Task<TestResultWithData<TriggerJobWithDataTestResult>> BuildTestResultAsync(
         TestContextScope contextScope,
-        HttpResponseMessage responseMessage,
+        HttpStatusCode responseStatusCode,
         string response
     )
     {
@@ -110,7 +112,7 @@ public class TriggerJobWithDataTests
             TestCaseId = 1,
             Data = new TriggerJobWithDataTestResult
             {
-                StatusCode = responseMessage.StatusCode,
+                StatusCode = responseStatusCode,
                 Response = response.PrettifyJson(4),
                 JobEntitiesDb = jobEntitiesDb,
                 SendMessageCalls = sendMessageCalls,
