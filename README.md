@@ -30,21 +30,78 @@ General steps of the job processing mechanism:
 6. The backend returns the job id to the frontend.
 7. The frontend can verify the job status by sending an HTTP request to the Web API, typically in a loop with a delay between requests.
 8. The backend reads the message with a job id from the Service Bus queue.
-9. The backend updates the job status to 'Running'.
-10. The backend processes the job.
-11. The backend saves an output file in Azure Storage Account (if the job generates a file).
-12. The backend updates the job entity in the SQL Server database with the status set as 'Finished'. The entity contains output job data and / or a reference to the output file (if the job generates a file).
-13. The frontend can receive output data and download the output file.
+9. The backend gets the job entity from the database.
+10. The backend updates the job status to 'Running'.
+11. The backend gets the input file from Azure Storage Account (if the job requires a file).
+12. The backend processes the job.
+13. The backend saves an output file in Azure Storage Account (if the job generates a file).
+14. The backend updates the job entity in the SQL Server database with the status set as 'Finished'. The entity contains output job data and / or a reference to the output file (if the job generates a file).
+15. The frontend can receive output data and download the output file.
 
-Sequence diagram:
+#### Triggering Operation
 
-![Sequence Diagram](docs/sequence-diagram.png)
+```mermaid
+sequenceDiagram
+    actor User
+    participant Frontend
+    participant Backend
+    participant Azure Storage Account
+    participant SQL Server
+    participant Azure Service Bus (queue)
+    User->>Frontend: trigger operation;
+    Frontend->>Backend: send request to trigger operation;
+    Backend->>Backend: generate job id (GUID;
+    Backend->>Azure Storage Account: save input file (if it exists);
+    Azure Storage Account-->>Backend: return file reference;
+    Backend->>SQL Server: create job entity with status 'Created';
+    Backend->>Azure Service Bus (queue): enqueue message with job id;
+    Backend-->>Frontend: return job id;
+    Frontend-->>User: show confirmation;
+```
+
+#### Processing Jobs
+
+```mermaid
+sequenceDiagram
+    participant Backend
+    participant Azure Storage Account
+    participant SQL Server
+    participant Azure Service Bus (queue)
+    Backend->>Azure Service Bus (queue): read message with job id;
+    Azure Service Bus (queue)-->>Backend: return message with job id;
+    Backend->>SQL Server: get job entity with job id;
+    SQL Server-->>Backend: return job entity;
+    Backend->>SQL Server: update job status to 'Running';
+    Backend->>Azure Storage Account: get input file (if it exists);
+    Azure Storage Account-->>Backend: return input file;
+    Backend->>Backend: process job;
+    Backend->>Azure Storage Account: save output file (if it exists);
+    Azure Storage Account-->>Backend: return file reference;
+    Backend->>SQL Server: update job entity with status 'Finished';
+```
+
+#### Getting Job Status
+
+```mermaid
+sequenceDiagram
+    actor User
+    participant Frontend
+    participant Backend
+    participant SQL Server
+    loop every 20 seconds
+    Frontend->>Backend: send request to get job status;
+    Backend->>SQL Server: get job entity;
+    SQL Server-->>Backend: return job entity;
+    Backend-->>Frontend: return job status;
+    end
+    Frontend--)User: show notification (if the job is done);
+```
 
 ## How To Run It Locally
 
 ### Prerequisites
 
-- ASP.NET Core 8
+- ASP.NET Core 9
 - Microsoft Entra ID tenant
 - Azure Storage Account
 - SQL Server 2019 or higher
@@ -56,7 +113,7 @@ In the local environment, it's recommended to use [user secrets](https://learn.m
 
 1. Set up configuration for Microsoft Entra ID (`AzureAd` section).
 2. Set up name for Azure Storage Account (`AzureStorageAccount:Name` section). Authorization to Azure Storage Account is based on the application with client id and client secret defined in `AzureAd` section.
-3. Set up connection string to SQL Server (`AzureSql` section).
+3. Set up connection string to SQL Server (`SqlServer` section).
 4. Set up Azure Service Bus configuration (`AzureServiceBus` section). Authorization to Azure Service Bus is based on the application with client id and client secret defined in `AzureAd` section.
 5. Set up username and password for Swagger UI (`Swagger` section).
 6. Set up queue type to `AzureServiceBus` (`Queue` section).
@@ -84,5 +141,5 @@ Project with tests: `AsyncJobsTemplate.WebApi.Tests.E2E`.
 - [ ] Add load tests in Grafana K6.
 - [x] Migrate to .NET 9.
 - [ ] Add integration with Application Insights.
-- [ ] Add example of using an external API.
+- [x] Add example of using an external API.
 - [ ] Add health check.

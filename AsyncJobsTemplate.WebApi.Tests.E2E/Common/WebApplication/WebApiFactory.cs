@@ -75,7 +75,7 @@ public class WebApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
     {
         DisableLogging(builder);
         DisableUserSecrets(builder);
-        ConfigureHttpPost(builder);
+        ConfigureHttpsPort(builder);
     }
 
     private void DisableLogging(IWebHostBuilder builder)
@@ -105,7 +105,7 @@ public class WebApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
         );
     }
 
-    private static void ConfigureHttpPost(IWebHostBuilder builder)
+    private static void ConfigureHttpsPort(IWebHostBuilder builder)
     {
         builder.ConfigureServices(
             services => { services.PostConfigure<HttpsRedirectionOptions>(options => { options.HttpsPort = 443; }); }
