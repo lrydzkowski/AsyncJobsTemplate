@@ -1,0 +1,23 @@
+{
+  "name": "async-jobs-template-load-tests",
+  "version": "1.0.0",
+  "description": "Load tests in k6",
+  "scripts": {
+    "token-user-1": "api-authenticator generate-token --config-file-path \"./config/ad-config.json\" --env local --output-file-path \"./config/tokens.json\" --output-file-access-token-key \"'user1'.'{env}'.'bearerToken'\" --output-file-refresh-token-key \"'user1'.'{env}'.'refreshToken'\" --output-file-win-new-line-char",
+    "build": "tsc",
+    "test1-k6": "k6 run ./dist/01-average-load-tests.js",
+    "test1": "npm run -s token-user-1 & npm run -s build & npm run -s test1-k6",
+    "lint": "npx eslint ."
+  },
+  "type": "module",
+  "devDependencies": {
+    "@eslint/js": "^9.13.0",
+    "@types/eslint__js": "^8.42.3",
+    "@types/k6": "^0.54.1",
+    "eslint": "^9.13.0",
+    "prettier": "^3.3.3",
+    "tsx": "^4.19.1",
+    "typescript": "^5.6.3",
+    "typescript-eslint": "^8.10.0"
+  }
+}

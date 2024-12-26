@@ -1,0 +1,10 @@
+{
+  "local": {
+    "clientId": "",
+    "scope": "",
+    "authorizationEndpoint": "",
+    "tokenEndpoint": "",
+    "origin": "",
+    "flow": ""
+  }
+}
