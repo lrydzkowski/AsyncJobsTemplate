@@ -27,7 +27,7 @@ internal class TestContextScope : IAsyncDisposable
 
     public StorageAccountContextScope StorageAccount { get; }
 
-    public IJobsQueue JobsQueue { get; set; }
+    public IJobsQueue JobsQueue { get; }
 
     public async ValueTask DisposeAsync()
     {
