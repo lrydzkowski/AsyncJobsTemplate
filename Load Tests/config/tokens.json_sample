@@ -1,0 +1,8 @@
+{
+  "user1": {
+    "local": {
+      "bearerToken": "",
+      "refreshToken": ""
+    }
+  }
+}
