@@ -38,7 +38,7 @@ public class TriggerJobWithDataTests
     {
         await using TestContextScope contextScope = new(_webApiFactory, _logMessages);
 
-        HttpClient client = _webApiFactory.MockJobsQueue().CreateClient();
+        HttpClient client = _webApiFactory.MockJobsQueue(contextScope.JobsQueue).CreateClient();
         (HttpStatusCode responseStatusCode, string response) = await SendRequestAsync(client);
         TestResultWithData<TriggerJobWithDataTestResult> result = await BuildTestResultAsync(
             contextScope,
@@ -55,7 +55,7 @@ public class TriggerJobWithDataTests
         await using TestContextScope contextScope = new(_webApiFactory, _logMessages);
 
         HttpClient client = _webApiFactory.MakeDbConnectionStringIncorrect(_dbContainer.GetConnectionString())
-            .MockJobsQueue()
+            .MockJobsQueue(contextScope.JobsQueue)
             .CreateClient();
         (HttpStatusCode responseStatusCode, string response) = await SendRequestAsync(client);
         TestResultWithData<TriggerJobWithDataTestResult> result = await BuildTestResultAsync(
@@ -106,7 +106,7 @@ public class TriggerJobWithDataTests
     )
     {
         IReadOnlyList<JobEntity> jobEntitiesDb = await JobsData.GetJobsAsync(contextScope);
-        IReadOnlyList<ReceivedMethodCall> sendMessageCalls = QueueBuilder.JobsQueue?.GetReceivedMethodCalls() ?? [];
+        IReadOnlyList<ReceivedMethodCall> sendMessageCalls = contextScope.JobsQueue.GetReceivedMethodCalls() ?? [];
         TestResultWithData<TriggerJobWithDataTestResult> result = new()
         {
             TestCaseId = 1,

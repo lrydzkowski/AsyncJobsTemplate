@@ -45,7 +45,7 @@ public class TriggerJobWithFileTests
     {
         await using TestContextScope contextScope = new(_webApiFactory, _logMessages);
 
-        HttpClient client = _webApiFactory.MockJobsQueue().CreateClient();
+        HttpClient client = _webApiFactory.MockJobsQueue(contextScope.JobsQueue).CreateClient();
         (HttpStatusCode responseStatusCode, string response) = await SendRequestAsync(client);
         TestResultWithData<TriggerJobWithFileTestResult> result = await BuildTestResultAsync(
             contextScope,
@@ -62,7 +62,7 @@ public class TriggerJobWithFileTests
         await using TestContextScope contextScope = new(_webApiFactory, _logMessages);
 
         HttpClient client = _webApiFactory.MakeDbConnectionStringIncorrect(_dbContainer.GetConnectionString())
-            .MockJobsQueue()
+            .MockJobsQueue(contextScope.JobsQueue)
             .CreateClient();
         (HttpStatusCode responseStatusCode, string response) = await SendRequestAsync(client);
         TestResultWithData<TriggerJobWithFileTestResult> result = await BuildTestResultAsync(
@@ -81,7 +81,7 @@ public class TriggerJobWithFileTests
 
         HttpClient client = _webApiFactory
             .MakeStorageAccountConnectionStringIncorrect(_azuriteContainer.GetConnectionString())
-            .MockJobsQueue()
+            .MockJobsQueue(contextScope.JobsQueue)
             .CreateClient();
         (HttpStatusCode responseStatusCode, string response) = await SendRequestAsync(client);
         TestResultWithData<TriggerJobWithFileTestResult> result = await BuildTestResultAsync(
@@ -128,7 +128,7 @@ public class TriggerJobWithFileTests
     {
         IReadOnlyList<JobEntity> jobEntitiesDb = await JobsData.GetJobsAsync(contextScope);
         IReadOnlyList<StorageAccountFile> inputFiles = await FilesData.GetInputFilesAsync(_webApiFactory);
-        IReadOnlyList<ReceivedMethodCall> sendMessageCalls = QueueBuilder.JobsQueue?.GetReceivedMethodCalls() ?? [];
+        IReadOnlyList<ReceivedMethodCall> sendMessageCalls = contextScope.JobsQueue.GetReceivedMethodCalls() ?? [];
         TestResultWithData<TriggerJobWithFileTestResult> result = new()
         {
             TestCaseId = 1,
