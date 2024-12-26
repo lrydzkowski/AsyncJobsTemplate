@@ -31,7 +31,7 @@ export const getJobs = (
   };
   const response = http.get(url, params);
   check(response, {
-    'getSets response has status 200': (r) => r.status === 200,
+    'getJobs response has status 200': (r) => r.status === 200,
   });
   requestTrends.getJobs.add(response.timings.duration);
 };
@@ -46,7 +46,7 @@ export const getJob = (host: string, accessToken: string, jobId: string): void =
   };
   const response = http.get(url, params);
   check(response, {
-    'getSet response has status 200': (r) => r.status === 200,
+    'getJob response has status 200': (r) => r.status === 200,
   });
   requestTrends.getJob.add(response.timings.duration);
 };
