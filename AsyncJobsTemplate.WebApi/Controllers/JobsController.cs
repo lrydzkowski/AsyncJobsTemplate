@@ -130,6 +130,9 @@ public class JobsController : ControllerBase
         typeof(GetJobResult),
         MediaTypeNames.Application.Json
     )]
+    [SwaggerResponse(
+        StatusCodes.Status500InternalServerError
+    )]
     [HttpGet("{jobId}")]
     public async Task<IActionResult> GetJob(string jobId)
     {
