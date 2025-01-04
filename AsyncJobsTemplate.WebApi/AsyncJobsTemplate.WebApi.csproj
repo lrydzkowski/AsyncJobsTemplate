@@ -22,4 +22,9 @@
     <InternalsVisibleTo Include="AsyncJobsTemplate.WebApi.Tests.E2E" />
   </ItemGroup>
 
+  <Target Name="OpenAPI" AfterTargets="Build" Condition="$(Configuration)=='Debug'">
+    <Exec Command="dotnet swagger tofile --output ./OpenApi/async-jobs-template.yaml --yaml $(OutputPath)$(AssemblyName).dll v1" WorkingDirectory="$(ProjectDir)" LogStandardErrorAsError="true" />
+    <Exec Command="npx openapi-typescript@7.4.4 ./OpenApi/async-jobs-template.yaml -o ../Frontend/async-jobs-template-react-front/types/async-jobs-template-api-types.d.ts" WorkingDirectory="$(ProjectDir)" />
+  </Target>
+
 </Project>

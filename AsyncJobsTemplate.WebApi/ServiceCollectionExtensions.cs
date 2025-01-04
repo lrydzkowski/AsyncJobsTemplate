@@ -21,6 +21,7 @@ public static class ServiceCollectionExtensions
         services.AddMassTransit(configuration);
         services.AddOptions(configuration);
         services.AddServices();
+        services.AddCorsDefaultPolicy(configuration);
 
         return services;
     }
@@ -93,5 +94,22 @@ public static class ServiceCollectionExtensions
     private static IServiceCollection AddServices(this IServiceCollection services)
     {
         return services.AddSingleton<ITriggerJobResponseMapper, TriggerJobResponseMapper>();
+    }
+
+    private static IServiceCollection AddCorsDefaultPolicy(
+        this IServiceCollection services,
+        IConfiguration configuration
+    )
+    {
+        return services.AddCors(
+            options =>
+            {
+                string[] allowedOrigins = configuration["AllowedOrigins"]?.Split(";") ?? [];
+
+                options.AddDefaultPolicy(
+                    builder => builder.WithOrigins(allowedOrigins).AllowAnyMethod().AllowAnyHeader().AllowCredentials()
+                );
+            }
+        );
     }
 }
