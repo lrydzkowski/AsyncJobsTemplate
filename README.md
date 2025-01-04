@@ -50,7 +50,7 @@ sequenceDiagram
     participant Azure Service Bus (queue)
     User->>Frontend: trigger operation;
     Frontend->>Backend: send request to trigger operation;
-    Backend->>Backend: generate job id (GUID;
+    Backend->>Backend: generate job id (GUID);
     Backend->>Azure Storage Account: save input file (if it exists);
     Azure Storage Account-->>Backend: return file reference;
     Backend->>SQL Server: create job entity with status 'Created';
