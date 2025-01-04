@@ -1,4 +1,6 @@
-using AsyncJobsTemplate.Infrastructure.JsonPlaceholderApi.Dtos;
+using System.Text.Json;
+using AsyncJobsTemplate.Core.Jobs.Job3;
+using AsyncJobsTemplate.Infrastructure.Db.Entities;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Common.TestCases;
 
 namespace AsyncJobsTemplate.WebApi.Tests.E2E.Features.Jobs.ConsumeJob.Job3.Data.CorrectTestCases;
@@ -7,25 +9,41 @@ internal static class TestCase01
 {
     public static TestCaseData Get()
     {
+        var existingInputData = new
+        {
+            Key1 = "Value1",
+            Key2 = new
+            {
+                Key3 = "Value3",
+                Key4 = 4,
+                Key5 = true,
+                Key6 = new DateTime(2025, 1, 1, 15, 15, 0, DateTimeKind.Utc)
+            }
+        };
+        string existingInputDataSerialized = JsonSerializer.Serialize(
+            existingInputData,
+            new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }
+        );
+
         return new TestCaseData
         {
             TestCaseId = 1,
-            JobId = Guid.NewGuid(),
-            CategoryName = "job3",
+            JobId = new Guid("F5EA43A0-C675-4259-B13E-636DFAE6BBCC"),
             Data = new BaseTestCaseData
             {
-                JsonPlaceholderApi = new JsonPlaceholderApiTestCaseData
+                Db = new DbTestCaseData
                 {
-                    TodoData = new Dictionary<int, GetTodoResponseDto>
-                    {
-                        [1] = new()
+                    Jobs =
+                    [
+                        new JobEntity
                         {
-                            Id = 1,
-                            UserId = 2,
-                            Title = "title2",
-                            Completed = true
+                            JobId = new Guid("F5EA43A0-C675-4259-B13E-636DFAE6BBCC"),
+                            JobCategoryName = Job3Handler.Name,
+                            Status = "Created",
+                            InputData = existingInputDataSerialized,
+                            CreatedAtUtc = new DateTime(2025, 1, 1, 10, 0, 0, DateTimeKind.Utc)
                         }
-                    }
+                    ]
                 }
             }
         };

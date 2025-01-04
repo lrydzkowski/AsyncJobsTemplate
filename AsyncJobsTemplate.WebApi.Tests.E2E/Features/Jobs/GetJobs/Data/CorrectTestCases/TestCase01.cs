@@ -4,6 +4,7 @@ namespace AsyncJobsTemplate.WebApi.Tests.E2E.Features.Jobs.GetJobs.Data.CorrectT
 
 internal static class TestCase01
 {
+    // No jobs
     public static TestCaseData Get()
     {
         return new TestCaseData

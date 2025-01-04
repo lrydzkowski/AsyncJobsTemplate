@@ -1,0 +1,30 @@
+﻿[
+  {
+    JobEntitiesDb: [
+      {
+        RecId: 1,
+        JobId: Guid_1,
+        JobCategoryName: job3,
+        Status: Finished,
+        InputData: {"key1":"Value1","key2":{"key3":"Value3","key4":4,"key5":true,"key6":"2025-01-01T15:15:00Z"}},
+        OutputFileReference: Guid_1,
+        CreatedAtUtc: DateTime_1,
+        LastUpdatedAtUtc: DateTime_2
+      }
+    ],
+    OutputFilesStorageAccount: [
+      {
+        Name: Guid_1,
+        Content: {"userId":1,"id":1,"title":"delectus aut autem","completed":false},
+        Metadata: {
+          FileContentName: application/json,
+          FileOriginalName: todo.json
+        }
+      }
+    ],
+    TestCaseId: 1,
+    LogMessages:
+      Information: Start processing Job3 - JobId = Guid_1
+      Information: Stop processing Job3 - JobId = Guid_1
+  }
+]

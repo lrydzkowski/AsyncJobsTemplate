@@ -1,4 +1,3 @@
-using AsyncJobsTemplate.Core.Jobs.Job2;
 using AsyncJobsTemplate.Infrastructure.Azure.ServiceBus;
 using AsyncJobsTemplate.Infrastructure.Db.Entities;
 using AsyncJobsTemplate.WebApi.Consumers;
@@ -11,6 +10,9 @@ using AsyncJobsTemplate.WebApi.Tests.E2E.Common.Models;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Common.TestCollections;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Common.WebApplication;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Common.WebApplication.Infrastructure;
+using AsyncJobsTemplate.WebApi.Tests.E2E.Features.Jobs.ConsumeJob.Job2.Data;
+using AsyncJobsTemplate.WebApi.Tests.E2E.Features.Jobs.ConsumeJob.Job2.Data.CorrectTestCases;
+using AsyncJobsTemplate.WebApi.Tests.E2E.Features.Jobs.ConsumeJob.Job2.Data.IncorrectTestCases;
 using MassTransit;
 using Microsoft.AspNetCore.Mvc.Testing;
 using NSubstitute;
@@ -36,72 +38,58 @@ public class ConsumeJob2Tests
     }
 
     [Fact]
-    public async Task ConsumeJob2Message_ShouldBeSuccessful_WhenCorrectData()
+    public async Task ConsumeJob2_ShouldBeSuccessful()
     {
-        Guid jobId = Guid.NewGuid();
-        string categoryName = Job2Handler.Name;
+        List<ConsumeJob2MessageTestResult> results = [];
+        foreach (TestCaseData testCase in CorrectTestCasesGenerator.Generate())
+        {
+            results.Add(await RunAsync(testCase));
+        }
 
-        await using TestContextScope contextScope = new(_webApiFactory, _logMessages);
-        await JobsData.CreateJobAsync(contextScope, jobId, categoryName);
-
-        await RunTestAsync(contextScope, jobId);
-        TestResultWithData<ConsumeJob2MessageTestResult> result = await BuildTestResultAsync(contextScope);
-
-        await Verify(result, _verifySettings);
+        await Verify(results, _verifySettings);
     }
 
     [Fact]
-    public async Task ConsumeJob2Message_ShouldBeUnsuccessful_WhenSavingOutputFileNotWork()
+    public async Task ConsumeJob2_ShouldBeUnsuccessful()
     {
-        Guid jobId = Guid.NewGuid();
-        string categoryName = Job2Handler.Name;
+        List<ConsumeJob2MessageTestResult> results = [];
+        foreach (TestCaseData testCase in IncorrectTestCasesGenerator.Generate(_azuriteContainer))
+        {
+            results.Add(await RunAsync(testCase));
+        }
 
-        WebApplicationFactory<Program> webApiFactory =
-            _webApiFactory.MakeStorageAccountConnectionStringIncorrect(_azuriteContainer.GetConnectionString());
-        await using TestContextScope contextScope = new(webApiFactory, _logMessages);
-        await JobsData.CreateJobAsync(contextScope, jobId, categoryName);
-
-        await RunTestAsync(contextScope, jobId);
-        TestResultWithData<ConsumeJob2MessageTestResult> result = await BuildTestResultAsync(contextScope);
-
-        await Verify(result, _verifySettings);
+        await Verify(results, _verifySettings);
     }
 
-    private static async Task RunTestAsync(TestContextScope contextScope, Guid jobId)
+    private async Task<ConsumeJob2MessageTestResult> RunAsync(TestCaseData testCase)
     {
+        WebApplicationFactory<Program> webApiFactory = _webApiFactory.WithCustomOptions(testCase.CustomOptions);
+        await using TestContextScope contextScope = new(webApiFactory, _logMessages);
+        await JobsData.CreateJobsAsync(contextScope, testCase.Data.Db.Jobs);
+
         ConsumeContext<JobMessage>? context = Substitute.For<ConsumeContext<JobMessage>>()!;
-        context.Message.Returns(new JobMessage { JobId = jobId });
+        context.Message.Returns(new JobMessage { JobId = testCase.JobId });
 
         JobsConsumer jobsConsumer = contextScope.GetRequiredService<JobsConsumer>();
         await jobsConsumer.Consume(context);
-    }
 
-    private async Task<TestResultWithData<ConsumeJob2MessageTestResult>> BuildTestResultAsync(
-        TestContextScope contextScope
-    )
-    {
-        IReadOnlyList<JobEntity> jobEntitiesDb = await JobsData.GetJobsAsync(contextScope);
-        IReadOnlyList<StorageAccountFile> outputFiles = await FilesData.GetOutputFilesAsync(_webApiFactory);
-        TestResultWithData<ConsumeJob2MessageTestResult> result = new()
+        ConsumeJob2MessageTestResult result = new()
         {
-            TestCaseId = 1,
-            Data = new ConsumeJob2MessageTestResult
-            {
-                JobEntitiesDb = jobEntitiesDb,
-                OutputFilesStorageAccount = outputFiles,
-                LogMessages = _logMessages.GetSerialized(6)
-            }
+            TestCaseId = testCase.TestCaseId,
+            JobEntitiesDb = await JobsData.GetJobsAsync(contextScope),
+            OutputFilesStorageAccount =
+                testCase.UseAzureStorageAccount ? await FilesData.GetOutputFilesAsync(contextScope) : [],
+            LogMessages = _logMessages.GetSerialized(6)
         };
 
         return result;
     }
 
-    private class ConsumeJob2MessageTestResult
+    private class ConsumeJob2MessageTestResult : ITestResult
     {
         public IReadOnlyList<JobEntity> JobEntitiesDb { get; init; } = [];
-
         public IReadOnlyList<StorageAccountFile> OutputFilesStorageAccount { get; init; } = [];
-
-        public string LogMessages { get; init; } = "";
+        public int TestCaseId { get; init; }
+        public string? LogMessages { get; init; }
     }
 }

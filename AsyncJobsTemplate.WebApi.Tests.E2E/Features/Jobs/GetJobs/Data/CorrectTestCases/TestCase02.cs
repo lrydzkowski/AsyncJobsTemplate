@@ -8,6 +8,7 @@ namespace AsyncJobsTemplate.WebApi.Tests.E2E.Features.Jobs.GetJobs.Data.CorrectT
 
 internal static class TestCase02
 {
+    // Default pagination, return all jobs
     public static TestCaseData Get()
     {
         return new TestCaseData

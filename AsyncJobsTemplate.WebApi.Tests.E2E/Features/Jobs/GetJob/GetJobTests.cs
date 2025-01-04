@@ -8,7 +8,10 @@ using AsyncJobsTemplate.WebApi.Tests.E2E.Common.Logging;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Common.Models;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Common.TestCollections;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Common.WebApplication;
+using AsyncJobsTemplate.WebApi.Tests.E2E.Common.WebApplication.Infrastructure;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Features.Jobs.GetJob.Data;
+using AsyncJobsTemplate.WebApi.Tests.E2E.Features.Jobs.GetJob.Data.CorrectTestCases;
+using AsyncJobsTemplate.WebApi.Tests.E2E.Features.Jobs.GetJob.Data.IncorrectTestCases;
 using Microsoft.AspNetCore.Mvc.Testing;
 
 namespace AsyncJobsTemplate.WebApi.Tests.E2E.Features.Jobs.GetJob;
@@ -17,6 +20,7 @@ namespace AsyncJobsTemplate.WebApi.Tests.E2E.Features.Jobs.GetJob;
 [Trait(TestConstants.Category, MainTestsCollection.CollectionName)]
 public class GetJobTests
 {
+    private const string JobIdPlaceholder = "{jobId}";
     private readonly string _endpointUrlPath = "/jobs/{jobId}";
     private readonly LogMessages _logMessages;
     private readonly VerifySettings _verifySettings;
@@ -30,69 +34,63 @@ public class GetJobTests
     }
 
     [Fact]
-    public async Task GetJob_ShouldReturnCorrectAnswer()
+    public async Task GetJob_ShouldReturnCorrectResponse()
     {
-        List<TestResultWithData<GetJobTestResult>>? results = [];
-        foreach (TestCaseData testCaseData in TestCasesGenerator.Get())
+        List<GetJobTestResult> results = [];
+        foreach (TestCaseData testCase in CorrectTestCasesGenerator.Generate())
         {
-            await using TestContextScope contextScope = new(_webApiFactory, _logMessages);
-
-            HttpClient client = (await _webApiFactory.BuildAsync(contextScope, testCaseData)).CreateClient();
-            (HttpStatusCode responseStatusCode, string response) = await SendRequestAsync(client, testCaseData.JobId);
-            TestResultWithData<GetJobTestResult> result = await BuildTestResultAsync(
-                testCaseData,
-                contextScope,
-                responseStatusCode,
-                response
-            );
-
-            results.Add(result);
+            results.Add(await RunAsync(testCase));
         }
 
         await Verify(results, _verifySettings);
     }
 
-    private async Task<(HttpStatusCode responseStatusCode, string response)> SendRequestAsync(
-        HttpClient client,
-        string jobId
-    )
+    [Fact]
+    public async Task GetJob_ShouldReturnIncorrectResponse()
     {
-        using HttpRequestMessage requestMessage = new(HttpMethod.Get, _endpointUrlPath.Replace("{jobId}", jobId));
-        using HttpResponseMessage responseMessage = await client.SendAsync(requestMessage);
-        HttpStatusCode responseStatusCode = responseMessage.StatusCode;
-        string response = await responseMessage.GetResponseMessageAsync();
+        List<GetJobTestResult> results = [];
+        foreach (TestCaseData testCase in IncorrectTestCasesGenerator.Generate())
+        {
+            results.Add(await RunAsync(testCase));
+        }
 
-        return (responseStatusCode, response);
+        await Verify(results, _verifySettings);
     }
 
-    private async Task<TestResultWithData<GetJobTestResult>> BuildTestResultAsync(
-        TestCaseData testCaseData,
-        TestContextScope contextScope,
-        HttpStatusCode responseStatusCode,
-        string response
-    )
+    private async Task<GetJobTestResult> RunAsync(TestCaseData testCaseData)
     {
-        IReadOnlyList<JobEntity> jobEntitiesDb = await JobsData.GetJobsAsync(contextScope);
-        TestResultWithData<GetJobTestResult> result = new()
+        await using TestContextScope contextScope = new(_webApiFactory, _logMessages);
+
+        HttpClient client = (await _webApiFactory.BuildAsync(contextScope, testCaseData)).CreateClient();
+        using HttpRequestMessage requestMessage = new(HttpMethod.Get, BuildUrl(testCaseData));
+        using HttpResponseMessage responseMessage = await client.SendAsync(requestMessage);
+        string response = await responseMessage.GetResponseMessageAsync();
+
+        GetJobTestResult result = new()
         {
             TestCaseId = testCaseData.TestCaseId,
-            Data = new GetJobTestResult
-            {
-                JobId = testCaseData.JobId,
-                StatusCode = responseStatusCode,
-                Response = response.PrettifyJson(6),
-                JobEntitiesDb = jobEntitiesDb,
-                LogMessages = _logMessages.GetSerialized(6)
-            }
+            JobId = testCaseData.JobId,
+            JobEntitiesDb = await JobsData.GetJobsAsync(contextScope),
+            LogMessages = _logMessages.GetSerialized(6),
+            StatusCode = responseMessage.StatusCode,
+            Response = response.PrettifyJson(4)
         };
 
         return result;
     }
 
-    private class GetJobTestResult : HttpTestResult
+    private string BuildUrl(TestCaseData testCaseData)
+    {
+        return _endpointUrlPath.Replace(JobIdPlaceholder, testCaseData.JobId);
+    }
+
+    private class GetJobTestResult : IHttpTestResult
     {
         public string JobId { get; init; } = "";
-
         public IReadOnlyList<JobEntity> JobEntitiesDb { get; init; } = [];
+        public int TestCaseId { get; init; }
+        public string? LogMessages { get; init; }
+        public HttpStatusCode StatusCode { get; init; }
+        public string? Response { get; init; }
     }
 }

@@ -12,16 +12,16 @@ internal class TestContextScope : IAsyncDisposable
 {
     public TestContextScope(WebApplicationFactory<Program> webApiFactory, LogMessages logMessages)
     {
-        LogMessages = logMessages;
         ServiceScope = webApiFactory.Services.CreateScope();
+        LogMessages = logMessages;
         Db = new DbContextScope(ServiceScope.ServiceProvider);
         StorageAccount = new StorageAccountContextScope(ServiceScope.ServiceProvider);
         JobsQueue = Substitute.For<IJobsQueue>();
     }
 
-    public LogMessages LogMessages { get; }
-
     public IServiceScope ServiceScope { get; }
+
+    public LogMessages LogMessages { get; }
 
     public DbContextScope Db { get; }
 
@@ -33,8 +33,8 @@ internal class TestContextScope : IAsyncDisposable
     {
         await StorageAccount.DisposeAsync();
         Db.Dispose();
-        ServiceScope.Dispose();
         LogMessages.Clear();
+        ServiceScope.Dispose();
     }
 
     public TService GetRequiredService<TService>() where TService : notnull
