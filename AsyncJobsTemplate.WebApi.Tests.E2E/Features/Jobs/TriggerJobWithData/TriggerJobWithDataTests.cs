@@ -1,4 +1,5 @@
 using System.Net;
+using AsyncJobsTemplate.Core.Commands.TriggerJob.Interfaces;
 using AsyncJobsTemplate.Infrastructure.Db.Entities;
 using AsyncJobsTemplate.Shared.Extensions;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Common;
@@ -63,12 +64,12 @@ public class TriggerJobWithDataTests
 
     private async Task<TriggerJobWithDataTestResult> RunAsync(TestCaseData testCase)
     {
-        WebApplicationFactory<Program>? webApiFactory = _webApiFactory.WithCustomUserEmail(testCase.UserEmail);
+        WebApplicationFactory<Program>? webApiFactory = _webApiFactory.WithCustomUserEmail(testCase.UserEmail)
+            .WithJobsQueueMock(out IJobsQueue jobsQueue);
         await using TestContextScope contextScope = new(webApiFactory, _logMessages);
 
         HttpClient client = webApiFactory
             .WithCustomOptions(testCase.CustomOptions)
-            .MockJobsQueue(contextScope.JobsQueue)
             .CreateClient();
         using HttpRequestMessage requestMessage = new(HttpMethod.Post, BuildUrl(testCase));
         requestMessage.CreateContent(testCase.DataToSend);
@@ -77,8 +78,8 @@ public class TriggerJobWithDataTests
 
         TriggerJobWithDataTestResult result = new()
         {
-            JobEntitiesDb = await JobsData.GetJobsAsync(contextScope),
-            SendMessageCalls = contextScope.JobsQueue.GetReceivedMethodCalls() ?? [],
+            JobEntitiesDb = await contextScope.GetJobsAsync(),
+            SendMessageCalls = jobsQueue.GetReceivedMethodCalls() ?? [],
             TestCaseId = testCase.TestCaseId,
             StatusCode = responseMessage.StatusCode,
             Response = response.PrettifyJson(4),

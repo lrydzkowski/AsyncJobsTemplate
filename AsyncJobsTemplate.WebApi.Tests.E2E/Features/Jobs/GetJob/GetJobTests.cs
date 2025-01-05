@@ -64,7 +64,7 @@ public class GetJobTests
     {
         WebApplicationFactory<Program> webApiFactory = _webApiFactory.WithDependencies(_wireMockServer, testCase);
         await using TestContextScope contextScope = new(webApiFactory, _logMessages);
-        await JobsData.CreateJobsAsync(contextScope, testCase);
+        await contextScope.CreateJobsAsync(testCase);
 
         HttpClient client = webApiFactory.CreateClient();
         using HttpRequestMessage requestMessage = new(HttpMethod.Get, BuildUrl(testCase));
@@ -75,7 +75,7 @@ public class GetJobTests
         {
             TestCaseId = testCase.TestCaseId,
             JobId = testCase.JobId,
-            JobEntitiesDb = await JobsData.GetJobsAsync(contextScope),
+            JobEntitiesDb = await contextScope.GetJobsAsync(),
             LogMessages = _logMessages.GetSerialized(6),
             StatusCode = responseMessage.StatusCode,
             Response = response.PrettifyJson(4)

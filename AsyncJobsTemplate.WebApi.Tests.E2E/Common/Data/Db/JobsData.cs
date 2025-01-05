@@ -6,7 +6,7 @@ namespace AsyncJobsTemplate.WebApi.Tests.E2E.Common.Data.Db;
 
 internal static class JobsData
 {
-    public static async Task<IReadOnlyList<JobEntity>> GetJobsAsync(TestContextScope scope)
+    public static async Task<IReadOnlyList<JobEntity>> GetJobsAsync(this TestContextScope scope)
     {
         return await scope.Db.Context.Jobs.Select(
                 job => new JobEntity
@@ -29,7 +29,7 @@ internal static class JobsData
             .ToListAsync();
     }
 
-    public static async Task CreateJobsAsync(TestContextScope scope, ITestCaseData testCase)
+    public static async Task CreateJobsAsync(this TestContextScope scope, ITestCaseData testCase)
     {
         scope.Db.Context.Jobs.AddRange(testCase.Data.Db.Jobs);
         await scope.Db.Context.SaveChangesAsync();

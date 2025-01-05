@@ -64,8 +64,8 @@ public class DownloadJobFileTests
     {
         WebApplicationFactory<Program> webApiFactory = _webApiFactory.WithDependencies(_wireMockServer, testCase);
         await using TestContextScope contextScope = new(webApiFactory, _logMessages);
-        await JobsData.CreateJobsAsync(contextScope, testCase);
-        await FilesData.SaveOutputFilesAsync(contextScope, testCase);
+        await contextScope.CreateJobsAsync(testCase);
+        await contextScope.SaveOutputFilesAsync(testCase);
 
         HttpClient client = webApiFactory.CreateClient();
         using HttpRequestMessage requestMessage = new(HttpMethod.Get, BuildUrl(testCase));

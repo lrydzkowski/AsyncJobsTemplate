@@ -66,7 +66,7 @@ public class ConsumeJob2Tests
         WebApplicationFactory<Program> webApiFactory = _webApiFactory.WithCustomUserEmail(testCase.UserEmail)
             .WithCustomOptions(testCase.CustomOptions);
         await using TestContextScope contextScope = new(webApiFactory, _logMessages);
-        await JobsData.CreateJobsAsync(contextScope, testCase);
+        await contextScope.CreateJobsAsync(testCase);
 
         ConsumeContext<JobMessage>? context = Substitute.For<ConsumeContext<JobMessage>>()!;
         context.Message.Returns(new JobMessage { JobId = testCase.JobId });
@@ -77,9 +77,9 @@ public class ConsumeJob2Tests
         ConsumeJob2MessageTestResult result = new()
         {
             TestCaseId = testCase.TestCaseId,
-            JobEntitiesDb = await JobsData.GetJobsAsync(contextScope),
+            JobEntitiesDb = await contextScope.GetJobsAsync(),
             OutputFilesStorageAccount =
-                testCase.UseAzureStorageAccount ? await FilesData.GetOutputFilesAsync(contextScope) : [],
+                testCase.UseAzureStorageAccount ? await contextScope.GetOutputFilesAsync() : [],
             LogMessages = _logMessages.GetSerialized(6)
         };
 
