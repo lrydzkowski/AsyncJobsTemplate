@@ -1,0 +1,14 @@
+﻿[
+  {
+    TestCaseId: 1,
+    StatusCode: InternalServerError,
+    Response:
+    {
+      "result": false,
+      "jobId": "Guid_1"
+    },
+    LogMessages:
+      Error: An unexpected error has occured in creating a job.
+      Error: An unexpected error has occured in saving errors.
+  }
+]

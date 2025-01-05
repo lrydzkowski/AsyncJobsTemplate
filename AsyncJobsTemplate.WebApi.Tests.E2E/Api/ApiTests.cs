@@ -1,6 +1,7 @@
 using System.Net;
+using System.Reflection;
+using AsyncJobsTemplate.Shared.Services;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Common;
-using AsyncJobsTemplate.WebApi.Tests.E2E.Common.Services;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Common.TestCollections;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Common.WebApplication;
 using FluentAssertions;
@@ -53,7 +54,10 @@ public class ApiTests
         {
             _output.WriteLine($"{endpointInfo.HttpMethod} {endpointInfo.Path}");
 
-            string accessToken = EmbeddedFile.GetContent("Api/Assets/expired_access_token.txt");
+            string accessToken = EmbeddedFile.GetContent(
+                "Api/Assets/expired_access_token.txt",
+                Assembly.GetExecutingAssembly()
+            );
             using HttpRequestMessage requestMessage = new(endpointInfo.HttpMethod, endpointInfo.Path);
             requestMessage.Headers.Add(HeaderNames.Authorization, $"Bearer {accessToken}");
 
@@ -75,7 +79,10 @@ public class ApiTests
         {
             _output.WriteLine($"{endpointInfo.HttpMethod} {endpointInfo.Path}");
 
-            string accessToken = EmbeddedFile.GetContent("Api/Assets/wrong_signature_access_token.txt");
+            string accessToken = EmbeddedFile.GetContent(
+                "Api/Assets/wrong_signature_access_token.txt",
+                Assembly.GetExecutingAssembly()
+            );
             using HttpRequestMessage requestMessage = new(endpointInfo.HttpMethod, endpointInfo.Path);
             requestMessage.Headers.Add(HeaderNames.Authorization, $"Bearer {accessToken}");
 

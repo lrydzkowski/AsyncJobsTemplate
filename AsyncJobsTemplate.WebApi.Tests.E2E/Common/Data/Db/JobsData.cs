@@ -1,6 +1,4 @@
-using System.Text.Json;
 using AsyncJobsTemplate.Infrastructure.Db.Entities;
-using AsyncJobsTemplate.Shared.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace AsyncJobsTemplate.WebApi.Tests.E2E.Common.Data.Db;
@@ -29,50 +27,12 @@ internal static class JobsData
             .ToListAsync();
     }
 
-    public static async Task CreateJobAsync(
-        TestContextScope scope,
-        Guid jobId,
-        string categoryName,
-        string status = "Created"
-    )
-    {
-        var inputData = new
-        {
-            Key1 = "Some data",
-            Key2 = 123,
-            Key3 = true,
-            Key4 = new { Key5 = "Value1", Key6 = DateTime.UtcNow }
-        };
-        await CreateJobAsync(scope, jobId, categoryName, inputData, status);
-    }
-
-    public static async Task CreateJobAsync(
-        TestContextScope scope,
-        Guid jobId,
-        string categoryName,
-        object inputData,
-        string status = "Created"
-    )
-    {
-        string serializedInputData = JsonSerializer.Serialize(inputData, Serializer.Options);
-        JobEntity jobEntity = new()
-        {
-            JobId = jobId,
-            JobCategoryName = categoryName,
-            Status = status,
-            InputData = serializedInputData,
-            CreatedAtUtc = DateTime.UtcNow
-        };
-        await CreateJobAsync(scope, jobEntity);
-    }
-
     public static async Task CreateJobAsync(TestContextScope scope, JobEntity jobEntity)
     {
-        scope.Db.Context.Jobs.Add(jobEntity);
-        await scope.Db.Context.SaveChangesAsync();
+        await CreateJobsAsync(scope, [jobEntity]);
     }
 
-    public static async Task CreateJobAsync(TestContextScope scope, List<JobEntity> jobEntities)
+    public static async Task CreateJobsAsync(TestContextScope scope, List<JobEntity> jobEntities)
     {
         scope.Db.Context.Jobs.AddRange(jobEntities);
         await scope.Db.Context.SaveChangesAsync();

@@ -11,12 +11,12 @@ using AsyncJobsTemplate.WebApi.Tests.E2E.Common.TestCollections;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Common.WebApplication;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Common.WebApplication.Infrastructure;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Features.Jobs.ConsumeJob.Job3.Data;
+using AsyncJobsTemplate.WebApi.Tests.E2E.Features.Jobs.ConsumeJob.Job3.Data.CorrectTestCases;
 using MassTransit;
 using Microsoft.AspNetCore.Mvc.Testing;
 using NSubstitute;
+using Testcontainers.Azurite;
 using WireMock.Server;
-using CorrectTestCasesGenerator =
-    AsyncJobsTemplate.WebApi.Tests.E2E.Features.Jobs.ConsumeJob.Job3.Data.CorrectTestCases.TestCasesGenerator;
 
 namespace AsyncJobsTemplate.WebApi.Tests.E2E.Features.Jobs.ConsumeJob.Job3;
 
@@ -24,6 +24,7 @@ namespace AsyncJobsTemplate.WebApi.Tests.E2E.Features.Jobs.ConsumeJob.Job3;
 [Trait(TestConstants.Category, MainTestsCollection.CollectionName)]
 public class ConsumeJob3Tests
 {
+    private readonly AzuriteContainer _azuriteContainer;
     private readonly LogMessages _logMessages;
     private readonly VerifySettings _verifySettings;
     private readonly WebApplicationFactory<Program> _webApiFactory;
@@ -31,75 +32,53 @@ public class ConsumeJob3Tests
 
     public ConsumeJob3Tests(WebApiFactory webApiFactory)
     {
-        _webApiFactory = webApiFactory;
+        _webApiFactory = webApiFactory.DisableJobsSleep();
         _logMessages = webApiFactory.LogMessages;
         _verifySettings = webApiFactory.VerifySettings;
+        _azuriteContainer = webApiFactory.AzuriteContainer;
         _wireMockServer = webApiFactory.WireMockServer;
     }
 
     [Fact]
-    public async Task ConsumeJob3Message_ShouldBeSuccessful_WhenCorrectData()
+    public async Task ConsumeJob3_ShouldBeSuccessful()
     {
-        List<TestResultWithData<ConsumeJob3MessageTestResult>> results = [];
-        WebApplicationFactory<Program> webApiFactory = _webApiFactory;
-        foreach (TestCaseData testCaseData in CorrectTestCasesGenerator.Get())
+        List<ConsumeJob3MessageTestResult> results = [];
+        foreach (TestCaseData testCase in CorrectTestCasesGenerator.Generate())
         {
-            webApiFactory = MockData(testCaseData, webApiFactory);
-            await using TestContextScope contextScope = new(webApiFactory, _logMessages);
-            await JobsData.CreateJobAsync(contextScope, testCaseData.JobId, testCaseData.CategoryName, new object());
-
-            await RunTestAsync(contextScope, testCaseData.JobId);
-            results.Add(await BuildTestResultAsync(contextScope));
+            results.Add(await RunAsync(testCase));
         }
 
         await Verify(results, _verifySettings);
     }
 
-    private WebApplicationFactory<Program> MockData(
-        TestCaseData testCaseData,
-        WebApplicationFactory<Program> webApiFactory
-    )
+    private async Task<ConsumeJob3MessageTestResult> RunAsync(TestCaseData testCase)
     {
-        webApiFactory = webApiFactory.MockGetTodo(_wireMockServer, testCaseData);
+        WebApplicationFactory<Program> webApiFactory = _webApiFactory.MockGetTodo(_wireMockServer, testCase);
+        await using TestContextScope contextScope = new(webApiFactory, _logMessages);
+        await JobsData.CreateJobsAsync(contextScope, testCase.Data.Db.Jobs);
 
-        return webApiFactory;
-    }
-
-    private static async Task RunTestAsync(TestContextScope contextScope, Guid jobId)
-    {
         ConsumeContext<JobMessage>? context = Substitute.For<ConsumeContext<JobMessage>>()!;
-        context.Message.Returns(new JobMessage { JobId = jobId });
+        context.Message.Returns(new JobMessage { JobId = testCase.JobId });
 
         JobsConsumer jobsConsumer = contextScope.GetRequiredService<JobsConsumer>();
         await jobsConsumer.Consume(context);
-    }
 
-    private async Task<TestResultWithData<ConsumeJob3MessageTestResult>> BuildTestResultAsync(
-        TestContextScope contextScope
-    )
-    {
-        IReadOnlyList<JobEntity> jobEntitiesDb = await JobsData.GetJobsAsync(contextScope);
-        IReadOnlyList<StorageAccountFile> outputFiles = await FilesData.GetOutputFilesAsync(_webApiFactory);
-        TestResultWithData<ConsumeJob3MessageTestResult> result = new()
+        ConsumeJob3MessageTestResult result = new()
         {
-            TestCaseId = 1,
-            Data = new ConsumeJob3MessageTestResult
-            {
-                JobEntitiesDb = jobEntitiesDb,
-                OutputFilesStorageAccount = outputFiles,
-                LogMessages = _logMessages.GetSerialized(6)
-            }
+            TestCaseId = testCase.TestCaseId,
+            JobEntitiesDb = await JobsData.GetJobsAsync(contextScope),
+            OutputFilesStorageAccount = await FilesData.GetOutputFilesAsync(contextScope),
+            LogMessages = _logMessages.GetSerialized(6)
         };
 
         return result;
     }
 
-    private class ConsumeJob3MessageTestResult
+    private class ConsumeJob3MessageTestResult : ITestResult
     {
         public IReadOnlyList<JobEntity> JobEntitiesDb { get; init; } = [];
-
         public IReadOnlyList<StorageAccountFile> OutputFilesStorageAccount { get; init; } = [];
-
-        public string LogMessages { get; init; } = "";
+        public int TestCaseId { get; init; }
+        public string? LogMessages { get; init; }
     }
 }

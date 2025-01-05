@@ -1,0 +1,28 @@
+﻿[
+  {
+    JobId: Guid_1,
+    JobEntitiesDb: [
+      {
+        RecId: 1,
+        JobId: Guid_1,
+        JobCategoryName: job1,
+        Status: Created,
+        InputData: {"key":"value"},
+        OutputData: {"key1":"value1"},
+        OutputFileReference: Guid_2,
+        CreatedAtUtc: DateTime_1
+      }
+    ],
+    TestCaseId: 1,
+    LogMessages: ,
+    StatusCode: OK,
+    Response:
+    {
+      "status": "Created",
+      "outputData": {
+        "key1": "value1"
+      },
+      "outputFileReference": "Guid_2"
+    }
+  }
+]

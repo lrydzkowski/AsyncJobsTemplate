@@ -8,12 +8,11 @@ using AsyncJobsTemplate.WebApi.Tests.E2E.Common.Logging;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Common.Models;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Common.TestCollections;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Common.WebApplication;
+using AsyncJobsTemplate.WebApi.Tests.E2E.Common.WebApplication.Infrastructure;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Features.Jobs.GetJobs.Data;
+using AsyncJobsTemplate.WebApi.Tests.E2E.Features.Jobs.GetJobs.Data.CorrectTestCases;
+using AsyncJobsTemplate.WebApi.Tests.E2E.Features.Jobs.GetJobs.Data.IncorrectTestCases;
 using Microsoft.AspNetCore.Mvc.Testing;
-using CorrectTestCasesGenerator =
-    AsyncJobsTemplate.WebApi.Tests.E2E.Features.Jobs.GetJobs.Data.CorrectTestCases.TestCasesGenerator;
-using IncorrectTestCasesGenerator =
-    AsyncJobsTemplate.WebApi.Tests.E2E.Features.Jobs.GetJobs.Data.IncorrectTestCases.TestCasesGenerator;
 
 namespace AsyncJobsTemplate.WebApi.Tests.E2E.Features.Jobs.GetJobs;
 
@@ -34,63 +33,50 @@ public class GetJobsTests
     }
 
     [Fact]
-    public async Task GetJobs_ShouldReturnValidationErrors_WhenIncorrectData()
+    public async Task GetJobs_ShouldReturnCorrectResponse()
     {
-        List<TestResultWithData<GetJobsTestResult>> results = [];
-        foreach (TestCaseData testCaseData in IncorrectTestCasesGenerator.Get())
+        List<GetJobTestResult> results = [];
+        foreach (TestCaseData testCase in CorrectTestCasesGenerator.Generate())
         {
-            await using TestContextScope contextScope = new(_webApiFactory, _logMessages);
-
-            HttpClient client = (await _webApiFactory.BuildAsync(contextScope, testCaseData)).CreateClient();
-            (HttpStatusCode responseStatusCode, string response) = await SendRequestAsync(client, testCaseData);
-            TestResultWithData<GetJobsTestResult> result = await BuildTestResultAsync(
-                testCaseData,
-                contextScope,
-                responseStatusCode,
-                response
-            );
-
-            results.Add(result);
+            results.Add(await RunAsync(testCase));
         }
 
         await Verify(results, _verifySettings);
     }
 
     [Fact]
-    public async Task GetJobs_ShouldReturnPaginatedResult_WhenCorrectData()
+    public async Task GetJobs_ShouldReturnIncorrectResponse()
     {
-        List<TestResultWithData<GetJobsTestResult>> results = [];
-        foreach (TestCaseData testCaseData in CorrectTestCasesGenerator.Get())
+        List<GetJobTestResult> results = [];
+        foreach (TestCaseData testCase in IncorrectTestCasesGenerator.Generate())
         {
-            await using TestContextScope contextScope = new(_webApiFactory, _logMessages);
-
-            HttpClient client = (await _webApiFactory.BuildAsync(contextScope, testCaseData)).CreateClient();
-            (HttpStatusCode responseStatusCode, string response) = await SendRequestAsync(client, testCaseData);
-            TestResultWithData<GetJobsTestResult> result = await BuildTestResultAsync(
-                testCaseData,
-                contextScope,
-                responseStatusCode,
-                response
-            );
-
-            results.Add(result);
+            results.Add(await RunAsync(testCase));
         }
 
         await Verify(results, _verifySettings);
     }
 
-    private async Task<(HttpStatusCode responseStatusCode, string response)> SendRequestAsync(
-        HttpClient client,
-        TestCaseData testCaseData
-    )
+    private async Task<GetJobTestResult> RunAsync(TestCaseData testCaseData)
     {
-        string url = BuildUrl(testCaseData);
-        using HttpRequestMessage requestMessage = new(HttpMethod.Get, url);
+        await using TestContextScope contextScope = new(_webApiFactory, _logMessages);
+
+        HttpClient client = (await _webApiFactory.BuildAsync(contextScope, testCaseData)).CreateClient();
+        using HttpRequestMessage requestMessage = new(HttpMethod.Get, BuildUrl(testCaseData));
         using HttpResponseMessage responseMessage = await client.SendAsync(requestMessage);
-        HttpStatusCode responseStatusCode = responseMessage.StatusCode;
         string response = await responseMessage.GetResponseMessageAsync();
 
-        return (responseStatusCode, response);
+        GetJobTestResult result = new()
+        {
+            TestCaseId = testCaseData.TestCaseId,
+            Page = testCaseData.Page,
+            PageSize = testCaseData.PageSize,
+            JobEntitiesDb = await JobsData.GetJobsAsync(contextScope),
+            LogMessages = _logMessages.GetSerialized(6),
+            StatusCode = responseMessage.StatusCode,
+            Response = response.PrettifyJson(4)
+        };
+
+        return result;
     }
 
     private string BuildUrl(TestCaseData testCaseData)
@@ -115,37 +101,14 @@ public class GetJobsTests
         return url;
     }
 
-    private async Task<TestResultWithData<GetJobsTestResult>> BuildTestResultAsync(
-        TestCaseData testCaseData,
-        TestContextScope contextScope,
-        HttpStatusCode responseStatusCode,
-        string response
-    )
-    {
-        IReadOnlyList<JobEntity> jobEntitiesDb = await JobsData.GetJobsAsync(contextScope);
-        TestResultWithData<GetJobsTestResult> result = new()
-        {
-            TestCaseId = testCaseData.TestCaseId,
-            Data = new GetJobsTestResult
-            {
-                Page = testCaseData.Page,
-                PageSize = testCaseData.PageSize,
-                StatusCode = responseStatusCode,
-                Response = response.PrettifyJson(6),
-                JobEntitiesDb = jobEntitiesDb,
-                LogMessages = _logMessages.GetSerialized(6)
-            }
-        };
-
-        return result;
-    }
-
-    private class GetJobsTestResult : HttpTestResult
+    private class GetJobTestResult : IHttpTestResult
     {
         public int? Page { get; init; }
-
         public int? PageSize { get; init; }
-
         public IReadOnlyList<JobEntity> JobEntitiesDb { get; init; } = [];
+        public int TestCaseId { get; init; }
+        public string? LogMessages { get; init; }
+        public HttpStatusCode StatusCode { get; init; }
+        public string? Response { get; init; }
     }
 }

@@ -4,5 +4,5 @@ namespace AsyncJobsTemplate.WebApi.Tests.E2E.Common.TestCases;
 
 internal class JsonPlaceholderApiTestCaseData
 {
-    public Dictionary<int, GetTodoResponseDto> TodoData = new();
+    public Dictionary<int, GetTodoResponseDto> TodoData { get; init; } = new();
 }

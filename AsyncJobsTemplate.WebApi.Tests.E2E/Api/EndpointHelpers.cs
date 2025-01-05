@@ -18,7 +18,7 @@ internal static class EndpointHelpers
         List<EndpointInfo> endpoints = endpointDataSource.Endpoints
             .Where(endpoint => endpoint is RouteEndpoint)
             .Cast<RouteEndpoint>()
-            .Where(endpoint => HasAuthPolicy(endpoint, policyName) /* && !IsFallbackEndpoint(endpoint)*/)
+            .Where(endpoint => HasAuthPolicy(endpoint, policyName))
             .SelectMany(MapToEndpointsInfo)
             .Where(endpoint => FilterIgnoredEndpoints(ignoredEndpoints, endpoint))
             .ToList();

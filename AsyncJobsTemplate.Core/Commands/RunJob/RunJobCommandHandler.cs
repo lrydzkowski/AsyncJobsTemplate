@@ -176,7 +176,7 @@ public class RunJobCommandHandler : IRequestHandler<RunJobCommand, RunJobResult>
         CancellationToken cancellationToken
     )
     {
-        if (process.JobId is null)
+        if (process.Job is null)
         {
             return process;
         }

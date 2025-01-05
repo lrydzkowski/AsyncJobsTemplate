@@ -39,6 +39,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Features\Jobs\TriggerJobWithFile\Data\Assets\test_payload.csv" />
     <None Remove="Api\Assets\wrong_signature_access_token.txt" />
     <EmbeddedResource Include="Api\Assets\wrong_signature_access_token.txt" />
     <None Remove="Api\Assets\expired_access_token.txt" />
@@ -48,7 +49,6 @@
       <DependentUpon>TriggerJobWithFileTests.cs</DependentUpon>
     </None>
     <None Remove="Features\Jobs\TriggerJob\Assets\test_payload.csv" />
-    <EmbeddedResource Include="Features\Jobs\TriggerJob\Assets\test_payload.csv" />
   </ItemGroup>
 
 </Project>

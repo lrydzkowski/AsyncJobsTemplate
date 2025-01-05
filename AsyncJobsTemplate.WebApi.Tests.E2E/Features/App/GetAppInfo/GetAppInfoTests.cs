@@ -29,47 +29,36 @@ public class GetAppInfoTests
     [Fact]
     public async Task GetAppInfo_ShouldReturnCorrectData()
     {
-        await using TestContextScope contextScope = new(_webApiFactory, _logMessages);
-
-        HttpClient client = _webApiFactory.CreateClient();
-        (HttpStatusCode responseStatusCode, string response) = await SendRequestAsync(client);
-        TestResultWithData<GetAppInfoTestResult> result = BuildTestResult(
-            responseStatusCode,
-            response
-        );
+        GetAppInfoTestResult result = await RunAsync();
 
         await Verify(result, _verifySettings);
     }
 
-    private async Task<(HttpStatusCode responseStatusCode, string response)> SendRequestAsync(HttpClient client)
+    private async Task<GetAppInfoTestResult> RunAsync()
     {
+        await using TestContextScope contextScope = new(_webApiFactory, _logMessages);
+
+        HttpClient client = _webApiFactory.CreateClient();
         using HttpRequestMessage requestMessage = new(HttpMethod.Get, _endpointUrlPath);
         using HttpResponseMessage responseMessage = await client.SendAsync(requestMessage);
         string response = await responseMessage.GetResponseMessageAsync();
 
-        return (responseMessage.StatusCode, response);
-    }
-
-    private TestResultWithData<GetAppInfoTestResult> BuildTestResult(
-        HttpStatusCode responseStatusCode,
-        string response
-    )
-    {
-        TestResultWithData<GetAppInfoTestResult> result = new()
+        GetAppInfoTestResult result = new()
         {
             TestCaseId = 1,
-            Data = new GetAppInfoTestResult
-            {
-                StatusCode = responseStatusCode,
-                Response = response.PrettifyJson(4),
-                LogMessages = _logMessages.GetSerialized(6)
-            }
+            StatusCode = responseMessage.StatusCode,
+            Response = response.PrettifyJson(4),
+            LogMessages = _logMessages.GetSerialized(6)
         };
 
         return result;
     }
 
-    private class GetAppInfoTestResult : HttpTestResult
+    private class GetAppInfoTestResult : IHttpTestResult
     {
+        public int TestCaseId { get; init; }
+        public HttpStatusCode StatusCode { get; init; }
+        public string? Response { get; init; }
+        public string? LogMessages { get; init; }
     }
 }

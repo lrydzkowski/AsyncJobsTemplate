@@ -1,4 +1,3 @@
-using AsyncJobsTemplate.Core.Jobs.Job1;
 using AsyncJobsTemplate.Infrastructure.Azure.ServiceBus;
 using AsyncJobsTemplate.Infrastructure.Db.Entities;
 using AsyncJobsTemplate.WebApi.Consumers;
@@ -10,6 +9,9 @@ using AsyncJobsTemplate.WebApi.Tests.E2E.Common.Models;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Common.TestCollections;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Common.WebApplication;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Common.WebApplication.Infrastructure;
+using AsyncJobsTemplate.WebApi.Tests.E2E.Features.Jobs.ConsumeJob.Job1.Data;
+using AsyncJobsTemplate.WebApi.Tests.E2E.Features.Jobs.ConsumeJob.Job1.Data.CorrectTestCases;
+using AsyncJobsTemplate.WebApi.Tests.E2E.Features.Jobs.ConsumeJob.Job1.Data.IncorrectTestCases;
 using MassTransit;
 using Microsoft.AspNetCore.Mvc.Testing;
 using NSubstitute;
@@ -35,98 +37,60 @@ public class ConsumeJob1Tests
     }
 
     [Fact]
-    public async Task ConsumeJob1Message_ShouldBeSuccessful_WhenCorrectData()
+    public async Task ConsumeJob1_ShouldBeSuccessful()
     {
-        Guid jobId = Guid.NewGuid();
-        string categoryName = Job1Handler.Name;
+        List<ConsumeJob1MessageTestResult> results = [];
+        foreach (TestCaseData testCase in CorrectTestCasesGenerator.Generate())
+        {
+            results.Add(await RunAsync(testCase));
+        }
 
-        await using TestContextScope contextScope = new(_webApiFactory, _logMessages);
-        await JobsData.CreateJobAsync(contextScope, jobId, categoryName);
-
-        await RunTestAsync(contextScope, jobId);
-        TestResultWithData<ConsumeJob1MessageTestResult> result = await BuildTestResultAsync(contextScope);
-
-        await Verify(result, _verifySettings);
+        await Verify(results, _verifySettings);
     }
 
     [Fact]
-    public async Task ConsumeJob1Message_ShouldBeUnsuccessful_WhenNoAccessToDatabase()
+    public async Task ConsumeJob1_ShouldBeUnsuccessful()
     {
-        Guid jobId = Guid.NewGuid();
+        List<ConsumeJob1MessageTestResult> results = [];
+        foreach (TestCaseData testCase in IncorrectTestCasesGenerator.Generate(_dbContainer))
+        {
+            results.Add(await RunAsync(testCase));
+        }
 
-        WebApplicationFactory<Program> webApiFactory =
-            _webApiFactory.MakeDbConnectionStringIncorrect(_dbContainer.GetConnectionString());
+        await Verify(results, _verifySettings);
+    }
+
+    private async Task<ConsumeJob1MessageTestResult> RunAsync(TestCaseData testCase)
+    {
+        WebApplicationFactory<Program> webApiFactory = _webApiFactory.WithCustomOptions(testCase.CustomOptions);
         await using TestContextScope contextScope = new(webApiFactory, _logMessages);
+        if (testCase.UseDatabase)
+        {
+            await JobsData.CreateJobsAsync(contextScope, testCase.Data.Db.Jobs);
+        }
 
-        await RunTestAsync(contextScope, jobId);
-        TestResultWithData<ConsumeJob1MessageTestResult> result = await BuildTestResultAsync(contextScope, false);
-
-        await Verify(result, _verifySettings);
-    }
-
-    [Fact]
-    public async Task ConsumeJob1Message_ShouldBeUnsuccessful_WhenJobNotExist()
-    {
-        Guid existingJobId = Guid.NewGuid();
-        Guid nonExistingJobId = Guid.NewGuid();
-        string categoryName = Job1Handler.Name;
-
-        await using TestContextScope contextScope = new(_webApiFactory, _logMessages);
-        await JobsData.CreateJobAsync(contextScope, existingJobId, categoryName);
-
-        await RunTestAsync(contextScope, nonExistingJobId);
-        TestResultWithData<ConsumeJob1MessageTestResult> result = await BuildTestResultAsync(contextScope);
-
-        await Verify(result, _verifySettings);
-    }
-
-    [Fact]
-    public async Task ConsumeJob1Message_ShouldBeUnsuccessful_WhenJobNotRegistered()
-    {
-        Guid jobId = Guid.NewGuid();
-        string incorrectCategoryName = Job1Handler.Name + "-Incorrect";
-
-        await using TestContextScope contextScope = new(_webApiFactory, _logMessages);
-        await JobsData.CreateJobAsync(contextScope, jobId, incorrectCategoryName);
-
-        await RunTestAsync(contextScope, jobId);
-        TestResultWithData<ConsumeJob1MessageTestResult> result = await BuildTestResultAsync(contextScope);
-
-        await Verify(result, _verifySettings);
-    }
-
-    private static async Task RunTestAsync(TestContextScope contextScope, Guid jobId)
-    {
         ConsumeContext<JobMessage>? context = Substitute.For<ConsumeContext<JobMessage>>()!;
-        context.Message.Returns(new JobMessage { JobId = jobId });
+        context.Message.Returns(new JobMessage { JobId = testCase.JobId });
 
         JobsConsumer jobsConsumer = contextScope.GetRequiredService<JobsConsumer>();
         await jobsConsumer.Consume(context);
-    }
 
-    private async Task<TestResultWithData<ConsumeJob1MessageTestResult>> BuildTestResultAsync(
-        TestContextScope contextScope,
-        bool withDbData = true
-    )
-    {
-        IReadOnlyList<JobEntity> jobEntitiesDb = withDbData ? await JobsData.GetJobsAsync(contextScope) : [];
-        TestResultWithData<ConsumeJob1MessageTestResult> result = new()
+        ConsumeJob1MessageTestResult result = new()
         {
-            TestCaseId = 1,
-            Data = new ConsumeJob1MessageTestResult
-            {
-                JobEntitiesDb = jobEntitiesDb,
-                LogMessages = _logMessages.GetSerialized(6)
-            }
+            TestCaseId = testCase.TestCaseId,
+            JobId = testCase.JobId,
+            JobEntitiesDb = testCase.UseDatabase ? await JobsData.GetJobsAsync(contextScope) : [],
+            LogMessages = _logMessages.GetSerialized(6)
         };
 
         return result;
     }
 
-    private class ConsumeJob1MessageTestResult
+    private class ConsumeJob1MessageTestResult : ITestResult
     {
         public IReadOnlyList<JobEntity> JobEntitiesDb { get; init; } = [];
-
-        public string LogMessages { get; init; } = "";
+        public Guid JobId { get; init; }
+        public int TestCaseId { get; init; }
+        public string? LogMessages { get; init; }
     }
 }

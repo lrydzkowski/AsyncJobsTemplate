@@ -8,24 +8,25 @@ namespace AsyncJobsTemplate.WebApi.Tests.E2E.Common.Data.StorageAccount;
 
 internal class ContextScope : IAsyncDisposable
 {
-    private readonly BlobContainerClient _inputContainerClient;
-    private readonly BlobContainerClient _outputContainerClient;
-
     public ContextScope(IServiceProvider serviceProvider)
     {
         AzureStorageAccountOptions options =
             serviceProvider.GetRequiredService<IOptions<AzureStorageAccountOptions>>().Value;
         BlobServiceClient serviceClient = serviceProvider.GetRequiredService<BlobServiceClient>();
-        _inputContainerClient = serviceClient.GetBlobContainerClient(options.InputContainerName)!;
-        _outputContainerClient = serviceClient.GetBlobContainerClient(options.OutputContainerName)!;
+        InputContainerClient = serviceClient.GetBlobContainerClient(options.InputContainerName)!;
+        OutputContainerClient = serviceClient.GetBlobContainerClient(options.OutputContainerName)!;
     }
+
+    public BlobContainerClient InputContainerClient { get; }
+
+    public BlobContainerClient OutputContainerClient { get; }
 
     public async ValueTask DisposeAsync()
     {
         try
         {
-            await RemoveAllFilesAsync(_inputContainerClient);
-            await RemoveAllFilesAsync(_outputContainerClient);
+            await RemoveAllFilesAsync(InputContainerClient);
+            await RemoveAllFilesAsync(OutputContainerClient);
         }
         catch
         {

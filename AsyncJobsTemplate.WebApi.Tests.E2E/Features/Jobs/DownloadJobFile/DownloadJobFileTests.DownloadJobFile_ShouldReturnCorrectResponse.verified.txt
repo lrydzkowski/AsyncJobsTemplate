@@ -1,0 +1,12 @@
+﻿[
+  {
+    TestCaseId: 1,
+    LogMessages: ,
+    StatusCode: OK,
+    Response:
+    {
+      "key1": "value1",
+      "key2": "value2"
+    }
+  }
+]
