@@ -50,8 +50,8 @@ public class DownloadJobFileQueryHandler : IRequestHandler<DownloadJobFileQuery,
             return new DownloadJobFileResult();
         }
 
-        bool parsingResult = Guid.TryParse(query.Request.JobId, out Guid jobId);
-        if (!parsingResult)
+        bool parsingJobIdResult = Guid.TryParse(query.Request.JobId, out Guid jobId);
+        if (!parsingJobIdResult)
         {
             return new DownloadJobFileResult();
         }
@@ -62,10 +62,13 @@ public class DownloadJobFileQueryHandler : IRequestHandler<DownloadJobFileQuery,
             return new DownloadJobFileResult();
         }
 
-        JobFile? file = await _jobsFileStorage.GetOutputFileAsync(
-            Guid.Parse(job.OutputFileReference),
-            cancellationToken
-        );
+        bool parsingOutputFileReferenceResult = Guid.TryParse(job.OutputFileReference, out Guid outputFileReference);
+        if (!parsingOutputFileReferenceResult)
+        {
+            return new DownloadJobFileResult();
+        }
+
+        JobFile? file = await _jobsFileStorage.GetOutputFileAsync(outputFileReference, cancellationToken);
         DownloadJobFileResult result = new()
         {
             File = file
