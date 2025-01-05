@@ -8,6 +8,8 @@ internal class JobEntity
 
     public long? RecId { get; set; }
 
+    public string UserEmail { get; set; } = "";
+
     public Guid JobId { get; set; }
 
     public string JobCategoryName { get; set; } = "";

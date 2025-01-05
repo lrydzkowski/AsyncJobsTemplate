@@ -30,7 +30,8 @@ internal static class TestCase03
                             OutputFileReference = null,
                             Errors = null,
                             CreatedAt = new DateTimeOffset(2024, 12, 1, 10, 0, 0, TimeSpan.Zero),
-                            LastUpdatedAt = null
+                            LastUpdatedAt = null,
+                            UserEmail = "test@asyncjobstemplate.com"
                         }
                     ]
                 }

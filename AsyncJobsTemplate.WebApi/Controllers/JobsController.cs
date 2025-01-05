@@ -1,15 +1,14 @@
 ﻿using System.Net.Mime;
 using AsyncJobsTemplate.Core.Commands.TriggerJob;
-using AsyncJobsTemplate.Core.Commands.TriggerJob.Models;
 using AsyncJobsTemplate.Core.Common.Models;
 using AsyncJobsTemplate.Core.Queries.DownloadJobFile;
-using AsyncJobsTemplate.Core.Queries.DownloadJobFile.Models;
 using AsyncJobsTemplate.Core.Queries.GetJob;
-using AsyncJobsTemplate.Core.Queries.GetJob.Models;
 using AsyncJobsTemplate.Core.Queries.GetJobs;
+using AsyncJobsTemplate.Shared.Models.Context;
 using AsyncJobsTemplate.Shared.Models.Lists;
 using AsyncJobsTemplate.WebApi.Mappers;
 using AsyncJobsTemplate.WebApi.Models;
+using AsyncJobsTemplate.WebApi.Services;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -23,11 +22,17 @@ namespace AsyncJobsTemplate.WebApi.Controllers;
 public class JobsController : ControllerBase
 {
     private readonly IMediator _mediator;
+    private readonly IRequestContextProvider _requestContextProvider;
     private readonly ITriggerJobResponseMapper _triggerJobResponseMapper;
 
-    public JobsController(IMediator mediator, ITriggerJobResponseMapper triggerJobResponseMapper)
+    public JobsController(
+        IMediator mediator,
+        IRequestContextProvider requestContextProvider,
+        ITriggerJobResponseMapper triggerJobResponseMapper
+    )
     {
         _mediator = mediator;
+        _requestContextProvider = requestContextProvider;
         _triggerJobResponseMapper = triggerJobResponseMapper;
     }
 
@@ -53,9 +58,11 @@ public class JobsController : ControllerBase
     [HttpPost("{jobCategoryName}")]
     public async Task<IActionResult> Trigger(string jobCategoryName, object? payload)
     {
+        RequestContext requestContext = _requestContextProvider.GetContext();
         TriggerJobResult result = await _mediator.Send(
             new TriggerJobCommand
             {
+                RequestContext = requestContext,
                 Request = new TriggerJobRequest
                 {
                     JobCategoryName = jobCategoryName,
@@ -96,9 +103,11 @@ public class JobsController : ControllerBase
     [HttpPost("{jobCategoryName}/file")]
     public async Task<IActionResult> Trigger(string jobCategoryName, IFormFile? file)
     {
+        RequestContext requestContext = _requestContextProvider.GetContext();
         TriggerJobResult result = await _mediator.Send(
             new TriggerJobCommand
             {
+                RequestContext = requestContext,
                 Request = new TriggerJobRequest
                 {
                     JobCategoryName = jobCategoryName,
@@ -136,9 +145,11 @@ public class JobsController : ControllerBase
     [HttpGet("{jobId}")]
     public async Task<IActionResult> GetJob(string jobId)
     {
+        RequestContext requestContext = _requestContextProvider.GetContext();
         GetJobResult result = await _mediator.Send(
             new GetJobQuery
             {
+                RequestContext = requestContext,
                 Request = new GetJobRequest
                 {
                     JobId = jobId
@@ -163,9 +174,11 @@ public class JobsController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetJobs([FromQuery] ListRequest listRequest)
     {
+        RequestContext requestContext = _requestContextProvider.GetContext();
         GetJobsResult result = await _mediator.Send(
             new GetJobsQuery
             {
+                RequestContext = requestContext,
                 Request = listRequest
             }
         );
@@ -182,12 +195,14 @@ public class JobsController : ControllerBase
     [HttpGet("{jobId}/file")]
     public async Task<IActionResult> DownloadJobFile(string jobId)
     {
+        RequestContext requestContext = _requestContextProvider.GetContext();
         DownloadJobFileResult result = await _mediator.Send(
             new DownloadJobFileQuery
             {
+                RequestContext = requestContext,
                 Request = new DownloadJobFileRequest
                 {
-                    FileReference = jobId
+                    JobId = jobId
                 }
             }
         );

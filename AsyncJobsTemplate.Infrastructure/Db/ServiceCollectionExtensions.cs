@@ -10,6 +10,7 @@ using IJobsRepositoryGetJob = AsyncJobsTemplate.Core.Queries.GetJob.Interfaces.I
 using IJobsRepositoryGetJobs = AsyncJobsTemplate.Core.Queries.GetJobs.Interfaces.IJobsRepository;
 using IJobsRepositoryRunJob = AsyncJobsTemplate.Core.Commands.RunJob.Interfaces.IJobsRepository;
 using IJobsRepositoryTriggerJob = AsyncJobsTemplate.Core.Commands.TriggerJob.Interfaces.IJobsRepository;
+using IJobsRepositoryDownloadJobFile = AsyncJobsTemplate.Core.Queries.DownloadJobFile.Interfaces.IJobsRepository;
 
 namespace AsyncJobsTemplate.Infrastructure.Db;
 
@@ -28,6 +29,7 @@ internal static class ServiceCollectionExtensions
             .AddScoped<IJobsRepositoryRunJob, JobsRepository>()
             .AddScoped<IJobsRepositoryGetJob, JobsRepository>()
             .AddScoped<IJobsRepositoryGetJobs, JobsRepository>()
+            .AddScoped<IJobsRepositoryDownloadJobFile, JobsRepository>()
             .AddScoped<IJobMapper, JobMapper>();
     }
 

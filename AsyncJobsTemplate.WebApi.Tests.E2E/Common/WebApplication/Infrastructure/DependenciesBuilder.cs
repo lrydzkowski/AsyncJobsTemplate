@@ -1,43 +1,19 @@
-using AsyncJobsTemplate.WebApi.Tests.E2E.Common.Data;
-using AsyncJobsTemplate.WebApi.Tests.E2E.Common.Data.Db;
-using AsyncJobsTemplate.WebApi.Tests.E2E.Common.Data.StorageAccount;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Common.TestCases;
 using Microsoft.AspNetCore.Mvc.Testing;
+using WireMock.Server;
 
 namespace AsyncJobsTemplate.WebApi.Tests.E2E.Common.WebApplication.Infrastructure;
 
 internal static class DependenciesBuilder
 {
-    public static async Task<WebApplicationFactory<Program>> BuildAsync(
+    public static WebApplicationFactory<Program> WithDependencies(
         this WebApplicationFactory<Program> webApiFactory,
-        TestContextScope scope,
-        ITestCaseData testCaseData
+        WireMockServer wireMockServer,
+        ITestCaseData testCase
     )
     {
-        webApiFactory = await webApiFactory.MockDbDataAsync(scope, testCaseData);
-        webApiFactory = await webApiFactory.MockStorageAccountDataAsync(scope, testCaseData);
-
-        return webApiFactory;
-    }
-
-    private static async Task<WebApplicationFactory<Program>> MockDbDataAsync(
-        this WebApplicationFactory<Program> webApiFactory,
-        TestContextScope scope,
-        ITestCaseData testCaseData
-    )
-    {
-        await JobsData.CreateJobsAsync(scope, testCaseData.Data.Db.Jobs);
-
-        return webApiFactory;
-    }
-
-    private static async Task<WebApplicationFactory<Program>> MockStorageAccountDataAsync(
-        this WebApplicationFactory<Program> webApiFactory,
-        TestContextScope scope,
-        ITestCaseData testCaseData
-    )
-    {
-        await FilesData.SaveFilesAsync(scope, testCaseData.Data.StorageAccount.OutputFiles);
+        webApiFactory = webApiFactory.WithCustomUserEmail(testCase.UserEmail);
+        webApiFactory = webApiFactory.WithGetTodoData(wireMockServer, testCase);
 
         return webApiFactory;
     }

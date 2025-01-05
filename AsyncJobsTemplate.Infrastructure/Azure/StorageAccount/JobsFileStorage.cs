@@ -23,14 +23,14 @@ internal class JobsFileStorage : IJobsFileStorageTriggerJob, IJobsFileStorageRun
         _blobServiceClient = blobServiceClient;
     }
 
-    public async Task<JobFile?> GetOutputFileAsync(Guid jobId, CancellationToken cancellationToken)
+    public async Task<JobFile?> GetOutputFileAsync(Guid fileReference, CancellationToken cancellationToken)
     {
-        return await GetFileAsync(jobId, _options.OutputContainerName, cancellationToken);
+        return await GetFileAsync(fileReference, _options.OutputContainerName, cancellationToken);
     }
 
-    public async Task<JobFile?> GetInputFileAsync(Guid jobId, CancellationToken cancellationToken)
+    public async Task<JobFile?> GetInputFileAsync(Guid fileReference, CancellationToken cancellationToken)
     {
-        return await GetFileAsync(jobId, _options.InputContainerName, cancellationToken);
+        return await GetFileAsync(fileReference, _options.InputContainerName, cancellationToken);
     }
 
     public async Task<SaveFileResult> SaveOutputFileAsync(Guid jobId, JobFile file, CancellationToken cancellationToken)
@@ -92,10 +92,14 @@ internal class JobsFileStorage : IJobsFileStorageTriggerJob, IJobsFileStorageRun
         return result;
     }
 
-    private async Task<JobFile?> GetFileAsync(Guid jobId, string containerName, CancellationToken cancellationToken)
+    private async Task<JobFile?> GetFileAsync(
+        Guid fileReference,
+        string containerName,
+        CancellationToken cancellationToken
+    )
     {
         BlobContainerClient containerClient = _blobServiceClient.GetBlobContainerClient(containerName)!;
-        string fileName = jobId.ToString();
+        string fileName = fileReference.ToString();
         BlobClient blobClient = containerClient.GetBlobClient(fileName)!;
         if (!await blobClient.ExistsAsync(cancellationToken)!)
         {

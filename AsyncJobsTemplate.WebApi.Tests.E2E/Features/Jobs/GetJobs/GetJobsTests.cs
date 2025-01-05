@@ -13,6 +13,7 @@ using AsyncJobsTemplate.WebApi.Tests.E2E.Features.Jobs.GetJobs.Data;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Features.Jobs.GetJobs.Data.CorrectTestCases;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Features.Jobs.GetJobs.Data.IncorrectTestCases;
 using Microsoft.AspNetCore.Mvc.Testing;
+using WireMock.Server;
 
 namespace AsyncJobsTemplate.WebApi.Tests.E2E.Features.Jobs.GetJobs;
 
@@ -24,12 +25,14 @@ public class GetJobsTests
     private readonly LogMessages _logMessages;
     private readonly VerifySettings _verifySettings;
     private readonly WebApplicationFactory<Program> _webApiFactory;
+    private readonly WireMockServer _wireMockServer;
 
     public GetJobsTests(WebApiFactory webApiFactory)
     {
         _webApiFactory = webApiFactory.DisableAuth();
         _logMessages = webApiFactory.LogMessages;
         _verifySettings = webApiFactory.VerifySettings;
+        _wireMockServer = webApiFactory.WireMockServer;
     }
 
     [Fact]
@@ -56,20 +59,22 @@ public class GetJobsTests
         await Verify(results, _verifySettings);
     }
 
-    private async Task<GetJobTestResult> RunAsync(TestCaseData testCaseData)
+    private async Task<GetJobTestResult> RunAsync(TestCaseData testCase)
     {
-        await using TestContextScope contextScope = new(_webApiFactory, _logMessages);
+        WebApplicationFactory<Program> webApiFactory = _webApiFactory.WithDependencies(_wireMockServer, testCase);
+        await using TestContextScope contextScope = new(webApiFactory, _logMessages);
+        await JobsData.CreateJobsAsync(contextScope, testCase);
 
-        HttpClient client = (await _webApiFactory.BuildAsync(contextScope, testCaseData)).CreateClient();
-        using HttpRequestMessage requestMessage = new(HttpMethod.Get, BuildUrl(testCaseData));
+        HttpClient client = webApiFactory.CreateClient();
+        using HttpRequestMessage requestMessage = new(HttpMethod.Get, BuildUrl(testCase));
         using HttpResponseMessage responseMessage = await client.SendAsync(requestMessage);
         string response = await responseMessage.GetResponseMessageAsync();
 
         GetJobTestResult result = new()
         {
-            TestCaseId = testCaseData.TestCaseId,
-            Page = testCaseData.Page,
-            PageSize = testCaseData.PageSize,
+            TestCaseId = testCase.TestCaseId,
+            Page = testCase.Page,
+            PageSize = testCase.PageSize,
             JobEntitiesDb = await JobsData.GetJobsAsync(contextScope),
             LogMessages = _logMessages.GetSerialized(6),
             StatusCode = responseMessage.StatusCode,
@@ -79,18 +84,18 @@ public class GetJobsTests
         return result;
     }
 
-    private string BuildUrl(TestCaseData testCaseData)
+    private string BuildUrl(TestCaseData testCase)
     {
         string url = _endpointUrlPath;
         List<string> queryParameters = [];
-        if (testCaseData.Page.HasValue)
+        if (testCase.Page.HasValue)
         {
-            queryParameters.Add($"page={testCaseData.Page}");
+            queryParameters.Add($"page={testCase.Page}");
         }
 
-        if (testCaseData.PageSize.HasValue)
+        if (testCase.PageSize.HasValue)
         {
-            queryParameters.Add($"pageSize={testCaseData.PageSize}");
+            queryParameters.Add($"pageSize={testCase.PageSize}");
         }
 
         if (queryParameters.Any())

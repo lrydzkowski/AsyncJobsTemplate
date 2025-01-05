@@ -29,6 +29,10 @@ internal class JobEntityTypeConfiguration : IEntityTypeConfiguration<JobEntity>
             .HasColumnName(nameof(JobEntity.RecId))
             .ValueGeneratedOnAdd()
             .IsRequired();
+        builder.Property(company => company.UserEmail)
+            .HasColumnName(nameof(JobEntity.UserEmail))
+            .IsRequired()
+            .HasMaxLength(200);
         builder.Property(company => company.JobId)
             .HasColumnName(nameof(JobEntity.JobId))
             .IsRequired()

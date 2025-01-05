@@ -41,7 +41,8 @@ internal static class TestCase02
                             JobCategoryName = nameof(CorrectTestCases.TestCase01),
                             Status = "Created",
                             InputData = existingInputDataSerialized,
-                            CreatedAt = new DateTimeOffset(2025, 1, 1, 10, 0, 0, TimeSpan.Zero)
+                            CreatedAt = new DateTimeOffset(2025, 1, 1, 10, 0, 0, TimeSpan.Zero),
+                            UserEmail = "test@asyncjobstemplate.com"
                         }
                     ]
                 }

@@ -11,5 +11,7 @@ internal class TestCaseData : ITestCaseData
 
     public int TestCaseId { get; init; }
 
+    public string UserEmail { get; init; } = "test@asyncjobstemplate.com";
+
     public BaseTestCaseData Data { get; init; } = new();
 }

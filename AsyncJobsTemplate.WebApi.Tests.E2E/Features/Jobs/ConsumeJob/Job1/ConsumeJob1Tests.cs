@@ -62,11 +62,12 @@ public class ConsumeJob1Tests
 
     private async Task<ConsumeJob1MessageTestResult> RunAsync(TestCaseData testCase)
     {
-        WebApplicationFactory<Program> webApiFactory = _webApiFactory.WithCustomOptions(testCase.CustomOptions);
+        WebApplicationFactory<Program> webApiFactory = _webApiFactory.WithCustomUserEmail(testCase.UserEmail)
+            .WithCustomOptions(testCase.CustomOptions);
         await using TestContextScope contextScope = new(webApiFactory, _logMessages);
         if (testCase.UseDatabase)
         {
-            await JobsData.CreateJobsAsync(contextScope, testCase.Data.Db.Jobs);
+            await JobsData.CreateJobsAsync(contextScope, testCase);
         }
 
         ConsumeContext<JobMessage>? context = Substitute.For<ConsumeContext<JobMessage>>()!;

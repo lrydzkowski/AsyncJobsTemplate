@@ -2,14 +2,29 @@
 using AsyncJobsTemplate.Core.Commands.TriggerJob.Models;
 using AsyncJobsTemplate.Core.Common.Extensions;
 using AsyncJobsTemplate.Core.Common.Models;
+using AsyncJobsTemplate.Shared.Extensions;
+using AsyncJobsTemplate.Shared.Models.Context;
+using AsyncJobsTemplate.Shared.Validators;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
 namespace AsyncJobsTemplate.Core.Commands.TriggerJob;
 
-public class TriggerJobCommand : IRequest<TriggerJobResult>
+public class TriggerJobCommand : IRequest<TriggerJobResult>, IRequestContextOperation
 {
     public TriggerJobRequest Request { get; init; } = new();
+
+    public required RequestContext RequestContext { get; init; }
+}
+
+public class TriggerJobRequest
+{
+    public string? JobCategoryName { get; init; }
+
+    public IFormFile? File { get; init; }
+
+    public object? Data { get; init; }
 }
 
 public class TriggerJobResult
@@ -27,14 +42,17 @@ public class TriggerJobCommandHandler : IRequestHandler<TriggerJobCommand, Trigg
     private readonly IJobsQueue _jobsQueue;
     private readonly IJobsRepository _jobsRepository;
     private readonly ILogger<TriggerJobCommandHandler> _logger;
+    private readonly RequestContextValidator _requestContextValidator;
 
     public TriggerJobCommandHandler(
+        RequestContextValidator requestContextValidator,
         IJobsFileStorage jobFileStorage,
         IJobsRepository jobsRepository,
         IJobsQueue jobsQueue,
         ILogger<TriggerJobCommandHandler> logger
     )
     {
+        _requestContextValidator = requestContextValidator;
         _jobFileStorage = jobFileStorage;
         _jobsRepository = jobsRepository;
         _jobsQueue = jobsQueue;
@@ -43,10 +61,13 @@ public class TriggerJobCommandHandler : IRequestHandler<TriggerJobCommand, Trigg
 
     public async Task<TriggerJobResult> Handle(TriggerJobCommand command, CancellationToken cancellationToken)
     {
+        await _requestContextValidator.ValidateAndThrowIfInvalidAsync(command, cancellationToken);
+
         TriggerJobRequest request = command.Request;
 
         ProcessContext process = new()
         {
+            UserEmail = command.RequestContext.User.UserEmail,
             JobId = Guid.NewGuid(),
             JobCategoryName = request.JobCategoryName!,
             InputFile = request.File,
@@ -101,6 +122,7 @@ public class TriggerJobCommandHandler : IRequestHandler<TriggerJobCommand, Trigg
         {
             JobToCreate jobToCreate = new()
             {
+                UserEmail = process.UserEmail,
                 JobId = process.JobId,
                 JobCategoryName = process.JobCategoryName,
                 InputData = process.InputData,

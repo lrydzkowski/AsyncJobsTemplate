@@ -33,7 +33,8 @@ internal static class TestCase04
                             OutputFileReference = null,
                             Errors = null,
                             CreatedAt = new DateTimeOffset(2024, 12, 5, 0, 0, 0, TimeSpan.Zero),
-                            LastUpdatedAt = null
+                            LastUpdatedAt = null,
+                            UserEmail = "test@asyncjobstemplate.com"
                         },
                         new JobEntity
                         {
@@ -46,7 +47,8 @@ internal static class TestCase04
                             OutputFileReference = null,
                             Errors = null,
                             CreatedAt = new DateTimeOffset(2024, 12, 4, 0, 0, 0, TimeSpan.Zero),
-                            LastUpdatedAt = null
+                            LastUpdatedAt = null,
+                            UserEmail = "test@asyncjobstemplate.com"
                         },
                         new JobEntity
                         {
@@ -60,7 +62,8 @@ internal static class TestCase04
                             Errors =
                                 "[{\"message\":\"Test message\",\"errorCode\":\"error1\",\"exceptionMessage\":\"Exception message\"},{\"message\":\"Test message 2\",\"errorCode\":\"error2\",\"exceptionMessage\":\"Exception message 2\"}]",
                             CreatedAt = new DateTimeOffset(2024, 12, 3, 10, 0, 0, TimeSpan.Zero),
-                            LastUpdatedAt = new DateTimeOffset(2024, 12, 2, 0, 0, 0, TimeSpan.Zero)
+                            LastUpdatedAt = new DateTimeOffset(2024, 12, 2, 0, 0, 0, TimeSpan.Zero),
+                            UserEmail = "test@asyncjobstemplate.com"
                         },
                         new JobEntity
                         {
@@ -73,7 +76,8 @@ internal static class TestCase04
                             OutputFileReference = null,
                             Errors = null,
                             CreatedAt = new DateTimeOffset(2024, 12, 2, 8, 10, 0, TimeSpan.Zero),
-                            LastUpdatedAt = new DateTimeOffset(2024, 12, 2, 11, 10, 10, TimeSpan.Zero)
+                            LastUpdatedAt = new DateTimeOffset(2024, 12, 2, 11, 10, 10, TimeSpan.Zero),
+                            UserEmail = "test@asyncjobstemplate.com"
                         }
                     ]
                 }

@@ -1,6 +1,6 @@
-﻿using AsyncJobsTemplate.Core.Common.Models;
+using AsyncJobsTemplate.Core.Common.Models;
 
-namespace AsyncJobsTemplate.Core.Queries.GetJob.Interfaces;
+namespace AsyncJobsTemplate.Core.Queries.DownloadJobFile.Interfaces;
 
 public interface IJobsRepository
 {

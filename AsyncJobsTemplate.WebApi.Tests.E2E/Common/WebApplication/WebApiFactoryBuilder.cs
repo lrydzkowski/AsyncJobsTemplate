@@ -1,19 +1,21 @@
+using AsyncJobsTemplate.WebApi.Services;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Common.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using NSubstitute;
 
 namespace AsyncJobsTemplate.WebApi.Tests.E2E.Common.WebApplication;
 
 internal static class WebApiFactoryBuilder
 {
     public static WebApplicationFactory<Program> WithCustomOptions(
-        this WebApplicationFactory<Program> webApplicationFactory,
+        this WebApplicationFactory<Program> webApiFactory,
         Dictionary<string, string?> customOptions
     )
     {
-        return webApplicationFactory.WithWebHostBuilder(
+        return webApiFactory.WithWebHostBuilder(
             builder => builder.ConfigureAppConfiguration(
                 (_, configBuilder) => configBuilder.AddInMemoryCollection(customOptions)
             )
@@ -23,6 +25,17 @@ internal static class WebApiFactoryBuilder
     public static WebApplicationFactory<Program> DisableAuth(this WebApplicationFactory<Program> webApiFactory)
     {
         return webApiFactory.DisableAuthentication();
+    }
+
+    public static WebApplicationFactory<Program> WithCustomUserEmail(
+        this WebApplicationFactory<Program> webApiFactory,
+        string userEmail
+    )
+    {
+        IUserEmailProvider userEmailProvider = Substitute.For<IUserEmailProvider>();
+        userEmailProvider.GetUserEmailFromClaims().Returns(userEmail);
+
+        return webApiFactory.ReplaceService(userEmailProvider, ServiceLifetime.Singleton);
     }
 
     private static WebApplicationFactory<Program> DisableAuthentication(

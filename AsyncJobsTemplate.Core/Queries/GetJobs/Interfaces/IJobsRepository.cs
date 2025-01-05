@@ -5,5 +5,9 @@ namespace AsyncJobsTemplate.Core.Queries.GetJobs.Interfaces;
 
 public interface IJobsRepository
 {
-    public Task<PaginatedList<Job>> GetJobsAsync(ListParameters listParameters, CancellationToken cancellationToken);
+    public Task<PaginatedList<Job>> GetJobsAsync(
+        string userEmail,
+        ListParameters listParameters,
+        CancellationToken cancellationToken
+    );
 }

@@ -15,6 +15,7 @@
     JobEntitiesDb: [
       {
         RecId: 1,
+        UserEmail: test@asyncjobstemplate.com,
         JobId: Guid_1,
         JobCategoryName: job1,
         Status: Created,
@@ -23,6 +24,7 @@
       },
       {
         RecId: 2,
+        UserEmail: test@asyncjobstemplate.com,
         JobId: Guid_2,
         JobCategoryName: job2,
         Status: Running,
@@ -32,6 +34,7 @@
       },
       {
         RecId: 3,
+        UserEmail: test@asyncjobstemplate.com,
         JobId: Guid_4,
         JobCategoryName: job2,
         Status: Running,
@@ -119,6 +122,7 @@
     JobEntitiesDb: [
       {
         RecId: 1,
+        UserEmail: test@asyncjobstemplate.com,
         JobId: Guid_1,
         JobCategoryName: job1,
         Status: Created,
@@ -127,6 +131,7 @@
       },
       {
         RecId: 2,
+        UserEmail: test@asyncjobstemplate.com,
         JobId: Guid_2,
         JobCategoryName: job2,
         Status: Running,
@@ -136,6 +141,7 @@
       },
       {
         RecId: 3,
+        UserEmail: test@asyncjobstemplate.com,
         JobId: Guid_4,
         JobCategoryName: job2,
         Status: Running,
@@ -180,6 +186,7 @@
     JobEntitiesDb: [
       {
         RecId: 4,
+        UserEmail: test@asyncjobstemplate.com,
         JobId: Guid_7,
         JobCategoryName: job2,
         Status: Running,
@@ -190,6 +197,7 @@
       },
       {
         RecId: 3,
+        UserEmail: test@asyncjobstemplate.com,
         JobId: Guid_4,
         JobCategoryName: job2,
         Status: Running,
@@ -203,6 +211,7 @@
       },
       {
         RecId: 2,
+        UserEmail: test@asyncjobstemplate.com,
         JobId: Guid_2,
         JobCategoryName: job2,
         Status: Running,
@@ -212,6 +221,7 @@
       },
       {
         RecId: 1,
+        UserEmail: test@asyncjobstemplate.com,
         JobId: Guid_1,
         JobCategoryName: job1,
         Status: Created,

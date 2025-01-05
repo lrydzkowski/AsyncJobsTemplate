@@ -2,6 +2,8 @@ using System.Net;
 using AsyncJobsTemplate.Shared.Extensions;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Common;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Common.Data;
+using AsyncJobsTemplate.WebApi.Tests.E2E.Common.Data.Db;
+using AsyncJobsTemplate.WebApi.Tests.E2E.Common.Data.StorageAccount;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Common.Logging;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Common.Models;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Common.TestCollections;
@@ -11,6 +13,7 @@ using AsyncJobsTemplate.WebApi.Tests.E2E.Features.Jobs.DownloadJobFile.Data;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Features.Jobs.DownloadJobFile.Data.CorrectTestCases;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Features.Jobs.DownloadJobFile.Data.IncorrectTestCases;
 using Microsoft.AspNetCore.Mvc.Testing;
+using WireMock.Server;
 
 namespace AsyncJobsTemplate.WebApi.Tests.E2E.Features.Jobs.DownloadJobFile;
 
@@ -23,12 +26,14 @@ public class DownloadJobFileTests
     private readonly LogMessages _logMessages;
     private readonly VerifySettings _verifySettings;
     private readonly WebApplicationFactory<Program> _webApiFactory;
+    private readonly WireMockServer _wireMockServer;
 
     public DownloadJobFileTests(WebApiFactory webApiFactory)
     {
         _webApiFactory = webApiFactory.DisableAuth();
         _logMessages = webApiFactory.LogMessages;
         _verifySettings = webApiFactory.VerifySettings;
+        _wireMockServer = webApiFactory.WireMockServer;
     }
 
     [Fact]
@@ -55,18 +60,21 @@ public class DownloadJobFileTests
         await Verify(results, _verifySettings);
     }
 
-    private async Task<DownloadJobFileTestResult> RunAsync(TestCaseData testCaseData)
+    private async Task<DownloadJobFileTestResult> RunAsync(TestCaseData testCase)
     {
-        await using TestContextScope contextScope = new(_webApiFactory, _logMessages);
+        WebApplicationFactory<Program> webApiFactory = _webApiFactory.WithDependencies(_wireMockServer, testCase);
+        await using TestContextScope contextScope = new(webApiFactory, _logMessages);
+        await JobsData.CreateJobsAsync(contextScope, testCase);
+        await FilesData.SaveOutputFilesAsync(contextScope, testCase);
 
-        HttpClient client = (await _webApiFactory.BuildAsync(contextScope, testCaseData)).CreateClient();
-        using HttpRequestMessage requestMessage = new(HttpMethod.Get, BuildUrl(testCaseData));
+        HttpClient client = webApiFactory.CreateClient();
+        using HttpRequestMessage requestMessage = new(HttpMethod.Get, BuildUrl(testCase));
         using HttpResponseMessage responseMessage = await client.SendAsync(requestMessage);
         string response = await responseMessage.GetResponseMessageAsync();
 
         DownloadJobFileTestResult result = new()
         {
-            TestCaseId = testCaseData.TestCaseId,
+            TestCaseId = testCase.TestCaseId,
             LogMessages = _logMessages.GetSerialized(6),
             StatusCode = responseMessage.StatusCode,
             Response = response.PrettifyJson(4)
@@ -75,9 +83,9 @@ public class DownloadJobFileTests
         return result;
     }
 
-    private string BuildUrl(TestCaseData testCaseData)
+    private string BuildUrl(TestCaseData testCase)
     {
-        return _endpointUrlPath.Replace(JobIdPlaceholder, testCaseData.JobId);
+        return _endpointUrlPath.Replace(JobIdPlaceholder, testCase.JobId);
     }
 
     private class DownloadJobFileTestResult : IHttpTestResult

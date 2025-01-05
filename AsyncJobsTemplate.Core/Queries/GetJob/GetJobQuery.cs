@@ -2,14 +2,24 @@
 using AsyncJobsTemplate.Core.Common.Models;
 using AsyncJobsTemplate.Core.Queries.GetJob.Interfaces;
 using AsyncJobsTemplate.Core.Queries.GetJob.Models;
+using AsyncJobsTemplate.Shared.Extensions;
+using AsyncJobsTemplate.Shared.Models.Context;
+using AsyncJobsTemplate.Shared.Validators;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
 namespace AsyncJobsTemplate.Core.Queries.GetJob;
 
-public class GetJobQuery : IRequest<GetJobResult>
+public class GetJobQuery : IRequest<GetJobResult>, IRequestContextOperation
 {
     public GetJobRequest Request { get; init; } = new();
+
+    public required RequestContext RequestContext { get; init; }
+}
+
+public class GetJobRequest
+{
+    public string? JobId { get; init; }
 }
 
 public class GetJobResult
@@ -25,17 +35,26 @@ public class GetJobQueryHandler : IRequestHandler<GetJobQuery, GetJobResult>
 {
     private readonly IJobsRepository _jobsRepository;
     private readonly ILogger<GetJobQueryHandler> _logger;
+    private readonly RequestContextValidator _requestContextValidator;
 
-    public GetJobQueryHandler(ILogger<GetJobQueryHandler> logger, IJobsRepository jobsRepository)
+    public GetJobQueryHandler(
+        RequestContextValidator requestContextValidator,
+        ILogger<GetJobQueryHandler> logger,
+        IJobsRepository jobsRepository
+    )
     {
+        _requestContextValidator = requestContextValidator;
         _logger = logger;
         _jobsRepository = jobsRepository;
     }
 
     public async Task<GetJobResult> Handle(GetJobQuery query, CancellationToken cancellationToken)
     {
+        await _requestContextValidator.ValidateAndThrowIfInvalidAsync(query, cancellationToken);
+
         ProcessContext process = new()
         {
+            UserEmail = query.RequestContext.User.UserEmail,
             JobIdToParse = query.Request.JobId ?? ""
         };
         process = GetJobId(process);
@@ -74,7 +93,7 @@ public class GetJobQueryHandler : IRequestHandler<GetJobQuery, GetJobResult>
 
         try
         {
-            job = await _jobsRepository.GetJobAsync((Guid)process.JobId, cancellationToken);
+            job = await _jobsRepository.GetJobAsync(process.UserEmail, (Guid)process.JobId, cancellationToken);
         }
         catch (Exception ex)
         {
