@@ -652,10 +652,10 @@ components:
           items:
             $ref: '#/components/schemas/JobError'
           nullable: true
-        createdAtUtc:
+        createdAt:
           type: string
           format: date-time
-        lastUpdatedAtUtc:
+        lastUpdatedAt:
           type: string
           format: date-time
           nullable: true

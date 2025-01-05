@@ -19,7 +19,7 @@
         JobCategoryName: job1,
         Status: Created,
         InputData: {"key":"value"},
-        CreatedAtUtc: DateTime_1
+        CreatedAt: DateTimeOffset_1
       },
       {
         RecId: 2,
@@ -28,7 +28,7 @@
         Status: Running,
         InputData: {"key":"value"},
         InputFileReference: Guid_3,
-        CreatedAtUtc: DateTime_1
+        CreatedAt: DateTimeOffset_1
       },
       {
         RecId: 3,
@@ -40,8 +40,8 @@
         OutputData: {"key2":"value2"},
         OutputFileReference: Guid_6,
         Errors: [{"message":"Test message","errorCode":"error1","exceptionMessage":"Exception message"},{"message":"Test message 2","errorCode":"error2","exceptionMessage":"Exception message 2"}],
-        CreatedAtUtc: DateTime_1,
-        LastUpdatedAtUtc: DateTime_2
+        CreatedAt: DateTimeOffset_1,
+        LastUpdatedAt: DateTimeOffset_2
       }
     ],
     TestCaseId: 2,
@@ -62,8 +62,8 @@
             "outputData": null,
             "outputFileReference": null,
             "errors": [],
-            "createdAtUtc": "2024-12-01T00:00:00",
-            "lastUpdatedAtUtc": null
+            "createdAt": "2024-12-01T10:00:00\u002B00:00",
+            "lastUpdatedAt": null
           },
           {
             "jobId": "Guid_2",
@@ -76,8 +76,8 @@
             "outputData": null,
             "outputFileReference": null,
             "errors": [],
-            "createdAtUtc": "2024-12-01T00:00:00",
-            "lastUpdatedAtUtc": null
+            "createdAt": "2024-12-01T10:00:00\u002B00:00",
+            "lastUpdatedAt": null
           },
           {
             "jobId": "Guid_4",
@@ -105,8 +105,8 @@
                 "type": 1
               }
             ],
-            "createdAtUtc": "2024-12-01T00:00:00",
-            "lastUpdatedAtUtc": "2024-12-02T00:00:00"
+            "createdAt": "2024-12-01T10:00:00\u002B00:00",
+            "lastUpdatedAt": "2024-12-02T10:00:00\u002B00:00"
           }
         ],
         "count": 3
@@ -123,7 +123,7 @@
         JobCategoryName: job1,
         Status: Created,
         InputData: {"key":"value"},
-        CreatedAtUtc: DateTime_1
+        CreatedAt: DateTimeOffset_1
       },
       {
         RecId: 2,
@@ -132,7 +132,7 @@
         Status: Running,
         InputData: {"key":"value"},
         InputFileReference: Guid_3,
-        CreatedAtUtc: DateTime_1
+        CreatedAt: DateTimeOffset_1
       },
       {
         RecId: 3,
@@ -144,8 +144,8 @@
         OutputData: {"key2":"value2"},
         OutputFileReference: Guid_6,
         Errors: [{"message":"Test message","errorCode":"error1","exceptionMessage":"Exception message"},{"message":"Test message 2","errorCode":"error2","exceptionMessage":"Exception message 2"}],
-        CreatedAtUtc: DateTime_1,
-        LastUpdatedAtUtc: DateTime_2
+        CreatedAt: DateTimeOffset_1,
+        LastUpdatedAt: DateTimeOffset_2
       }
     ],
     TestCaseId: 3,
@@ -166,8 +166,8 @@
             "outputData": null,
             "outputFileReference": null,
             "errors": [],
-            "createdAtUtc": "2024-12-01T00:00:00",
-            "lastUpdatedAtUtc": null
+            "createdAt": "2024-12-01T10:00:00\u002B00:00",
+            "lastUpdatedAt": null
           }
         ],
         "count": 3
@@ -179,21 +179,14 @@
     PageSize: 2,
     JobEntitiesDb: [
       {
-        RecId: 1,
-        JobId: Guid_1,
-        JobCategoryName: job1,
-        Status: Created,
-        InputData: {"key":"value"},
-        CreatedAtUtc: DateTime_1
-      },
-      {
-        RecId: 2,
-        JobId: Guid_2,
+        RecId: 4,
+        JobId: Guid_7,
         JobCategoryName: job2,
         Status: Running,
-        InputData: {"key":"value"},
-        InputFileReference: Guid_3,
-        CreatedAtUtc: DateTime_1
+        InputData: {"key1":"value1"},
+        OutputData: {"key2":"value2"},
+        CreatedAt: DateTimeOffset_3,
+        LastUpdatedAt: DateTimeOffset_4
       },
       {
         RecId: 3,
@@ -205,18 +198,25 @@
         OutputData: {"key2":"value2"},
         OutputFileReference: Guid_6,
         Errors: [{"message":"Test message","errorCode":"error1","exceptionMessage":"Exception message"},{"message":"Test message 2","errorCode":"error2","exceptionMessage":"Exception message 2"}],
-        CreatedAtUtc: DateTime_1,
-        LastUpdatedAtUtc: DateTime_2
+        CreatedAt: DateTimeOffset_5,
+        LastUpdatedAt: DateTimeOffset_6
       },
       {
-        RecId: 4,
-        JobId: Guid_7,
+        RecId: 2,
+        JobId: Guid_2,
         JobCategoryName: job2,
         Status: Running,
-        InputData: {"key1":"value1"},
-        OutputData: {"key2":"value2"},
-        CreatedAtUtc: DateTime_1,
-        LastUpdatedAtUtc: DateTime_2
+        InputData: {"key":"value"},
+        InputFileReference: Guid_3,
+        CreatedAt: DateTimeOffset_7
+      },
+      {
+        RecId: 1,
+        JobId: Guid_1,
+        JobCategoryName: job1,
+        Status: Created,
+        InputData: {"key":"value"},
+        CreatedAt: DateTimeOffset_8
       }
     ],
     TestCaseId: 4,
@@ -252,8 +252,8 @@
                 "type": 1
               }
             ],
-            "createdAtUtc": "2024-12-01T00:00:00",
-            "lastUpdatedAtUtc": "2024-12-02T00:00:00"
+            "createdAt": "2024-12-03T10:00:00\u002B00:00",
+            "lastUpdatedAt": "2024-12-02T00:00:00\u002B00:00"
           },
           {
             "jobId": "Guid_7",
@@ -268,8 +268,8 @@
             },
             "outputFileReference": null,
             "errors": [],
-            "createdAtUtc": "2024-12-01T00:00:00",
-            "lastUpdatedAtUtc": "2024-12-02T00:00:00"
+            "createdAt": "2024-12-02T08:10:00\u002B00:00",
+            "lastUpdatedAt": "2024-12-02T11:10:10\u002B00:00"
           }
         ],
         "count": 4

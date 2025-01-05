@@ -8,7 +8,7 @@
         JobCategoryName: job1,
         Status: Created,
         InputData: {"key":"value"},
-        CreatedAtUtc: DateTime_1
+        CreatedAt: DateTimeOffset_1
       }
     ],
     TestCaseId: 1,
@@ -30,7 +30,7 @@
         JobCategoryName: job1,
         Status: Created,
         InputData: {"key":"value"},
-        CreatedAtUtc: DateTime_1
+        CreatedAt: DateTimeOffset_1
       }
     ],
     TestCaseId: 2,

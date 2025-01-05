@@ -525,9 +525,9 @@ export interface components {
             outputFileReference?: string | null;
             errors?: components["schemas"]["JobError"][] | null;
             /** Format: date-time */
-            createdAtUtc?: string;
+            createdAt?: string;
             /** Format: date-time */
-            lastUpdatedAtUtc?: string | null;
+            lastUpdatedAt?: string | null;
         };
         JobError: {
             message?: string | null;

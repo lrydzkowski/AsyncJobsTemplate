@@ -10,7 +10,7 @@
         InputData: {"key":"value"},
         OutputData: {"key1":"value1"},
         OutputFileReference: Guid_2,
-        CreatedAtUtc: DateTime_1
+        CreatedAt: DateTimeOffset_1
       }
     ],
     TestCaseId: 1,

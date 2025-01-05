@@ -29,8 +29,8 @@ internal static class TestCase03
                             OutputData = null,
                             OutputFileReference = null,
                             Errors = null,
-                            CreatedAtUtc = new DateTime(2024, 12, 1),
-                            LastUpdatedAtUtc = null
+                            CreatedAt = new DateTimeOffset(2024, 12, 1, 10, 0, 0, TimeSpan.Zero),
+                            LastUpdatedAt = null
                         }
                     ]
                 }

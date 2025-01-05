@@ -12,7 +12,7 @@
         JobCategoryName: TestCase01,
         Status: Created,
         InputData: {"key1":"Value1","key2":{"key3":"Value3","key4":4,"key5":true,"key6":"2025-01-01T10:00:00+00:00"}},
-        CreatedAtUtc: DateTime_1
+        CreatedAt: DateTimeOffset_1
       }
     ],
     JobId: Guid_3,
@@ -28,8 +28,8 @@
         Status: Failed,
         InputData: {"key":"value"},
         Errors: [{"message":"An unexpected error has occured in resolving a job type. Job type doesn\u0027t exist.","errorCode":"GetJobTypeFailure","exceptionMessage":null}],
-        CreatedAtUtc: DateTime_2,
-        LastUpdatedAtUtc: DateTime_3
+        CreatedAt: DateTimeOffset_2,
+        LastUpdatedAt: DateTimeOffset_3
       }
     ],
     JobId: Guid_1,

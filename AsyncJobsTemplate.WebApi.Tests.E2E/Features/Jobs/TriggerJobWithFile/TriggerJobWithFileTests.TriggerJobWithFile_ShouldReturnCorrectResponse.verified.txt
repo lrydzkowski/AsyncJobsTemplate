@@ -7,7 +7,7 @@
         JobCategoryName: TestCase01,
         Status: Created,
         InputFileReference: Guid_1,
-        CreatedAtUtc: DateTime_1
+        CreatedAt: DateTimeOffset_1
       }
     ],
     InputFilesStorageAccount: [

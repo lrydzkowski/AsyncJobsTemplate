@@ -3,7 +3,6 @@ using AsyncJobsTemplate.Core.Jobs;
 using AsyncJobsTemplate.Core.Jobs.Job1;
 using AsyncJobsTemplate.Core.Jobs.Job2;
 using AsyncJobsTemplate.Core.Jobs.Job3;
-using AsyncJobsTemplate.Shared.Services;
 using FluentValidation;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,7 +13,7 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddCoreServices(this IServiceCollection services, IConfiguration configuration)
     {
-        return services.AddMediatR().AddJobs().ConfigureFluentValidation().AddServices().AddOptions(configuration);
+        return services.AddMediatR().AddJobs().AddFluentValidation().AddOptions(configuration);
     }
 
     public static IServiceCollection AddOptionsType<TOptions>(
@@ -42,17 +41,12 @@ public static class ServiceCollectionExtensions
             .AddKeyedScoped<IJobHandler, Job3Handler>(Job3Handler.Name);
     }
 
-    private static IServiceCollection ConfigureFluentValidation(this IServiceCollection services)
+    private static IServiceCollection AddFluentValidation(this IServiceCollection services)
     {
         return services.AddValidatorsFromAssemblyContaining(
             typeof(ServiceCollectionExtensions),
             includeInternalTypes: true
         )!;
-    }
-
-    private static IServiceCollection AddServices(this IServiceCollection services)
-    {
-        return services.AddSingleton<IDateTimeProvider, DateTimeProvider>().AddSingleton<ISerializer, Serializer>();
     }
 
     private static IServiceCollection AddOptions(this IServiceCollection services, IConfiguration configuration)

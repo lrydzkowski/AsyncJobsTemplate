@@ -1,3 +1,4 @@
+using AsyncJobsTemplate.Shared.Services;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -7,14 +8,20 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddSharedServices(this IServiceCollection services)
     {
-        return services.ConfigureFluentValidation();
+        return services.AddFluentValidation().AddServices();
     }
 
-    private static IServiceCollection ConfigureFluentValidation(this IServiceCollection services)
+    private static IServiceCollection AddFluentValidation(this IServiceCollection services)
     {
         return services.AddValidatorsFromAssemblyContaining(
             typeof(ServiceCollectionExtensions),
             includeInternalTypes: true
         )!;
+    }
+
+    private static IServiceCollection AddServices(this IServiceCollection services)
+    {
+        return services.AddSingleton<IDateTimeOffsetProvider, DateTimeOffsetProvider>()
+            .AddSingleton<ISerializer, Serializer>();
     }
 }

@@ -19,11 +19,11 @@ internal static class JobsData
                     OutputData = job.OutputData,
                     OutputFileReference = job.OutputFileReference,
                     Errors = job.Errors,
-                    CreatedAtUtc = job.CreatedAtUtc,
-                    LastUpdatedAtUtc = job.LastUpdatedAtUtc
+                    CreatedAt = job.CreatedAt,
+                    LastUpdatedAt = job.LastUpdatedAt
                 }
             )
-            .OrderBy(job => job.CreatedAtUtc)
+            .OrderBy(job => job.CreatedAt)
             .ToListAsync();
     }
 
