@@ -5,6 +5,8 @@ namespace AsyncJobsTemplate.Core.Commands.TriggerJob.Models;
 
 internal class ProcessContext : ProcessContextBase
 {
+    public string UserEmail { get; init; } = "";
+
     public Guid JobId { get; init; }
 
     public string JobCategoryName { get; init; } = "";

@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <InternalsVisibleTo Include="AsyncJobsTemplate.WebApi.Tests.E2E" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
   </ItemGroup>
 
   <Target Name="OpenAPI" AfterTargets="Build" Condition="$(Configuration)=='Debug'">

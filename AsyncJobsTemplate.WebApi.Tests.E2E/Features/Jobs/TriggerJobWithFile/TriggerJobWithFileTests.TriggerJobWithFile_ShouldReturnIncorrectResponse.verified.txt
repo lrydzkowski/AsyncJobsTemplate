@@ -27,6 +27,7 @@ val1,val2,val3,
     JobEntitiesDb: [
       {
         RecId: 1,
+        UserEmail: test@asyncjobstemplate.com,
         JobId: Guid_2,
         JobCategoryName: TestCase02,
         Status: Created,

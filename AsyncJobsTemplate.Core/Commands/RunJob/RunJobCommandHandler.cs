@@ -16,6 +16,11 @@ public class RunJobCommand : IRequest<RunJobResult>
     public RunJobRequest Request { get; init; } = new();
 }
 
+public class RunJobRequest
+{
+    public Guid JobId { get; init; }
+}
+
 public class RunJobResult
 {
     public bool Result { get; init; }

@@ -1,13 +1,22 @@
 ﻿using AsyncJobsTemplate.Core.Common.Models;
 using AsyncJobsTemplate.Core.Queries.DownloadJobFile.Interfaces;
-using AsyncJobsTemplate.Core.Queries.DownloadJobFile.Models;
+using AsyncJobsTemplate.Shared.Extensions;
+using AsyncJobsTemplate.Shared.Models.Context;
+using AsyncJobsTemplate.Shared.Validators;
 using MediatR;
 
 namespace AsyncJobsTemplate.Core.Queries.DownloadJobFile;
 
-public class DownloadJobFileQuery : IRequest<DownloadJobFileResult>
+public class DownloadJobFileQuery : IRequest<DownloadJobFileResult>, IRequestContextOperation
 {
     public DownloadJobFileRequest Request { get; init; } = new();
+
+    public required RequestContext RequestContext { get; init; }
+}
+
+public class DownloadJobFileRequest
+{
+    public string? JobId { get; init; }
 }
 
 public class DownloadJobFileResult
@@ -18,26 +27,45 @@ public class DownloadJobFileResult
 public class DownloadJobFileQueryHandler : IRequestHandler<DownloadJobFileQuery, DownloadJobFileResult>
 {
     private readonly IJobsFileStorage _jobsFileStorage;
+    private readonly IJobsRepository _jobsRepository;
+    private readonly RequestContextValidator _requestContextValidator;
 
-    public DownloadJobFileQueryHandler(IJobsFileStorage jobsFileStorage)
+    public DownloadJobFileQueryHandler(
+        RequestContextValidator requestContextValidator,
+        IJobsRepository jobsRepository,
+        IJobsFileStorage jobsFileStorage
+    )
     {
+        _requestContextValidator = requestContextValidator;
+        _jobsRepository = jobsRepository;
         _jobsFileStorage = jobsFileStorage;
     }
 
     public async Task<DownloadJobFileResult> Handle(DownloadJobFileQuery query, CancellationToken cancellationToken)
     {
-        if (query.Request.FileReference is null)
+        await _requestContextValidator.ValidateAndThrowIfInvalidAsync(query, cancellationToken);
+
+        if (query.Request.JobId is null)
         {
             return new DownloadJobFileResult();
         }
 
-        bool parsingResult = Guid.TryParse(query.Request.FileReference, out Guid fileReference);
+        bool parsingResult = Guid.TryParse(query.Request.JobId, out Guid jobId);
         if (!parsingResult)
         {
             return new DownloadJobFileResult();
         }
 
-        JobFile? file = await _jobsFileStorage.GetOutputFileAsync(fileReference, cancellationToken);
+        Job? job = await _jobsRepository.GetJobAsync(query.RequestContext.User.UserEmail, jobId, cancellationToken);
+        if (job?.OutputFileReference is null)
+        {
+            return new DownloadJobFileResult();
+        }
+
+        JobFile? file = await _jobsFileStorage.GetOutputFileAsync(
+            Guid.Parse(job.OutputFileReference),
+            cancellationToken
+        );
         DownloadJobFileResult result = new()
         {
             File = file

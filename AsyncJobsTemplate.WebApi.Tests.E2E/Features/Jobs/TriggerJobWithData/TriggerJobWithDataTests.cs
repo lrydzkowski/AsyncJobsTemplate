@@ -61,15 +61,17 @@ public class TriggerJobWithDataTests
         await Verify(results, _verifySettings);
     }
 
-    private async Task<TriggerJobWithDataTestResult> RunAsync(TestCaseData testCaseData)
+    private async Task<TriggerJobWithDataTestResult> RunAsync(TestCaseData testCase)
     {
-        await using TestContextScope contextScope = new(_webApiFactory, _logMessages);
+        WebApplicationFactory<Program>? webApiFactory = _webApiFactory.WithCustomUserEmail(testCase.UserEmail);
+        await using TestContextScope contextScope = new(webApiFactory, _logMessages);
 
-        HttpClient client = _webApiFactory.WithCustomOptions(testCaseData.CustomOptions)
+        HttpClient client = webApiFactory
+            .WithCustomOptions(testCase.CustomOptions)
             .MockJobsQueue(contextScope.JobsQueue)
             .CreateClient();
-        using HttpRequestMessage requestMessage = new(HttpMethod.Post, BuildUrl(testCaseData));
-        requestMessage.CreateContent(testCaseData.DataToSend);
+        using HttpRequestMessage requestMessage = new(HttpMethod.Post, BuildUrl(testCase));
+        requestMessage.CreateContent(testCase.DataToSend);
         using HttpResponseMessage responseMessage = await client.SendAsync(requestMessage);
         string response = await responseMessage.GetResponseMessageAsync();
 
@@ -77,7 +79,7 @@ public class TriggerJobWithDataTests
         {
             JobEntitiesDb = await JobsData.GetJobsAsync(contextScope),
             SendMessageCalls = contextScope.JobsQueue.GetReceivedMethodCalls() ?? [],
-            TestCaseId = testCaseData.TestCaseId,
+            TestCaseId = testCase.TestCaseId,
             StatusCode = responseMessage.StatusCode,
             Response = response.PrettifyJson(4),
             LogMessages = _logMessages.GetSerialized(6)
@@ -86,9 +88,9 @@ public class TriggerJobWithDataTests
         return result;
     }
 
-    private string BuildUrl(TestCaseData testCaseData)
+    private string BuildUrl(TestCaseData testCase)
     {
-        return _endpointUrlPath.Replace(CategoryNamePlaceholder, testCaseData.CategoryName);
+        return _endpointUrlPath.Replace(CategoryNamePlaceholder, testCase.CategoryName);
     }
 
     private class TriggerJobWithDataTestResult : IHttpTestResult

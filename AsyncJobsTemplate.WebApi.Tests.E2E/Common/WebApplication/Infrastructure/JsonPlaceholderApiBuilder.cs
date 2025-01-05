@@ -11,7 +11,7 @@ namespace AsyncJobsTemplate.WebApi.Tests.E2E.Common.WebApplication.Infrastructur
 
 internal static class JsonPlaceholderApiBuilder
 {
-    public static WebApplicationFactory<Program> MockGetTodo(
+    public static WebApplicationFactory<Program> WithGetTodoData(
         this WebApplicationFactory<Program> webApplicationFactory,
         WireMockServer wireMockServer,
         ITestCaseData testCaseData
@@ -19,7 +19,7 @@ internal static class JsonPlaceholderApiBuilder
     {
         foreach (KeyValuePair<int, GetTodoResponseDto> todoResponse in testCaseData.Data.JsonPlaceholderApi.TodoData)
         {
-            webApplicationFactory = webApplicationFactory.MockGetTodo(
+            webApplicationFactory = webApplicationFactory.WithGetTodoData(
                 wireMockServer,
                 todoResponse.Key,
                 todoResponse.Value
@@ -29,7 +29,7 @@ internal static class JsonPlaceholderApiBuilder
         return webApplicationFactory;
     }
 
-    public static WebApplicationFactory<Program> MockGetTodo(
+    public static WebApplicationFactory<Program> WithGetTodoData(
         this WebApplicationFactory<Program> webApplicationFactory,
         WireMockServer wireMockServer,
         int todoId,

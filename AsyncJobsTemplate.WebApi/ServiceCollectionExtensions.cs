@@ -4,6 +4,7 @@ using AsyncJobsTemplate.Infrastructure.Azure.Options;
 using AsyncJobsTemplate.WebApi.Consumers;
 using AsyncJobsTemplate.WebApi.Mappers;
 using AsyncJobsTemplate.WebApi.Options;
+using AsyncJobsTemplate.WebApi.Services;
 using Azure.Core;
 using MassTransit;
 using Microsoft.Extensions.Options;
@@ -93,7 +94,9 @@ public static class ServiceCollectionExtensions
 
     private static IServiceCollection AddServices(this IServiceCollection services)
     {
-        return services.AddSingleton<ITriggerJobResponseMapper, TriggerJobResponseMapper>();
+        return services.AddSingleton<ITriggerJobResponseMapper, TriggerJobResponseMapper>()
+            .AddScoped<IUserEmailProvider, UserEmailProvider>()
+            .AddScoped<IRequestContextProvider, RequestContextProvider>();
     }
 
     private static IServiceCollection AddCorsDefaultPolicy(

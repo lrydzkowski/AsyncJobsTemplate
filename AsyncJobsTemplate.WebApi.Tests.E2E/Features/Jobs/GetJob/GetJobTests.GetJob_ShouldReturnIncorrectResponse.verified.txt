@@ -4,6 +4,7 @@
     JobEntitiesDb: [
       {
         RecId: 1,
+        UserEmail: test@asyncjobstemplate.com,
         JobId: Guid_1,
         JobCategoryName: job1,
         Status: Created,
@@ -26,6 +27,7 @@
     JobEntitiesDb: [
       {
         RecId: 1,
+        UserEmail: test@asyncjobstemplate.com,
         JobId: Guid_1,
         JobCategoryName: job1,
         Status: Created,

@@ -69,14 +69,16 @@ public class TriggerJobWithFileTests
         await Verify(results, _verifySettings);
     }
 
-    private async Task<TriggerJobWithFileTestResult> RunAsync(TestCaseData testCaseData)
+    private async Task<TriggerJobWithFileTestResult> RunAsync(TestCaseData testCase)
     {
-        await using TestContextScope contextScope = new(_webApiFactory, _logMessages);
+        WebApplicationFactory<Program> webApiFactory = _webApiFactory.WithCustomUserEmail(testCase.UserEmail);
+        await using TestContextScope contextScope = new(webApiFactory, _logMessages);
 
-        HttpClient client = _webApiFactory.WithCustomOptions(testCaseData.CustomOptions)
+        HttpClient client = webApiFactory
+            .WithCustomOptions(testCase.CustomOptions)
             .MockJobsQueue(contextScope.JobsQueue)
             .CreateClient();
-        using HttpRequestMessage requestMessage = BuildRequestMessage(testCaseData);
+        using HttpRequestMessage requestMessage = BuildRequestMessage(testCase);
         using HttpResponseMessage responseMessage = await client.SendAsync(requestMessage);
         string response = await responseMessage.GetResponseMessageAsync();
 
@@ -85,7 +87,7 @@ public class TriggerJobWithFileTests
             JobEntitiesDb = await JobsData.GetJobsAsync(contextScope),
             InputFilesStorageAccount = await FilesData.GetInputFilesAsync(contextScope),
             SendMessageCalls = contextScope.JobsQueue.GetReceivedMethodCalls() ?? [],
-            TestCaseId = testCaseData.TestCaseId,
+            TestCaseId = testCase.TestCaseId,
             StatusCode = responseMessage.StatusCode,
             Response = response.PrettifyJson(4),
             LogMessages = _logMessages.GetSerialized(6)
@@ -94,25 +96,25 @@ public class TriggerJobWithFileTests
         return result;
     }
 
-    private HttpRequestMessage BuildRequestMessage(TestCaseData testCaseData)
+    private HttpRequestMessage BuildRequestMessage(TestCaseData testCAse)
     {
-        HttpRequestMessage? requestMessage = new(HttpMethod.Post, BuildUrl(testCaseData));
+        HttpRequestMessage? requestMessage = new(HttpMethod.Post, BuildUrl(testCAse));
         byte[] file = EmbeddedFile.Get(
-            $"Features/Jobs/TriggerJobWithFile/Data/Assets/{testCaseData.FileToSend}",
+            $"Features/Jobs/TriggerJobWithFile/Data/Assets/{testCAse.FileToSend}",
             Assembly.GetExecutingAssembly()
         );
         MultipartFormDataContent formData = new();
         ByteArrayContent fileContent = new(file);
         fileContent.Headers.Add(HeaderNames.ContentType, MediaTypeNames.Text.Csv);
-        formData.Add(fileContent, "file", testCaseData.FileToSend);
+        formData.Add(fileContent, "file", testCAse.FileToSend);
         requestMessage.Content = formData;
 
         return requestMessage;
     }
 
-    private string BuildUrl(TestCaseData testCaseData)
+    private string BuildUrl(TestCaseData testCase)
     {
-        return _endpointUrlPath.Replace(CategoryNamePlaceholder, testCaseData.CategoryName);
+        return _endpointUrlPath.Replace(CategoryNamePlaceholder, testCase.CategoryName);
     }
 
     private class TriggerJobWithFileTestResult : IHttpTestResult

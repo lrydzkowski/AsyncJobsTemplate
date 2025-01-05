@@ -18,9 +18,9 @@ internal static class FilesData
         return await GetFilesAsync(scope, AzureStorageContainerType.Output);
     }
 
-    public static async Task SaveFilesAsync(TestContextScope scope, List<JobFileInfo> files)
+    public static async Task SaveOutputFilesAsync(TestContextScope scope, ITestCaseData testCase)
     {
-        foreach (JobFileInfo file in files)
+        foreach (JobFileInfo file in testCase.Data.StorageAccount.OutputFiles)
         {
             await SaveFileAsync(scope, AzureStorageContainerType.Output, file);
         }

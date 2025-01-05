@@ -4,5 +4,7 @@ internal interface ITestCaseData
 {
     int TestCaseId { get; init; }
 
+    string UserEmail { get; init; }
+
     BaseTestCaseData Data { get; init; }
 }

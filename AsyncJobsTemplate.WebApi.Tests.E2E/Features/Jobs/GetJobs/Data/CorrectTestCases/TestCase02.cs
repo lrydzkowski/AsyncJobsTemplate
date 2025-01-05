@@ -31,7 +31,8 @@ internal static class TestCase02
                             OutputFileReference = null,
                             Errors = null,
                             CreatedAt = new DateTimeOffset(2024, 12, 1, 10, 0, 0, TimeSpan.Zero),
-                            LastUpdatedAt = null
+                            LastUpdatedAt = null,
+                            UserEmail = "test@asyncjobstemplate.com"
                         },
                         new JobEntity
                         {
@@ -44,7 +45,8 @@ internal static class TestCase02
                             OutputFileReference = null,
                             Errors = null,
                             CreatedAt = new DateTimeOffset(2024, 12, 1, 10, 0, 0, TimeSpan.Zero),
-                            LastUpdatedAt = null
+                            LastUpdatedAt = null,
+                            UserEmail = "test@asyncjobstemplate.com"
                         },
                         new JobEntity
                         {
@@ -58,7 +60,8 @@ internal static class TestCase02
                             Errors =
                                 "[{\"message\":\"Test message\",\"errorCode\":\"error1\",\"exceptionMessage\":\"Exception message\"},{\"message\":\"Test message 2\",\"errorCode\":\"error2\",\"exceptionMessage\":\"Exception message 2\"}]",
                             CreatedAt = new DateTimeOffset(2024, 12, 1, 10, 0, 0, TimeSpan.Zero),
-                            LastUpdatedAt = new DateTimeOffset(2024, 12, 2, 10, 0, 0, TimeSpan.Zero)
+                            LastUpdatedAt = new DateTimeOffset(2024, 12, 2, 10, 0, 0, TimeSpan.Zero),
+                            UserEmail = "test@asyncjobstemplate.com"
                         }
                     ]
                 }

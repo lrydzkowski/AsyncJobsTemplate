@@ -10,13 +10,18 @@ using IJobsRepositoryGetJob = AsyncJobsTemplate.Core.Queries.GetJob.Interfaces.I
 using IJobsRepositoryGetJobs = AsyncJobsTemplate.Core.Queries.GetJobs.Interfaces.IJobsRepository;
 using IJobsRepositoryRunJob = AsyncJobsTemplate.Core.Commands.RunJob.Interfaces.IJobsRepository;
 using IJobsRepositoryTriggerJob = AsyncJobsTemplate.Core.Commands.TriggerJob.Interfaces.IJobsRepository;
+using IJobsRepositoryDownloadJobFile = AsyncJobsTemplate.Core.Queries.DownloadJobFile.Interfaces.IJobsRepository;
 using JobError = AsyncJobsTemplate.Infrastructure.Db.Models.JobError;
 using JobErrorCore = AsyncJobsTemplate.Core.Common.Models.JobError;
 
 namespace AsyncJobsTemplate.Infrastructure.Db.Repositories;
 
 internal class JobsRepository
-    : IJobsRepositoryTriggerJob, IJobsRepositoryRunJob, IJobsRepositoryGetJob, IJobsRepositoryGetJobs
+    : IJobsRepositoryTriggerJob,
+        IJobsRepositoryRunJob,
+        IJobsRepositoryGetJob,
+        IJobsRepositoryGetJobs,
+        IJobsRepositoryDownloadJobFile
 {
     private readonly AppDbContext _appDbContext;
     private readonly IDateTimeOffsetProvider _dateTimeOffsetProvider;
@@ -36,13 +41,32 @@ internal class JobsRepository
         _serializer = serializer;
     }
 
+    public async Task<Job?> GetJobAsync(string userEmail, Guid jobId, CancellationToken cancellationToken)
+    {
+        JobEntity? jobEntity = await _appDbContext.Jobs.AsNoTracking()
+            .FirstOrDefaultAsync(
+                jobEntity => jobEntity.UserEmail == userEmail && jobEntity.JobId == jobId,
+                cancellationToken
+            );
+        if (jobEntity is null)
+        {
+            return null;
+        }
+
+        Job job = BuildJob(jobEntity);
+
+        return job;
+    }
+
     public async Task<PaginatedList<Job>> GetJobsAsync(
+        string userEmail,
         ListParameters listParameters,
         CancellationToken cancellationToken
     )
     {
         IQueryable<JobEntity> query = _appDbContext.Jobs.AsNoTracking()
-            .Select(jobEntity => jobEntity);
+            .Select(jobEntity => jobEntity)
+            .Where(jobEntity => jobEntity.UserEmail == userEmail);
         List<JobEntity> jobEntities = await query
             .OrderByDescending(x => x.CreatedAt)
             .Skip((listParameters.Pagination.Page - 1) * listParameters.Pagination.PageSize)
@@ -62,7 +86,10 @@ internal class JobsRepository
     public async Task<Job?> GetJobAsync(Guid jobId, CancellationToken cancellationToken)
     {
         JobEntity? jobEntity = await _appDbContext.Jobs.AsNoTracking()
-            .FirstOrDefaultAsync(jobEntity => jobEntity.JobId == jobId, cancellationToken);
+            .FirstOrDefaultAsync(
+                jobEntity => jobEntity.JobId == jobId,
+                cancellationToken
+            );
         if (jobEntity is null)
         {
             return null;
@@ -107,6 +134,7 @@ internal class JobsRepository
     {
         JobEntity jobEntity = new()
         {
+            UserEmail = jobToCreate.UserEmail,
             JobId = jobToCreate.JobId,
             JobCategoryName = jobToCreate.JobCategoryName,
             InputData = jobToCreate.InputData is null ? null : _serializer.Serialize(jobToCreate.InputData),

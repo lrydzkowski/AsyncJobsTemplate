@@ -2,6 +2,8 @@
 
 public class JobToCreate
 {
+    public string UserEmail { get; init; } = "";
+
     public Guid JobId { get; init; }
 
     public string JobCategoryName { get; init; } = "";

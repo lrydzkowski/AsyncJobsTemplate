@@ -1,4 +1,5 @@
 using AsyncJobsTemplate.Infrastructure.Db.Entities;
+using AsyncJobsTemplate.WebApi.Tests.E2E.Common.TestCases;
 using Microsoft.EntityFrameworkCore;
 
 namespace AsyncJobsTemplate.WebApi.Tests.E2E.Common.Data.Db;
@@ -20,21 +21,17 @@ internal static class JobsData
                     OutputFileReference = job.OutputFileReference,
                     Errors = job.Errors,
                     CreatedAt = job.CreatedAt,
-                    LastUpdatedAt = job.LastUpdatedAt
+                    LastUpdatedAt = job.LastUpdatedAt,
+                    UserEmail = job.UserEmail
                 }
             )
             .OrderBy(job => job.CreatedAt)
             .ToListAsync();
     }
 
-    public static async Task CreateJobAsync(TestContextScope scope, JobEntity jobEntity)
+    public static async Task CreateJobsAsync(TestContextScope scope, ITestCaseData testCase)
     {
-        await CreateJobsAsync(scope, [jobEntity]);
-    }
-
-    public static async Task CreateJobsAsync(TestContextScope scope, List<JobEntity> jobEntities)
-    {
-        scope.Db.Context.Jobs.AddRange(jobEntities);
+        scope.Db.Context.Jobs.AddRange(testCase.Data.Db.Jobs);
         await scope.Db.Context.SaveChangesAsync();
     }
 }

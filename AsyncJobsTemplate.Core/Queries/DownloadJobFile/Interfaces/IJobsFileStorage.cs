@@ -4,5 +4,5 @@ namespace AsyncJobsTemplate.Core.Queries.DownloadJobFile.Interfaces;
 
 public interface IJobsFileStorage
 {
-    Task<JobFile?> GetOutputFileAsync(Guid jobId, CancellationToken cancellationToken);
+    Task<JobFile?> GetOutputFileAsync(Guid fileReference, CancellationToken cancellationToken);
 }

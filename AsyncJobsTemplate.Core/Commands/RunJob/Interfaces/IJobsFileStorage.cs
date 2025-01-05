@@ -5,7 +5,7 @@ namespace AsyncJobsTemplate.Core.Commands.RunJob.Interfaces;
 
 public interface IJobsFileStorage
 {
-    Task<JobFile?> GetInputFileAsync(Guid jobId, CancellationToken cancellationToken);
+    Task<JobFile?> GetInputFileAsync(Guid fileReference, CancellationToken cancellationToken);
 
     Task<SaveFileResult> SaveOutputFileAsync(Guid jobId, JobFile file, CancellationToken cancellationToken);
 }

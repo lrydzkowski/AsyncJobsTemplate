@@ -53,9 +53,9 @@ public class ConsumeJob3Tests
 
     private async Task<ConsumeJob3MessageTestResult> RunAsync(TestCaseData testCase)
     {
-        WebApplicationFactory<Program> webApiFactory = _webApiFactory.MockGetTodo(_wireMockServer, testCase);
+        WebApplicationFactory<Program> webApiFactory = _webApiFactory.WithDependencies(_wireMockServer, testCase);
         await using TestContextScope contextScope = new(webApiFactory, _logMessages);
-        await JobsData.CreateJobsAsync(contextScope, testCase.Data.Db.Jobs);
+        await JobsData.CreateJobsAsync(contextScope, testCase);
 
         ConsumeContext<JobMessage>? context = Substitute.For<ConsumeContext<JobMessage>>()!;
         context.Message.Returns(new JobMessage { JobId = testCase.JobId });

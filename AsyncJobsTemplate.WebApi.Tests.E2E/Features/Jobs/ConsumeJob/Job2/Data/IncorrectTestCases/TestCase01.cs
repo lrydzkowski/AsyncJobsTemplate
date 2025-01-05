@@ -31,7 +31,8 @@ internal static class TestCase01
                             JobId = new Guid("6C75377E-FAD6-4128-A22A-EE0C335C754B"),
                             JobCategoryName = Job2Handler.Name,
                             Status = "Created",
-                            CreatedAt = new DateTimeOffset(2025, 1, 1, 10, 0, 0, TimeSpan.Zero)
+                            CreatedAt = new DateTimeOffset(2025, 1, 1, 10, 0, 0, TimeSpan.Zero),
+                            UserEmail = "test@asyncjobstemplate.com"
                         }
                     ]
                 }
