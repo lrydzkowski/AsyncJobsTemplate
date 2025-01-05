@@ -56,10 +56,10 @@ internal class JobEntityTypeConfiguration : IEntityTypeConfiguration<JobEntity>
         builder.Property(company => company.Errors)
             .HasColumnName(nameof(JobEntity.Errors))
             .HasMaxLength(10000);
-        builder.Property(company => company.CreatedAtUtc)
-            .HasColumnName(nameof(JobEntity.CreatedAtUtc))
+        builder.Property(company => company.CreatedAt)
+            .HasColumnName(nameof(JobEntity.CreatedAt))
             .IsRequired();
-        builder.Property(company => company.LastUpdatedAtUtc)
-            .HasColumnName(nameof(JobEntity.LastUpdatedAtUtc));
+        builder.Property(company => company.LastUpdatedAt)
+            .HasColumnName(nameof(JobEntity.LastUpdatedAt));
     }
 }

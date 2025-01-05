@@ -19,19 +19,19 @@ internal class JobsRepository
     : IJobsRepositoryTriggerJob, IJobsRepositoryRunJob, IJobsRepositoryGetJob, IJobsRepositoryGetJobs
 {
     private readonly AppDbContext _appDbContext;
-    private readonly IDateTimeProvider _dateTimeProvider;
+    private readonly IDateTimeOffsetProvider _dateTimeOffsetProvider;
     private readonly IJobMapper _jobMapper;
     private readonly ISerializer _serializer;
 
     public JobsRepository(
         AppDbContext appDbContext,
-        IDateTimeProvider dateTimeProvider,
+        IDateTimeOffsetProvider dateTimeOffsetProvider,
         IJobMapper jobMapper,
         ISerializer serializer
     )
     {
         _appDbContext = appDbContext;
-        _dateTimeProvider = dateTimeProvider;
+        _dateTimeOffsetProvider = dateTimeOffsetProvider;
         _jobMapper = jobMapper;
         _serializer = serializer;
     }
@@ -44,7 +44,7 @@ internal class JobsRepository
         IQueryable<JobEntity> query = _appDbContext.Jobs.AsNoTracking()
             .Select(jobEntity => jobEntity);
         List<JobEntity> jobEntities = await query
-            .OrderByDescending(x => x.CreatedAtUtc)
+            .OrderByDescending(x => x.CreatedAt)
             .Skip((listParameters.Pagination.Page - 1) * listParameters.Pagination.PageSize)
             .Take(listParameters.Pagination.PageSize)
             .ToListAsync(cancellationToken);
@@ -88,7 +88,7 @@ internal class JobsRepository
                     .SetProperty(jobEntity => jobEntity.OutputData, serializedOutputData)
                     .SetProperty(jobEntity => jobEntity.OutputFileReference, jobToUpdate.OutputFileReference)
                     .SetProperty(jobEntity => jobEntity.Errors, serializedErrors)
-                    .SetProperty(jobEntity => jobEntity.LastUpdatedAtUtc, _dateTimeProvider.UtcNow),
+                    .SetProperty(jobEntity => jobEntity.LastUpdatedAt, _dateTimeOffsetProvider.UtcNow),
                 cancellationToken
             );
     }
@@ -98,7 +98,7 @@ internal class JobsRepository
         await _appDbContext.Jobs.Where(jobEntity => jobEntity.JobId == jobId)
             .ExecuteUpdateAsync(
                 x => x.SetProperty(jobEntity => jobEntity.Status, status.ToString())
-                    .SetProperty(jobEntity => jobEntity.LastUpdatedAtUtc, _dateTimeProvider.UtcNow),
+                    .SetProperty(jobEntity => jobEntity.LastUpdatedAt, _dateTimeOffsetProvider.UtcNow),
                 cancellationToken
             );
     }
@@ -111,7 +111,7 @@ internal class JobsRepository
             JobCategoryName = jobToCreate.JobCategoryName,
             InputData = jobToCreate.InputData is null ? null : _serializer.Serialize(jobToCreate.InputData),
             InputFileReference = jobToCreate.InputFileReference,
-            CreatedAtUtc = _dateTimeProvider.UtcNow
+            CreatedAt = _dateTimeOffsetProvider.UtcNow
         };
         _appDbContext.Add(jobEntity);
         await _appDbContext.SaveChangesAsync(cancellationToken);
@@ -129,7 +129,7 @@ internal class JobsRepository
             )
             .ExecuteUpdateAsync(
                 x => x.SetProperty(jobEntity => jobEntity.Errors, serializedErrors)
-                    .SetProperty(jobEntity => jobEntity.LastUpdatedAtUtc, _dateTimeProvider.UtcNow),
+                    .SetProperty(jobEntity => jobEntity.LastUpdatedAt, _dateTimeOffsetProvider.UtcNow),
                 cancellationToken
             );
     }
@@ -163,8 +163,8 @@ internal class JobsRepository
             Errors = jobEntity.Errors is null
                 ? []
                 : _jobMapper.Map(_serializer.Deserialize<List<JobError>>(jobEntity.Errors) ?? []),
-            CreatedAtUtc = jobEntity.CreatedAtUtc,
-            LastUpdatedAtUtc = jobEntity.LastUpdatedAtUtc
+            CreatedAt = jobEntity.CreatedAt,
+            LastUpdatedAt = jobEntity.LastUpdatedAt
         };
 
         return job;

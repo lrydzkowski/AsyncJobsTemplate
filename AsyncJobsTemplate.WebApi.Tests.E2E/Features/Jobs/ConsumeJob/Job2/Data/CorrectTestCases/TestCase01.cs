@@ -41,7 +41,7 @@ internal static class TestCase01
                             JobCategoryName = Job2Handler.Name,
                             Status = "Created",
                             InputData = existingInputDataSerialized,
-                            CreatedAtUtc = new DateTime(2025, 1, 1, 10, 0, 0, DateTimeKind.Utc)
+                            CreatedAt = new DateTimeOffset(2025, 1, 1, 10, 0, 0, TimeSpan.Zero)
                         }
                     ]
                 }

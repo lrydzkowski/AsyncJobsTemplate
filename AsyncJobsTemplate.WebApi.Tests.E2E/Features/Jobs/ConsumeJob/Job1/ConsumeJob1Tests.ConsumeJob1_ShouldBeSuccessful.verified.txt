@@ -8,8 +8,8 @@
         Status: Finished,
         InputData: {"key1":"Value1","key2":{"key3":"Value3","key4":4,"key5":true,"key6":"2025-01-09T10:11:00+00:00"}},
         OutputData: {"result":true},
-        CreatedAtUtc: DateTime_1,
-        LastUpdatedAtUtc: DateTime_2
+        CreatedAt: DateTimeOffset_1,
+        LastUpdatedAt: DateTimeOffset_2
       }
     ],
     JobId: Guid_1,

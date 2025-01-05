@@ -24,7 +24,7 @@ internal class JobEntity
 
     public string? Errors { get; set; }
 
-    public DateTime CreatedAtUtc { get; set; }
+    public DateTimeOffset CreatedAt { get; set; }
 
-    public DateTime? LastUpdatedAtUtc { get; set; }
+    public DateTimeOffset? LastUpdatedAt { get; set; }
 }
