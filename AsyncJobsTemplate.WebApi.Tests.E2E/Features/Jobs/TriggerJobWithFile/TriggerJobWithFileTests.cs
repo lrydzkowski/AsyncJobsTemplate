@@ -1,6 +1,7 @@
 using System.Net;
 using System.Net.Mime;
 using System.Reflection;
+using AsyncJobsTemplate.Core.Commands.TriggerJob.Interfaces;
 using AsyncJobsTemplate.Infrastructure.Db.Entities;
 using AsyncJobsTemplate.Shared.Extensions;
 using AsyncJobsTemplate.Shared.Services;
@@ -71,12 +72,12 @@ public class TriggerJobWithFileTests
 
     private async Task<TriggerJobWithFileTestResult> RunAsync(TestCaseData testCase)
     {
-        WebApplicationFactory<Program> webApiFactory = _webApiFactory.WithCustomUserEmail(testCase.UserEmail);
+        WebApplicationFactory<Program> webApiFactory = _webApiFactory.WithCustomUserEmail(testCase.UserEmail)
+            .WithJobsQueueMock(out IJobsQueue jobsQueue);
         await using TestContextScope contextScope = new(webApiFactory, _logMessages);
 
         HttpClient client = webApiFactory
             .WithCustomOptions(testCase.CustomOptions)
-            .MockJobsQueue(contextScope.JobsQueue)
             .CreateClient();
         using HttpRequestMessage requestMessage = BuildRequestMessage(testCase);
         using HttpResponseMessage responseMessage = await client.SendAsync(requestMessage);
@@ -84,9 +85,9 @@ public class TriggerJobWithFileTests
 
         TriggerJobWithFileTestResult result = new()
         {
-            JobEntitiesDb = await JobsData.GetJobsAsync(contextScope),
-            InputFilesStorageAccount = await FilesData.GetInputFilesAsync(contextScope),
-            SendMessageCalls = contextScope.JobsQueue.GetReceivedMethodCalls() ?? [],
+            JobEntitiesDb = await contextScope.GetJobsAsync(),
+            InputFilesStorageAccount = await contextScope.GetInputFilesAsync(),
+            SendMessageCalls = jobsQueue.GetReceivedMethodCalls() ?? [],
             TestCaseId = testCase.TestCaseId,
             StatusCode = responseMessage.StatusCode,
             Response = response.PrettifyJson(4),

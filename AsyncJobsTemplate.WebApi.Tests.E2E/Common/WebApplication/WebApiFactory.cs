@@ -28,6 +28,7 @@ public class WebApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
         VerifySettings.ScrubInlineDateTimes("ddd, dd MMM yyyy HH:mm:ss 'GMT'");
         VerifySettings.ScrubInlineGuids();
         VerifySettings.ScrubInlineSqlServerHost();
+        VerifySettings.DontIgnoreEmptyCollections();
     }
 
     public AzuriteContainer AzuriteContainer { get; } =

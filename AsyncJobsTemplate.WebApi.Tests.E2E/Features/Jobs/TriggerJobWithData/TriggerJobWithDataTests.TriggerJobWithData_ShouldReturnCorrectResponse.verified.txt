@@ -7,7 +7,16 @@
         JobId: Guid_1,
         JobCategoryName: TestCase01,
         Status: Created,
-        InputData: {"key1":"Value1","key2":{"key3":"Value3","key4":4,"key5":true,"key6":"DateTime_1"}},
+        InputData:
+          {
+            "key1": "Value1",
+            "key2": {
+              "key3": "Value3",
+              "key4": 4,
+              "key5": true,
+              "key6": "DateTime_1"
+            }
+          },
         CreatedAt: DateTimeOffset_1
       }
     ],

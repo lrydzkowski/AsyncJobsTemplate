@@ -13,7 +13,11 @@ internal class DbTestCaseData
             JobId = Guid.Parse("30d49143-3fee-4a5d-a150-1e18acb5f57d"),
             JobCategoryName = Job1Handler.Name,
             Status = JobStatus.Created.ToString(),
-            InputData = "{\"key\":\"value\"}",
+            InputData = """
+                        {
+                          "key": "value"
+                        }
+                        """,
             InputFileReference = null,
             OutputData = null,
             OutputFileReference = null,

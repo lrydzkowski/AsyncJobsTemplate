@@ -9,22 +9,6 @@ internal static class TestCase01
 {
     public static TestCaseData Get()
     {
-        var existingInputData = new
-        {
-            Key1 = "Value1",
-            Key2 = new
-            {
-                Key3 = "Value3",
-                Key4 = 4,
-                Key5 = true,
-                Key6 = new DateTime(2025, 1, 1, 12, 0, 0, 0, DateTimeKind.Utc)
-            }
-        };
-        string existingInputDataSerialized = JsonSerializer.Serialize(
-            existingInputData,
-            new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }
-        );
-
         return new TestCaseData
         {
             TestCaseId = 1,
@@ -40,7 +24,17 @@ internal static class TestCase01
                             JobId = new Guid("F5EA43A0-C675-4259-B13E-636DFAE6BBCC"),
                             JobCategoryName = Job2Handler.Name,
                             Status = "Created",
-                            InputData = existingInputDataSerialized,
+                            InputData = """
+                                        {
+                                          "key1": "Value1",
+                                          "key2": {
+                                            "key3": "Value3",
+                                            "key4": 4,
+                                            "key5": true,
+                                            "key6": "2025-01-09T10:11:00+00:00"
+                                          }
+                                        }
+                                        """,
                             CreatedAt = new DateTimeOffset(2025, 1, 1, 10, 0, 0, TimeSpan.Zero),
                             UserEmail = "test@asyncjobstemplate.com"
                         }

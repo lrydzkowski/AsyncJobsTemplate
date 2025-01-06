@@ -67,7 +67,7 @@ public class ConsumeJob1Tests
         await using TestContextScope contextScope = new(webApiFactory, _logMessages);
         if (testCase.UseDatabase)
         {
-            await JobsData.CreateJobsAsync(contextScope, testCase);
+            await contextScope.CreateJobsAsync(testCase);
         }
 
         ConsumeContext<JobMessage>? context = Substitute.For<ConsumeContext<JobMessage>>()!;
@@ -80,7 +80,7 @@ public class ConsumeJob1Tests
         {
             TestCaseId = testCase.TestCaseId,
             JobId = testCase.JobId,
-            JobEntitiesDb = testCase.UseDatabase ? await JobsData.GetJobsAsync(contextScope) : [],
+            JobEntitiesDb = testCase.UseDatabase ? await contextScope.GetJobsAsync() : [],
             LogMessages = _logMessages.GetSerialized(6)
         };
 

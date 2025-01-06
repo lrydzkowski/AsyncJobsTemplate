@@ -24,7 +24,11 @@ internal static class TestCase03
                             JobId = Guid.Parse("30d49143-3fee-4a5d-a150-1e18acb5f57d"),
                             JobCategoryName = "non-existing-category",
                             Status = JobStatus.Created.ToString(),
-                            InputData = "{\"key\":\"value\"}",
+                            InputData = """
+                                        {
+                                          "key": "value"
+                                        }
+                                        """,
                             InputFileReference = null,
                             OutputData = null,
                             OutputFileReference = null,

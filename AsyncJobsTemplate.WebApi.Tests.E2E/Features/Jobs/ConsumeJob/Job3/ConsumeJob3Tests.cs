@@ -55,7 +55,7 @@ public class ConsumeJob3Tests
     {
         WebApplicationFactory<Program> webApiFactory = _webApiFactory.WithDependencies(_wireMockServer, testCase);
         await using TestContextScope contextScope = new(webApiFactory, _logMessages);
-        await JobsData.CreateJobsAsync(contextScope, testCase);
+        await contextScope.CreateJobsAsync(testCase);
 
         ConsumeContext<JobMessage>? context = Substitute.For<ConsumeContext<JobMessage>>()!;
         context.Message.Returns(new JobMessage { JobId = testCase.JobId });
@@ -66,8 +66,8 @@ public class ConsumeJob3Tests
         ConsumeJob3MessageTestResult result = new()
         {
             TestCaseId = testCase.TestCaseId,
-            JobEntitiesDb = await JobsData.GetJobsAsync(contextScope),
-            OutputFilesStorageAccount = await FilesData.GetOutputFilesAsync(contextScope),
+            JobEntitiesDb = await contextScope.GetJobsAsync(),
+            OutputFilesStorageAccount = await contextScope.GetOutputFilesAsync(),
             LogMessages = _logMessages.GetSerialized(6)
         };
 

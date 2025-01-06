@@ -25,9 +25,17 @@ internal static class TestCase01
                             JobId = Guid.Parse("30d49143-3fee-4a5d-a150-1e18acb5f57d"),
                             JobCategoryName = Job1Handler.Name,
                             Status = JobStatus.Created.ToString(),
-                            InputData = "{\"key\":\"value\"}",
+                            InputData = """
+                                        {
+                                          "key": "value"
+                                        }
+                                        """,
                             InputFileReference = null,
-                            OutputData = "{\"key1\":\"value1\"}",
+                            OutputData = """
+                                         {
+                                           "key1": "value1"
+                                         }
+                                         """,
                             OutputFileReference = "21BFDDB3-70E4-40CF-948B-355E071F4F47",
                             Errors = null,
                             CreatedAt = new DateTimeOffset(2024, 12, 1, 10, 10, 10, TimeSpan.Zero),

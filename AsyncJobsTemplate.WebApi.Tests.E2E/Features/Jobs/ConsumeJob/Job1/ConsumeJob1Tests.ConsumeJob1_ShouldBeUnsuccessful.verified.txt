@@ -1,5 +1,6 @@
 ﻿[
   {
+    JobEntitiesDb: [],
     JobId: Guid_1,
     TestCaseId: 1,
     LogMessages:       Error: An unexpected error has occured in getting a job.
@@ -12,7 +13,16 @@
         JobId: Guid_2,
         JobCategoryName: TestCase01,
         Status: Created,
-        InputData: {"key1":"Value1","key2":{"key3":"Value3","key4":4,"key5":true,"key6":"2025-01-01T10:00:00+00:00"}},
+        InputData:
+          {
+            "key1": "Value1",
+            "key2": {
+              "key3": "Value3",
+              "key4": 4,
+              "key5": true,
+              "key6": "2025-01-09T10:11:00\u002B00:00"
+            }
+          },
         CreatedAt: DateTimeOffset_1
       }
     ],
@@ -28,8 +38,18 @@
         JobId: Guid_1,
         JobCategoryName: non-existing-category,
         Status: Failed,
-        InputData: {"key":"value"},
-        Errors: [{"message":"An unexpected error has occured in resolving a job type. Job type doesn\u0027t exist.","errorCode":"GetJobTypeFailure","exceptionMessage":null}],
+        InputData:
+          {
+            "key": "value"
+          },
+        Errors:
+          [
+            {
+              "message": "An unexpected error has occured in resolving a job type. Job type doesn\u0027t exist.",
+              "errorCode": "GetJobTypeFailure",
+              "exceptionMessage": null
+            }
+          ],
         CreatedAt: DateTimeOffset_2,
         LastUpdatedAt: DateTimeOffset_3
       }

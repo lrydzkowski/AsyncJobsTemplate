@@ -1,8 +1,6 @@
-using AsyncJobsTemplate.Core.Commands.TriggerJob.Interfaces;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Common.Logging;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
-using NSubstitute;
 using DbContextScope = AsyncJobsTemplate.WebApi.Tests.E2E.Common.Data.Db.ContextScope;
 using StorageAccountContextScope = AsyncJobsTemplate.WebApi.Tests.E2E.Common.Data.StorageAccount.ContextScope;
 
@@ -13,27 +11,24 @@ internal class TestContextScope : IAsyncDisposable
     public TestContextScope(WebApplicationFactory<Program> webApiFactory, LogMessages logMessages)
     {
         ServiceScope = webApiFactory.Services.CreateScope();
-        LogMessages = logMessages;
         Db = new DbContextScope(ServiceScope.ServiceProvider);
         StorageAccount = new StorageAccountContextScope(ServiceScope.ServiceProvider);
-        JobsQueue = Substitute.For<IJobsQueue>();
+        LogMessages = logMessages;
     }
 
-    public IServiceScope ServiceScope { get; }
-
-    public LogMessages LogMessages { get; }
+    private IServiceScope ServiceScope { get; }
 
     public DbContextScope Db { get; }
 
     public StorageAccountContextScope StorageAccount { get; }
 
-    public IJobsQueue JobsQueue { get; }
+    public LogMessages LogMessages { get; }
 
     public async ValueTask DisposeAsync()
     {
+        LogMessages.Clear();
         await StorageAccount.DisposeAsync();
         Db.Dispose();
-        LogMessages.Clear();
         ServiceScope.Dispose();
     }
 

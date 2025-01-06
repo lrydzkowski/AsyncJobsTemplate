@@ -1,6 +1,7 @@
 ﻿[
   {
     Page: -1,
+    JobEntitiesDb: [],
     TestCaseId: 1,
     LogMessages: ,
     StatusCode: UnprocessableEntity,
@@ -17,6 +18,7 @@
   {
     Page: 1,
     PageSize: 201,
+    JobEntitiesDb: [],
     TestCaseId: 2,
     LogMessages: ,
     StatusCode: UnprocessableEntity,
@@ -33,6 +35,7 @@
   {
     Page: 1,
     PageSize: -1,
+    JobEntitiesDb: [],
     TestCaseId: 3,
     LogMessages: ,
     StatusCode: UnprocessableEntity,

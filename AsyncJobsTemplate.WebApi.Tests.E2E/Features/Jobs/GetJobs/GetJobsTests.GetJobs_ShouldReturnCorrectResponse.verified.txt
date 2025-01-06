@@ -1,5 +1,6 @@
 ﻿[
   {
+    JobEntitiesDb: [],
     TestCaseId: 1,
     LogMessages: ,
     StatusCode: OK,
@@ -19,7 +20,10 @@
         JobId: Guid_1,
         JobCategoryName: job1,
         Status: Created,
-        InputData: {"key":"value"},
+        InputData:
+          {
+            "key": "value"
+          },
         CreatedAt: DateTimeOffset_1
       },
       {
@@ -28,7 +32,10 @@
         JobId: Guid_2,
         JobCategoryName: job2,
         Status: Running,
-        InputData: {"key":"value"},
+        InputData:
+          {
+            "key": "value"
+          },
         InputFileReference: Guid_3,
         CreatedAt: DateTimeOffset_1
       },
@@ -38,11 +45,29 @@
         JobId: Guid_4,
         JobCategoryName: job2,
         Status: Running,
-        InputData: {"key1":"value1"},
+        InputData:
+          {
+            "key1": "value1"
+          },
         InputFileReference: Guid_5,
-        OutputData: {"key2":"value2"},
+        OutputData:
+          {
+            "key2": "value2"
+          },
         OutputFileReference: Guid_6,
-        Errors: [{"message":"Test message","errorCode":"error1","exceptionMessage":"Exception message"},{"message":"Test message 2","errorCode":"error2","exceptionMessage":"Exception message 2"}],
+        Errors:
+          [
+            {
+              "message": "Test message",
+              "errorCode": "error1",
+              "exceptionMessage": "Exception message"
+            },
+            {
+              "message": "Test message 2",
+              "errorCode": "error2",
+              "exceptionMessage": "Exception message 2"
+            }
+          ],
         CreatedAt: DateTimeOffset_1,
         LastUpdatedAt: DateTimeOffset_2
       }
@@ -126,7 +151,10 @@
         JobId: Guid_1,
         JobCategoryName: job1,
         Status: Created,
-        InputData: {"key":"value"},
+        InputData:
+          {
+            "key": "value"
+          },
         CreatedAt: DateTimeOffset_1
       },
       {
@@ -135,7 +163,10 @@
         JobId: Guid_2,
         JobCategoryName: job2,
         Status: Running,
-        InputData: {"key":"value"},
+        InputData:
+          {
+            "key": "value"
+          },
         InputFileReference: Guid_3,
         CreatedAt: DateTimeOffset_1
       },
@@ -145,11 +176,29 @@
         JobId: Guid_4,
         JobCategoryName: job2,
         Status: Running,
-        InputData: {"key1":"value1"},
+        InputData:
+          {
+            "key1": "value1"
+          },
         InputFileReference: Guid_5,
-        OutputData: {"key2":"value2"},
+        OutputData:
+          {
+            "key2": "value2"
+          },
         OutputFileReference: Guid_6,
-        Errors: [{"message":"Test message","errorCode":"error1","exceptionMessage":"Exception message"},{"message":"Test message 2","errorCode":"error2","exceptionMessage":"Exception message 2"}],
+        Errors:
+          [
+            {
+              "message": "Test message",
+              "errorCode": "error1",
+              "exceptionMessage": "Exception message"
+            },
+            {
+              "message": "Test message 2",
+              "errorCode": "error2",
+              "exceptionMessage": "Exception message 2"
+            }
+          ],
         CreatedAt: DateTimeOffset_1,
         LastUpdatedAt: DateTimeOffset_2
       }
@@ -190,8 +239,14 @@
         JobId: Guid_7,
         JobCategoryName: job2,
         Status: Running,
-        InputData: {"key1":"value1"},
-        OutputData: {"key2":"value2"},
+        InputData:
+          {
+            "key1": "value1"
+          },
+        OutputData:
+          {
+            "key2": "value2"
+          },
         CreatedAt: DateTimeOffset_3,
         LastUpdatedAt: DateTimeOffset_4
       },
@@ -201,11 +256,29 @@
         JobId: Guid_4,
         JobCategoryName: job2,
         Status: Running,
-        InputData: {"key1":"value1"},
+        InputData:
+          {
+            "key1": "value1"
+          },
         InputFileReference: Guid_5,
-        OutputData: {"key2":"value2"},
+        OutputData:
+          {
+            "key2": "value2"
+          },
         OutputFileReference: Guid_6,
-        Errors: [{"message":"Test message","errorCode":"error1","exceptionMessage":"Exception message"},{"message":"Test message 2","errorCode":"error2","exceptionMessage":"Exception message 2"}],
+        Errors:
+          [
+            {
+              "message": "Test message",
+              "errorCode": "error1",
+              "exceptionMessage": "Exception message"
+            },
+            {
+              "message": "Test message 2",
+              "errorCode": "error2",
+              "exceptionMessage": "Exception message 2"
+            }
+          ],
         CreatedAt: DateTimeOffset_5,
         LastUpdatedAt: DateTimeOffset_6
       },
@@ -215,7 +288,10 @@
         JobId: Guid_2,
         JobCategoryName: job2,
         Status: Running,
-        InputData: {"key":"value"},
+        InputData:
+          {
+            "key": "value"
+          },
         InputFileReference: Guid_3,
         CreatedAt: DateTimeOffset_7
       },
@@ -225,7 +301,10 @@
         JobId: Guid_1,
         JobCategoryName: job1,
         Status: Created,
-        InputData: {"key":"value"},
+        InputData:
+          {
+            "key": "value"
+          },
         CreatedAt: DateTimeOffset_8
       }
     ],

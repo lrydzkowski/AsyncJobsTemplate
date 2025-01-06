@@ -1,4 +1,5 @@
 using AsyncJobsTemplate.Infrastructure.Azure.StorageAccount;
+using AsyncJobsTemplate.WebApi.Tests.E2E.Common.Extensions;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Common.Models;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Common.TestCases;
 using Azure.Storage.Blobs;
@@ -8,30 +9,37 @@ namespace AsyncJobsTemplate.WebApi.Tests.E2E.Common.Data.StorageAccount;
 
 internal static class FilesData
 {
-    public static async Task<IReadOnlyList<StorageAccountFile>> GetInputFilesAsync(TestContextScope scope)
+    public static async Task<IReadOnlyList<StorageAccountFile>> GetInputFilesAsync(
+        this TestContextScope scope,
+        int contentIndentationLength = 10
+    )
     {
-        return await GetFilesAsync(scope, AzureStorageContainerType.Input);
+        return await scope.GetFilesAsync(AzureStorageContainerType.Input, contentIndentationLength);
     }
 
-    public static async Task<IReadOnlyList<StorageAccountFile>> GetOutputFilesAsync(TestContextScope scope)
+    public static async Task<IReadOnlyList<StorageAccountFile>> GetOutputFilesAsync(
+        this TestContextScope scope,
+        int contentIndentationLength = 10
+    )
     {
-        return await GetFilesAsync(scope, AzureStorageContainerType.Output);
+        return await scope.GetFilesAsync(AzureStorageContainerType.Output, contentIndentationLength);
     }
 
-    public static async Task SaveOutputFilesAsync(TestContextScope scope, ITestCaseData testCase)
+    public static async Task SaveOutputFilesAsync(this TestContextScope scope, ITestCaseData testCase)
     {
         foreach (JobFileInfo file in testCase.Data.StorageAccount.OutputFiles)
         {
-            await SaveFileAsync(scope, AzureStorageContainerType.Output, file);
+            await scope.SaveFileAsync(AzureStorageContainerType.Output, file);
         }
     }
 
     private static async Task<IReadOnlyList<StorageAccountFile>> GetFilesAsync(
-        TestContextScope scope,
-        AzureStorageContainerType containerType
+        this TestContextScope scope,
+        AzureStorageContainerType containerType,
+        int contentIndentationLength = 10
     )
     {
-        BlobContainerClient containerClient = GetBlobContainerClient(scope, containerType);
+        BlobContainerClient containerClient = scope.GetBlobContainerClient(containerType);
         List<StorageAccountFile> files = [];
         await foreach (BlobItem blobItem in containerClient.GetBlobsAsync(BlobTraits.Metadata))
         {
@@ -41,7 +49,7 @@ internal static class FilesData
                 new StorageAccountFile
                 {
                     Name = blobItem.Name,
-                    Content = content,
+                    Content = content.AddIndentationToString(contentIndentationLength) ?? "",
                     Metadata = blobItem.Metadata ?? new Dictionary<string, string>()
                 }
             );
@@ -51,12 +59,12 @@ internal static class FilesData
     }
 
     private static async Task SaveFileAsync(
-        TestContextScope scope,
+        this TestContextScope scope,
         AzureStorageContainerType containerType,
         JobFileInfo jobFileInfo
     )
     {
-        BlobContainerClient containerClient = GetBlobContainerClient(scope, containerType);
+        BlobContainerClient containerClient = scope.GetBlobContainerClient(containerType);
         string fileName = jobFileInfo.JobId.ToString();
         BlobClient blobClient = containerClient.GetBlobClient(fileName);
         await blobClient.UploadAsync(
@@ -74,7 +82,7 @@ internal static class FilesData
     }
 
     private static BlobContainerClient GetBlobContainerClient(
-        TestContextScope scope,
+        this TestContextScope scope,
         AzureStorageContainerType containerType
     )
     {

@@ -1,4 +1,3 @@
-using System.Text.Json;
 using AsyncJobsTemplate.Core.Jobs.Job1;
 using AsyncJobsTemplate.Infrastructure.Db.Entities;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Common.TestCases;
@@ -9,22 +8,6 @@ internal static class TestCase01
 {
     public static TestCaseData Get()
     {
-        var existingInputData = new
-        {
-            Key1 = "Value1",
-            Key2 = new
-            {
-                Key3 = "Value3",
-                Key4 = 4,
-                Key5 = true,
-                Key6 = new DateTimeOffset(2025, 1, 9, 10, 11, 0, TimeSpan.Zero)
-            }
-        };
-        string existingInputDataSerialized = JsonSerializer.Serialize(
-            existingInputData,
-            new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }
-        );
-
         return new TestCaseData
         {
             TestCaseId = 1,
@@ -40,7 +23,17 @@ internal static class TestCase01
                             JobId = new Guid("EE1BBD3A-385D-4FFB-AE06-CD870BF12C26"),
                             JobCategoryName = Job1Handler.Name,
                             Status = "Created",
-                            InputData = existingInputDataSerialized,
+                            InputData = """
+                                        {
+                                          "key1": "Value1",
+                                          "key2": {
+                                            "key3": "Value3",
+                                            "key4": 4,
+                                            "key5": true,
+                                            "key6": "2025-01-09T10:11:00+00:00"
+                                          }
+                                        }
+                                        """,
                             CreatedAt = new DateTimeOffset(2025, 1, 1, 10, 0, 0, TimeSpan.Zero),
                             UserEmail = "test@asyncjobstemplate.com"
                         }

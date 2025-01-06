@@ -135,11 +135,8 @@ Project with tests: `AsyncJobsTemplate.WebApi.Tests.E2E`.
 
 ## Things To Implement
 
-- [ ] Add a simple frontend application in Blazor.
+- [ ] Add a frontend application.
 - [ ] Add frontend tests in Playwright.
-- [ ] Add correlation between jobs and users.
 - [ ] Add load tests in Grafana K6.
-- [x] Migrate to .NET 9.
 - [ ] Add integration with Application Insights.
-- [x] Add example of using an external API.
 - [ ] Add health check.

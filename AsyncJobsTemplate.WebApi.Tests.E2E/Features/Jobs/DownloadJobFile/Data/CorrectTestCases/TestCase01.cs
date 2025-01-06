@@ -29,7 +29,12 @@ internal static class TestCase01
                                 FileName = "test-file.json",
                                 ContentType = MediaTypeNames.Application.Json,
                                 Content = new MemoryStream(
-                                    "{\"key1\": \"value1\", \"key2\": \"value2\"}"u8.ToArray()
+                                    """
+                                        {
+                                          "key1": "value1",
+                                          "key2": "value2"
+                                        }
+                                        """u8.ToArray()
                                 )
                             }
                         }
@@ -44,7 +49,11 @@ internal static class TestCase01
                             JobId = Guid.Parse("21CB9FB1-8FE9-45B9-89CB-45BAAF90CF5E"),
                             JobCategoryName = Job1Handler.Name,
                             Status = JobStatus.Created.ToString(),
-                            InputData = "{\"key\":\"value\"}",
+                            InputData = """
+                                        {
+                                          "key": "value"
+                                        }
+                                        """,
                             InputFileReference = null,
                             OutputData = null,
                             OutputFileReference = "21CB9FB1-8FE9-45B9-89CB-45BAAF90CF5E",
