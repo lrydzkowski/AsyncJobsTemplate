@@ -8,8 +8,14 @@
         JobId: Guid_1,
         JobCategoryName: job1,
         Status: Created,
-        InputData: {"key":"value"},
-        OutputData: {"key1":"value1"},
+        InputData:
+          {
+            "key": "value"
+          },
+        OutputData:
+          {
+            "key1": "value1"
+          },
         OutputFileReference: Guid_2,
         CreatedAt: DateTimeOffset_1
       }

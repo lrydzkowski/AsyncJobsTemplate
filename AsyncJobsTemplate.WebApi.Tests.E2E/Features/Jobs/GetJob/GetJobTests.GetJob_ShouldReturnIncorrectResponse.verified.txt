@@ -8,7 +8,10 @@
         JobId: Guid_1,
         JobCategoryName: job1,
         Status: Created,
-        InputData: {"key":"value"},
+        InputData:
+          {
+            "key": "value"
+          },
         CreatedAt: DateTimeOffset_1
       }
     ],
@@ -31,7 +34,10 @@
         JobId: Guid_1,
         JobCategoryName: job1,
         Status: Created,
-        InputData: {"key":"value"},
+        InputData:
+          {
+            "key": "value"
+          },
         CreatedAt: DateTimeOffset_1
       }
     ],

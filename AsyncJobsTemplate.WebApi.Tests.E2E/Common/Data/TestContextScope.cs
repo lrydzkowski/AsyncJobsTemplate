@@ -11,24 +11,24 @@ internal class TestContextScope : IAsyncDisposable
     public TestContextScope(WebApplicationFactory<Program> webApiFactory, LogMessages logMessages)
     {
         ServiceScope = webApiFactory.Services.CreateScope();
-        LogMessages = logMessages;
         Db = new DbContextScope(ServiceScope.ServiceProvider);
         StorageAccount = new StorageAccountContextScope(ServiceScope.ServiceProvider);
+        LogMessages = logMessages;
     }
 
     private IServiceScope ServiceScope { get; }
-
-    public LogMessages LogMessages { get; }
 
     public DbContextScope Db { get; }
 
     public StorageAccountContextScope StorageAccount { get; }
 
+    public LogMessages LogMessages { get; }
+
     public async ValueTask DisposeAsync()
     {
+        LogMessages.Clear();
         await StorageAccount.DisposeAsync();
         Db.Dispose();
-        LogMessages.Clear();
         ServiceScope.Dispose();
     }
 

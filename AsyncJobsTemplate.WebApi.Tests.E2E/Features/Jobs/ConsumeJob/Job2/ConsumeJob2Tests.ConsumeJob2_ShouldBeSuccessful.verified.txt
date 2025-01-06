@@ -7,7 +7,16 @@
         JobId: Guid_1,
         JobCategoryName: job2,
         Status: Finished,
-        InputData: {"key1":"Value1","key2":{"key3":"Value3","key4":4,"key5":true,"key6":"2025-01-01T12:00:00Z"}},
+        InputData:
+          {
+            "key1": "Value1",
+            "key2": {
+              "key3": "Value3",
+              "key4": 4,
+              "key5": true,
+              "key6": "2025-01-09T10:11:00\u002B00:00"
+            }
+          },
         OutputFileReference: Guid_1,
         CreatedAt: DateTimeOffset_1,
         LastUpdatedAt: DateTimeOffset_2
@@ -16,7 +25,7 @@
     OutputFilesStorageAccount: [
       {
         Name: Guid_1,
-        Content: This is an example of a text file. Input data: '{"key1":"Value1","key2":{"key3":"Value3","key4":4,"key5":true,"key6":"2025-01-01T12:00:00Z"}}',
+        Content: This is an example of a text file. Input data: '{"key1":"Value1","key2":{"key3":"Value3","key4":4,"key5":true,"key6":"2025-01-09T10:11:00\u002B00:00"}}',
         Metadata: {
           FileContentName: text/plain,
           FileOriginalName: test-output.txt

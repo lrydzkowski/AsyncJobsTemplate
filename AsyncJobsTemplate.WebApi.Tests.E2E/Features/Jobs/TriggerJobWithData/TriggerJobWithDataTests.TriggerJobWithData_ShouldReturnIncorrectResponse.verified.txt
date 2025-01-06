@@ -1,5 +1,7 @@
 ﻿[
   {
+    JobEntitiesDb: [],
+    SendMessageCalls: [],
     TestCaseId: 1,
     StatusCode: InternalServerError,
     Response:

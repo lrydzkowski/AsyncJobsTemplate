@@ -1,4 +1,5 @@
 using AsyncJobsTemplate.Infrastructure.Azure.StorageAccount;
+using AsyncJobsTemplate.WebApi.Tests.E2E.Common.Extensions;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Common.Models;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Common.TestCases;
 using Azure.Storage.Blobs;
@@ -8,14 +9,20 @@ namespace AsyncJobsTemplate.WebApi.Tests.E2E.Common.Data.StorageAccount;
 
 internal static class FilesData
 {
-    public static async Task<IReadOnlyList<StorageAccountFile>> GetInputFilesAsync(this TestContextScope scope)
+    public static async Task<IReadOnlyList<StorageAccountFile>> GetInputFilesAsync(
+        this TestContextScope scope,
+        int contentIndentationLength = 10
+    )
     {
-        return await scope.GetFilesAsync(AzureStorageContainerType.Input);
+        return await scope.GetFilesAsync(AzureStorageContainerType.Input, contentIndentationLength);
     }
 
-    public static async Task<IReadOnlyList<StorageAccountFile>> GetOutputFilesAsync(this TestContextScope scope)
+    public static async Task<IReadOnlyList<StorageAccountFile>> GetOutputFilesAsync(
+        this TestContextScope scope,
+        int contentIndentationLength = 10
+    )
     {
-        return await scope.GetFilesAsync(AzureStorageContainerType.Output);
+        return await scope.GetFilesAsync(AzureStorageContainerType.Output, contentIndentationLength);
     }
 
     public static async Task SaveOutputFilesAsync(this TestContextScope scope, ITestCaseData testCase)
@@ -28,7 +35,8 @@ internal static class FilesData
 
     private static async Task<IReadOnlyList<StorageAccountFile>> GetFilesAsync(
         this TestContextScope scope,
-        AzureStorageContainerType containerType
+        AzureStorageContainerType containerType,
+        int contentIndentationLength = 10
     )
     {
         BlobContainerClient containerClient = scope.GetBlobContainerClient(containerType);
@@ -41,7 +49,7 @@ internal static class FilesData
                 new StorageAccountFile
                 {
                     Name = blobItem.Name,
-                    Content = content,
+                    Content = content.AddIndentationToString(contentIndentationLength) ?? "",
                     Metadata = blobItem.Metadata ?? new Dictionary<string, string>()
                 }
             );
