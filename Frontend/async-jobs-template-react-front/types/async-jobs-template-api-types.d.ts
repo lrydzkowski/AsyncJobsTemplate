@@ -40,6 +40,53 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/health-check": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Check health */
+        get: {
+            parameters: {
+                query?: never;
+                header: {
+                    "api-key": string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["CheckHealthResponse"];
+                    };
+                };
+                /** @description Service Unavailable */
+                503: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["CheckHealthResponse"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/jobs/{jobCategoryName}": {
         parameters: {
             query?: never;
@@ -334,6 +381,14 @@ export interface components {
          * @enum {integer}
          */
         CallingConventions: 1 | 2 | 3 | 32 | 64;
+        CheckHealthResponse: {
+            entries?: {
+                [key: string]: components["schemas"]["HealthReportEntryDto"];
+            } | null;
+            status?: string | null;
+            /** Format: date-span */
+            totalDuration?: string;
+        };
         ConstructorInfo: {
             readonly name?: string | null;
             declaringType?: components["schemas"]["Type"];
@@ -511,6 +566,21 @@ export interface components {
         };
         GetJobsResult: {
             jobs?: components["schemas"]["JobPaginatedList"];
+        };
+        HealthReportEntryDto: {
+            data?: {
+                [key: string]: unknown;
+            } | null;
+            description?: string | null;
+            /** Format: date-span */
+            duration?: string;
+            exceptionInfo?: components["schemas"]["HealthReportEntryExceptionInfoDto"];
+            status?: string | null;
+            tags?: string[] | null;
+        };
+        HealthReportEntryExceptionInfoDto: {
+            message?: string | null;
+            stackTrace?: string | null;
         };
         ICustomAttributeProvider: Record<string, never>;
         IntPtr: Record<string, never>;
