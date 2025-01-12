@@ -15,6 +15,24 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GetAppInfoResponse'
+  /health-check:
+    get:
+      tags:
+        - HealthCheck
+      summary: Check health
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CheckHealthResponse'
+        '503':
+          description: Service Unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CheckHealthResponse'
   '/jobs/{jobCategoryName}':
     post:
       tags:
@@ -247,6 +265,21 @@ components:
         - 64
       type: integer
       format: int32
+    CheckHealthResponse:
+      type: object
+      properties:
+        entries:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/HealthReportEntryDto'
+          nullable: true
+        status:
+          type: string
+          nullable: true
+        totalDuration:
+          type: string
+          format: date-span
+      additionalProperties: false
     ConstructorInfo:
       type: object
       properties:
@@ -619,6 +652,40 @@ components:
       properties:
         jobs:
           $ref: '#/components/schemas/JobPaginatedList'
+      additionalProperties: false
+    HealthReportEntryDto:
+      type: object
+      properties:
+        data:
+          type: object
+          additionalProperties: { }
+          nullable: true
+        description:
+          type: string
+          nullable: true
+        duration:
+          type: string
+          format: date-span
+        exceptionInfo:
+          $ref: '#/components/schemas/HealthReportEntryExceptionInfoDto'
+        status:
+          type: string
+          nullable: true
+        tags:
+          type: array
+          items:
+            type: string
+          nullable: true
+      additionalProperties: false
+    HealthReportEntryExceptionInfoDto:
+      type: object
+      properties:
+        message:
+          type: string
+          nullable: true
+        stackTrace:
+          type: string
+          nullable: true
       additionalProperties: false
     ICustomAttributeProvider:
       type: object

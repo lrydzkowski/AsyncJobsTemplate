@@ -1,5 +1,6 @@
 using AsyncJobsTemplate.Core;
 using AsyncJobsTemplate.Core.Jobs.Job3.Services;
+using AsyncJobsTemplate.Infrastructure.JsonPlaceholderApi.Health;
 using AsyncJobsTemplate.Infrastructure.JsonPlaceholderApi.Options;
 using AsyncJobsTemplate.Infrastructure.JsonPlaceholderApi.Services;
 using Microsoft.Extensions.Configuration;
@@ -16,7 +17,8 @@ internal static class ServiceCollectionExtensions
     {
         return services.AddServices()
             .AddOptions(configuration)
-            .AddJsonPlaceholderApi();
+            .AddJsonPlaceholderApi()
+            .AddHealthCheck();
     }
 
     private static IServiceCollection AddServices(this IServiceCollection services)
@@ -33,5 +35,12 @@ internal static class ServiceCollectionExtensions
     private static IServiceCollection AddJsonPlaceholderApi(this IServiceCollection services)
     {
         return services.AddJsonPlaceholderApiHttpClient();
+    }
+
+    private static IServiceCollection AddHealthCheck(this IServiceCollection services)
+    {
+        services.AddHealthChecks().AddCheck<JsonPlaceholderApiHealthCheck>(JsonPlaceholderApiHealthCheck.Name);
+
+        return services;
     }
 }

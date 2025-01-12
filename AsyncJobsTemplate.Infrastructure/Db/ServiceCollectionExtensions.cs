@@ -20,7 +20,8 @@ internal static class ServiceCollectionExtensions
     {
         return services.AddServices()
             .AddOptions(configuration)
-            .AddAppDbContext();
+            .AddAppDbContext()
+            .AddHealthCheck();
     }
 
     private static IServiceCollection AddServices(this IServiceCollection services)
@@ -48,5 +49,20 @@ internal static class ServiceCollectionExtensions
                 options.UseSqlServer(sqlServerOptions.ConnectionString);
             }
         );
+    }
+
+    private static IServiceCollection AddHealthCheck(this IServiceCollection services)
+    {
+        services.AddHealthChecks()
+            .AddSqlServer(
+                serviceProvider =>
+                {
+                    SqlServerOptions options = serviceProvider.GetRequiredService<IOptions<SqlServerOptions>>().Value;
+
+                    return options.ConnectionString;
+                }
+            );
+
+        return services;
     }
 }

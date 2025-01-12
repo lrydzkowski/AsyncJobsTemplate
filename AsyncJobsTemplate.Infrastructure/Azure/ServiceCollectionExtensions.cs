@@ -6,6 +6,7 @@ using AsyncJobsTemplate.Infrastructure.Azure.ServiceBus;
 using AsyncJobsTemplate.Infrastructure.Azure.StorageAccount;
 using Azure.Core;
 using Azure.Storage.Blobs;
+using HealthChecks.Azure.Storage.Blobs;
 using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,7 +23,8 @@ internal static class ServiceCollectionExtensions
     {
         return services.AddServices()
             .AddOptions(configuration)
-            .AddAzureBlobServiceClient();
+            .AddAzureBlobServiceClient()
+            .AddHealthCheck();
     }
 
     private static IServiceCollection AddServices(this IServiceCollection services)
@@ -71,6 +73,39 @@ internal static class ServiceCollectionExtensions
                 );
             }
         );
+
+        return services;
+    }
+
+    private static IServiceCollection AddHealthCheck(this IServiceCollection services)
+    {
+        services.AddHealthChecks()
+            .AddAzureBlobStorage(
+                optionsFactory: serviceProvider =>
+                {
+                    AzureStorageAccountOptions options =
+                        serviceProvider.GetRequiredService<IOptions<AzureStorageAccountOptions>>().Value;
+
+                    return new AzureBlobStorageHealthCheckOptions
+                    {
+                        ContainerName = options.InputContainerName
+                    };
+                },
+                name: "azureblobstorage:inputcontainer"
+            )
+            .AddAzureBlobStorage(
+                optionsFactory: serviceProvider =>
+                {
+                    AzureStorageAccountOptions options =
+                        serviceProvider.GetRequiredService<IOptions<AzureStorageAccountOptions>>().Value;
+
+                    return new AzureBlobStorageHealthCheckOptions
+                    {
+                        ContainerName = options.OutputContainerName
+                    };
+                },
+                name: "azureblobstorage:outputcontainer"
+            );
 
         return services;
     }

@@ -124,7 +124,8 @@ public static class ServiceCollectionExtensions
     {
         return services.AddSingleton<ITriggerJobResponseMapper, TriggerJobResponseMapper>()
             .AddScoped<IUserEmailProvider, UserEmailProvider>()
-            .AddScoped<IRequestContextProvider, RequestContextProvider>();
+            .AddScoped<IRequestContextProvider, RequestContextProvider>()
+            .AddScoped<ICheckHealthResponseMapper, CheckHealthResponseMapper>();
     }
 
     private static IServiceCollection AddCorsDefaultPolicy(
