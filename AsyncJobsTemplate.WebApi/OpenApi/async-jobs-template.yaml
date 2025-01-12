@@ -1735,3 +1735,11 @@ components:
           nullable: true
           readOnly: true
       additionalProperties: false
+  securitySchemes:
+    Bearer:
+      type: http
+      description: Please enter token
+      scheme: bearer
+      bearerFormat: JWT
+security:
+  - Bearer: [ ]
