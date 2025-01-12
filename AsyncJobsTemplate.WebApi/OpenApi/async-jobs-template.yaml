@@ -20,6 +20,12 @@ paths:
       tags:
         - HealthCheck
       summary: Check health
+      parameters:
+        - name: api-key
+          in: header
+          required: true
+          schema:
+            type: string
       responses:
         '200':
           description: OK

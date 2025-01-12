@@ -51,7 +51,9 @@ export interface paths {
         get: {
             parameters: {
                 query?: never;
-                header?: never;
+                header: {
+                    "api-key": string;
+                };
                 path?: never;
                 cookie?: never;
             };

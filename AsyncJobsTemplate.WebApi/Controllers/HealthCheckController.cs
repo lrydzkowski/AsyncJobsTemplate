@@ -1,6 +1,9 @@
 using System.Net.Mime;
+using AsyncJobsTemplate.WebApi.Authentication;
 using AsyncJobsTemplate.WebApi.Mappers;
 using AsyncJobsTemplate.WebApi.Models;
+using AsyncJobsTemplate.WebApi.Swagger;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Swashbuckle.AspNetCore.Annotations;
@@ -8,7 +11,7 @@ using Swashbuckle.AspNetCore.Annotations;
 namespace AsyncJobsTemplate.WebApi.Controllers;
 
 [ApiController]
-// [Authorize]
+[Authorize(AuthenticationSchemes = ApiKeyAuthenticationSchemeOptions.Name)]
 [Route("health-check")]
 public class HealthCheckController : ControllerBase
 {
@@ -35,6 +38,7 @@ public class HealthCheckController : ControllerBase
         Type = typeof(CheckHealthResponse),
         ContentTypes = [MediaTypeNames.Application.Json]
     )]
+    [SwaggerHeaderParameter(ApiKeyAuthenticationHandler.ApiKeyHeaderName)]
     [HttpGet("")]
     public async Task<IActionResult> CheckHealth()
     {

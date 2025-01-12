@@ -1,10 +1,12 @@
 ﻿using AsyncJobsTemplate.Core;
 using AsyncJobsTemplate.Infrastructure.Azure.Authentication;
 using AsyncJobsTemplate.Infrastructure.Azure.Options;
+using AsyncJobsTemplate.WebApi.Authentication;
 using AsyncJobsTemplate.WebApi.Consumers;
 using AsyncJobsTemplate.WebApi.Mappers;
 using AsyncJobsTemplate.WebApi.Options;
 using AsyncJobsTemplate.WebApi.Services;
+using AsyncJobsTemplate.WebApi.Swagger;
 using Azure.Core;
 using MassTransit;
 using Microsoft.Extensions.Options;
@@ -23,6 +25,7 @@ public static class ServiceCollectionExtensions
         services.AddOptions(configuration);
         services.AddServices();
         services.AddCorsDefaultPolicy(configuration);
+        services.AddApiKeyAuthentication();
 
         return services;
     }
@@ -62,6 +65,7 @@ public static class ServiceCollectionExtensions
                         }
                     }
                 );
+                options.OperationFilter<SwaggerHeaderParameterAttributeFilter>();
             }
         );
     }
@@ -117,7 +121,8 @@ public static class ServiceCollectionExtensions
     private static IServiceCollection AddOptions(this IServiceCollection services, IConfiguration configuration)
     {
         return services.AddOptionsType<SwaggerOptions>(configuration, SwaggerOptions.Position)
-            .AddOptionsType<QueueOptions>(configuration, QueueOptions.Position);
+            .AddOptionsType<QueueOptions>(configuration, QueueOptions.Position)
+            .AddOptionsType<InternalEndpointsOptions>(configuration, InternalEndpointsOptions.Position);
     }
 
     private static IServiceCollection AddServices(this IServiceCollection services)
@@ -143,5 +148,16 @@ public static class ServiceCollectionExtensions
                 );
             }
         );
+    }
+
+    private static IServiceCollection AddApiKeyAuthentication(this IServiceCollection services)
+    {
+        services.AddAuthentication()
+            .AddScheme<ApiKeyAuthenticationSchemeOptions, ApiKeyAuthenticationHandler>(
+                ApiKeyAuthenticationSchemeOptions.Name,
+                null
+            );
+
+        return services;
     }
 }

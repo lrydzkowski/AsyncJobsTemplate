@@ -117,6 +117,7 @@ In the local environment, it's recommended to use [user secrets](https://learn.m
 4. Set up Azure Service Bus configuration (`AzureServiceBus` section). Authorization to Azure Service Bus is based on the application with client id and client secret defined in `AzureAd` section.
 5. Set up username and password for Swagger UI (`Swagger` section).
 6. Set up queue type to `AzureServiceBus` (`Queue` section).
+7. Set up API key for the health check endpoint (`InternalEndpoints:ApiKey` section).
 
 ## Tests
 
