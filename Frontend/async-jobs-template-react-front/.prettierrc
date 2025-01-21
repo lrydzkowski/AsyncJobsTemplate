@@ -14,5 +14,23 @@
   "proseWrap": "always",
   "embeddedLanguageFormatting": "auto",
   "singleAttributePerLine": false,
-  "plugins": []
+  "plugins": ["@ianvs/prettier-plugin-sort-imports"],
+  "importOrder": [
+    ".*styles.css$",
+    "",
+    "dayjs",
+    "^react$",
+    "^next$",
+    "^next/.*$",
+    "<BUILTIN_MODULES>",
+    "<THIRD_PARTY_MODULES>",
+    "^@mantine/(.*)$",
+    "^@mantinex/(.*)$",
+    "^@mantine-tests/(.*)$",
+    "^@docs/(.*)$",
+    "^@/.*$",
+    "^../(?!.*.css$).*$",
+    "^./(?!.*.css$).*$",
+    "\\.css$"
+  ]
 }
