@@ -10,6 +10,9 @@ import { MantineProvider } from '@mantine/core';
 import { App } from './app.tsx';
 import { msalConfig } from './auth/msal-config.ts';
 import { HomePage } from './pages/home-page.tsx';
+import { Job1Page } from './pages/jobs/job1-page.tsx';
+import { Job2Page } from './pages/jobs/job2-page.tsx';
+import { Job3Page } from './pages/jobs/job3-page.tsx';
 import { LoginPage } from './pages/login-page.tsx';
 import NotFoundPage from './pages/not-found-page.tsx';
 
@@ -34,6 +37,9 @@ createRoot(document.getElementById('root')!).render(
             <Routes>
               <Route path="/" element={<App />}>
                 <Route index element={<HomePage />} />
+                <Route path="jobs/job1" element={<Job1Page />} />
+                <Route path="jobs/job2" element={<Job2Page />} />
+                <Route path="jobs/job3" element={<Job3Page />} />
                 <Route path="*" element={<NotFoundPage />} />
               </Route>
             </Routes>

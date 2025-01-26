@@ -3,3 +3,10 @@ body,
 #root {
   height: 100%;
 }
+#root {
+  min-width: 300px;
+}
+a.active,
+a.active:hover {
+  background-color: var(--mantine-color-gray-1);
+}

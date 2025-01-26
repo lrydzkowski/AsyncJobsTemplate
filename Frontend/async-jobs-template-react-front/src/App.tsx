@@ -1,21 +1,17 @@
-// import { Outlet } from 'react-router';
-import { AppShell, Burger, Flex, Title } from '@mantine/core';
-// import { Navbar } from './layout/navbar/navbar';
-// import classes from './app.module.css';
+import { InteractionStatus } from '@azure/msal-browser';
+import { useMsal } from '@azure/msal-react';
+import { Outlet } from 'react-router';
+import { AppShell, Box, Burger, Flex, Text, Title } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
+import { Navbar } from './layout/navbar/navbar';
 
 export function App() {
+  const { inProgress } = useMsal();
   const [opened, { toggle }] = useDisclosure();
 
+  const isLoading = inProgress === InteractionStatus.Logout;
+
   return (
-    // <div className={classes.layout}>
-    //   <div className={classes.leftCol}>
-    //     <Navbar />
-    //   </div>
-    //   <div className={classes.rightCol}>
-    //     <Outlet />
-    //   </div>
-    // </div>
     <AppShell
       header={{ height: 60 }}
       navbar={{
@@ -27,15 +23,17 @@ export function App() {
       <AppShell.Header pl="md" pr="md">
         <Flex h="100%" align="center" direction="row" wrap="wrap">
           <Burger mr="md" opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
-          <Title order={1} size="h3">
+          <Title order={1} size="h3" c="blue">
             async-jobs-template
           </Title>
         </Flex>
       </AppShell.Header>
 
-      <AppShell.Navbar p="md">Navbar</AppShell.Navbar>
+      <AppShell.Navbar>{!isLoading && <Navbar />}</AppShell.Navbar>
 
-      <AppShell.Main>Main</AppShell.Main>
+      <AppShell.Main>
+        <Box>{isLoading ? <Text>Loading...</Text> : <Outlet />}</Box>
+      </AppShell.Main>
     </AppShell>
   );
 }
