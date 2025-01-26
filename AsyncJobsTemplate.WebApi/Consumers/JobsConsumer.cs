@@ -1,5 +1,4 @@
 ﻿using AsyncJobsTemplate.Core.Commands.RunJob;
-using AsyncJobsTemplate.Core.Commands.RunJob.Models;
 using AsyncJobsTemplate.Infrastructure.Azure.ServiceBus;
 using MassTransit;
 using MediatR;

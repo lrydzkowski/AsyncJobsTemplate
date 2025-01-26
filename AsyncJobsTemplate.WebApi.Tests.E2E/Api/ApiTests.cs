@@ -4,10 +4,10 @@ using AsyncJobsTemplate.Shared.Services;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Common;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Common.TestCollections;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Common.WebApplication;
-using FluentAssertions;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Net.Http.Headers;
+using Shouldly;
 using Xunit.Abstractions;
 
 namespace AsyncJobsTemplate.WebApi.Tests.E2E.Api;
@@ -38,11 +38,10 @@ public class ApiTests
             using HttpRequestMessage requestMessage = new(endpointInfo.HttpMethod, endpointInfo.Path);
             using HttpResponseMessage responseMessage = await _webApiFactory.CreateClient().SendAsync(requestMessage);
 
-            responseMessage.StatusCode.Should()
-                ?.Be(
-                    HttpStatusCode.Unauthorized,
-                    $"endpoint {endpointInfo.HttpMethod} {endpointInfo.Path} should require authorization"
-                );
+            responseMessage.StatusCode.ShouldBe(
+                HttpStatusCode.Unauthorized,
+                $"endpoint {endpointInfo.HttpMethod} {endpointInfo.Path} should require authorization"
+            );
         }
     }
 
@@ -63,11 +62,10 @@ public class ApiTests
 
             using HttpResponseMessage responseMessage = await _webApiFactory.CreateClient().SendAsync(requestMessage);
 
-            responseMessage.StatusCode.Should()
-                ?.Be(
-                    HttpStatusCode.Unauthorized,
-                    $"endpoint {endpointInfo.HttpMethod} {endpointInfo.Path} should require authorization"
-                );
+            responseMessage.StatusCode.ShouldBe(
+                HttpStatusCode.Unauthorized,
+                $"endpoint {endpointInfo.HttpMethod} {endpointInfo.Path} should require authorization"
+            );
         }
     }
 
@@ -88,11 +86,10 @@ public class ApiTests
 
             using HttpResponseMessage responseMessage = await _webApiFactory.CreateClient().SendAsync(requestMessage);
 
-            responseMessage.StatusCode.Should()
-                ?.Be(
-                    HttpStatusCode.Unauthorized,
-                    $"endpoint {endpointInfo.HttpMethod} {endpointInfo.Path} should require authorization"
-                );
+            responseMessage.StatusCode.ShouldBe(
+                HttpStatusCode.Unauthorized,
+                $"endpoint {endpointInfo.HttpMethod} {endpointInfo.Path} should require authorization"
+            );
         }
     }
 }

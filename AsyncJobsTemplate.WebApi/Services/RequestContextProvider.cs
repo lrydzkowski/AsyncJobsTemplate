@@ -25,7 +25,7 @@ internal class RequestContextProvider
             return _currentContext;
         }
 
-        string? userEmail = _userEmailProvider.GetUserEmailFromClaims() ?? "";
+        string userEmail = _userEmailProvider.GetUserEmailFromClaims() ?? "";
         _currentContext = new RequestContext
         {
             User = new UserContext

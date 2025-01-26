@@ -8,7 +8,7 @@ internal static class StringExtensions
 {
     public static string ReplacePasswordInSqlConnectionString(this string connectionString, string newPassword)
     {
-        SqlConnectionStringBuilder? builder = new(connectionString)
+        SqlConnectionStringBuilder builder = new(connectionString)
         {
             Password = newPassword
         };
