@@ -140,4 +140,4 @@ Project with tests: `AsyncJobsTemplate.WebApi.Tests.E2E`.
 - [ ] Add frontend tests in Playwright.
 - [ ] Add load tests in Grafana K6.
 - [ ] Add integration with Application Insights.
-- [ ] Add health check.
+- [x] Add health check.

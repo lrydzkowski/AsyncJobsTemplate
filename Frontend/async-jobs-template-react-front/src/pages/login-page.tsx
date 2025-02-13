@@ -1,4 +1,5 @@
 import { useMsal } from '@azure/msal-react';
+import { Button, Text } from '@mantine/core';
 
 export function LoginPage() {
   const { instance } = useMsal();
@@ -9,8 +10,10 @@ export function LoginPage() {
 
   return (
     <>
-      <p>Please sign-in.</p>
-      <button onClick={handleSignIn}>Sign In</button>
+      <Text mb="1rem">Please sign-in.</Text>
+      <Button variant="filled" onClick={handleSignIn}>
+        Sign In
+      </Button>
     </>
   );
 }
