@@ -6,6 +6,7 @@ export const msalConfig = {
     clientId: appConfig.azureAdClientId,
     authority: `https://login.microsoftonline.com/${appConfig.azureAdTenantId}`,
     redirectUri: appConfig.azureAdRedirectUri,
+    postLogoutRedirectUri: appConfig.azureAdRedirectUri,
   },
   cache: {
     cacheLocation: 'sessionStorage',
