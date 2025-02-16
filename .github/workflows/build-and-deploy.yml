@@ -66,7 +66,7 @@ jobs:
         id: docker_frontend_app_build
         uses: docker/build-push-action@v4
         with:
-          context: ./Frontend/async-jobs-template-react-front
+          context: ./Frontend/async-jobs-template-react-front/
           file: ./Frontend/async-jobs-template-react-front/Dockerfile
           push: true
           tags: ${{ env.REGISTRY }}/${{ env.REACT_FRONTEND_IMAGE_NAME }}:latest,${{ env.REGISTRY }}/${{ env.REACT_FRONTEND_IMAGE_NAME }}:${{ env.VERSION_TAG }}
