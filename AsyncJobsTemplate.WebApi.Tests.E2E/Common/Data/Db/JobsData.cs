@@ -35,7 +35,10 @@ internal static class JobsData
         {
             job.InputData = job.InputData?.Trim().PrettyPrintJson().AddIndentationToString(jsonIndentationLength);
             job.OutputData = job.OutputData?.Trim().PrettyPrintJson().AddIndentationToString(jsonIndentationLength);
-            job.Errors = job.Errors?.Trim().PrettyPrintJson().AddIndentationToString(jsonIndentationLength);
+            job.Errors = job.Errors?.Trim()
+                .PrettyPrintJson()
+                .AddIndentationToString(jsonIndentationLength)
+                .UnifyNewLineCharacters();
         }
 
         return jobs;

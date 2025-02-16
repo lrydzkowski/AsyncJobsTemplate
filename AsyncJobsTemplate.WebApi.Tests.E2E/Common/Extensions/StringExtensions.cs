@@ -51,4 +51,9 @@ internal static class StringExtensions
 
         return JsonSerializer.Serialize(doc, new JsonSerializerOptions { WriteIndented = true });
     }
+
+    public static string? UnifyNewLineCharacters(this string? str)
+    {
+        return str?.Replace(@"\r\n", @"\n");
+    }
 }
