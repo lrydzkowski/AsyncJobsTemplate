@@ -99,6 +99,7 @@ jobs:
           url: 'https://r-systems-cloud.com/api/hooks/async-jobs-template-api'
           method: 'GET'
           customHeaders: '{"x-api-key": "${{ secrets.DEPLOY_API_KEY }}"}'
+          timeout: 300000
 
       - name: Deploy React frontend app
         uses: fjogeleit/http-request-action@v1
@@ -106,3 +107,4 @@ jobs:
           url: 'https://r-systems-cloud.com/api/hooks/async-jobs-template-react-front'
           method: 'GET'
           customHeaders: '{"x-api-key": "${{ secrets.DEPLOY_REACT_FRONT_KEY }}"}'
+          timeout: 300000
