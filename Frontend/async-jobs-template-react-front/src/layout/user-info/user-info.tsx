@@ -16,11 +16,9 @@ export function UserInfo() {
 
   return !isLoggedIn ? (
     <Box className={classes.user}>
-      <Tooltip label={username}>
-        <Text size="sm" fw={500} truncate="end">
-          Version: 1.0.1
-        </Text>
-      </Tooltip>
+      <Text size="sm" fw={500} truncate="end">
+        Version: 1.0.2
+      </Text>
     </Box>
   ) : (
     <>
