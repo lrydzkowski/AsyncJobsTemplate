@@ -14,25 +14,31 @@ export function UserInfo() {
 
   const username = accounts[0]?.username ?? 'anonymous';
 
-  return (
-    isLoggedIn && (
-      <>
-        <Box className={classes.user}>
-          <Tooltip label={username}>
-            <Text size="sm" fw={500} truncate="end">
-              {username}
-            </Text>
-          </Tooltip>
-        </Box>
-        <UnstyledButton onClick={logout} className={classes.control}>
-          <Group gap={0}>
-            <IconLogout className={classes.linkIcon} stroke={1.5} />
-            <Box style={{ display: 'flex', alignItems: 'center' }}>
-              <Box ml="md">Logout</Box>
-            </Box>
-          </Group>
-        </UnstyledButton>
-      </>
-    )
+  return !isLoggedIn ? (
+    <Box className={classes.user}>
+      <Tooltip label={username}>
+        <Text size="sm" fw={500} truncate="end">
+          Version: 1.0.1
+        </Text>
+      </Tooltip>
+    </Box>
+  ) : (
+    <>
+      <Box className={classes.user}>
+        <Tooltip label={username}>
+          <Text size="sm" fw={500} truncate="end">
+            {username}
+          </Text>
+        </Tooltip>
+      </Box>
+      <UnstyledButton onClick={logout} className={classes.control}>
+        <Group gap={0}>
+          <IconLogout className={classes.linkIcon} stroke={1.5} />
+          <Box style={{ display: 'flex', alignItems: 'center' }}>
+            <Box ml="md">Logout</Box>
+          </Box>
+        </Group>
+      </UnstyledButton>
+    </>
   );
 }
