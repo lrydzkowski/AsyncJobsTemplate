@@ -39,7 +39,7 @@ public class TriggerJobResult
 public class TriggerJobCommandHandler : IRequestHandler<TriggerJobCommand, TriggerJobResult>
 {
     private readonly IJobsFileStorage _jobFileStorage;
-    private readonly IJobsQueue _jobsQueue;
+    private readonly IJobsQueueSender _jobsQueueSender;
     private readonly IJobsRepository _jobsRepository;
     private readonly ILogger<TriggerJobCommandHandler> _logger;
     private readonly RequestContextValidator _requestContextValidator;
@@ -48,14 +48,14 @@ public class TriggerJobCommandHandler : IRequestHandler<TriggerJobCommand, Trigg
         RequestContextValidator requestContextValidator,
         IJobsFileStorage jobFileStorage,
         IJobsRepository jobsRepository,
-        IJobsQueue jobsQueue,
+        IJobsQueueSender jobsQueueSender,
         ILogger<TriggerJobCommandHandler> logger
     )
     {
         _requestContextValidator = requestContextValidator;
         _jobFileStorage = jobFileStorage;
         _jobsRepository = jobsRepository;
-        _jobsQueue = jobsQueue;
+        _jobsQueueSender = jobsQueueSender;
         _logger = logger;
     }
 
@@ -149,7 +149,7 @@ public class TriggerJobCommandHandler : IRequestHandler<TriggerJobCommand, Trigg
 
         try
         {
-            await _jobsQueue.SendMessageAsync(process.JobId, cancellationToken);
+            await _jobsQueueSender.SendMessageAsync(process.JobId, cancellationToken);
         }
         catch (Exception ex)
         {

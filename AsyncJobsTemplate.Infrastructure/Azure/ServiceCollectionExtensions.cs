@@ -3,6 +3,7 @@ using AsyncJobsTemplate.Core.Commands.TriggerJob.Interfaces;
 using AsyncJobsTemplate.Infrastructure.Azure.Authentication;
 using AsyncJobsTemplate.Infrastructure.Azure.Options;
 using AsyncJobsTemplate.Infrastructure.Azure.ServiceBus;
+using AsyncJobsTemplate.Infrastructure.Azure.ServiceBus.Common;
 using AsyncJobsTemplate.Infrastructure.Azure.StorageAccount;
 using Azure.Core;
 using Azure.Storage.Blobs;
@@ -24,13 +25,14 @@ internal static class ServiceCollectionExtensions
         return services.AddServices()
             .AddOptions(configuration)
             .AddAzureBlobServiceClient()
-            .AddHealthCheck();
+            .AddHealthCheck()
+            .AddJobsQueue()
+            .AddServiceBusCommonServices();
     }
 
     private static IServiceCollection AddServices(this IServiceCollection services)
     {
-        return services.AddScoped<IJobsQueue, JobsQueue>()
-            .AddScoped<IJobsFileStorageRunJob, JobsFileStorage>()
+        return services.AddScoped<IJobsFileStorageRunJob, JobsFileStorage>()
             .AddScoped<IJobsFileStorageTriggerJob, JobsFileStorage>()
             .AddScoped<IJobsFileStorageDownloadJobFile, JobsFileStorage>()
             .AddSingleton<IAccessTokenProvider, AccessTokenProvider>();
@@ -45,11 +47,9 @@ internal static class ServiceCollectionExtensions
 
     private static IServiceCollection AddAzureBlobServiceClient(this IServiceCollection services)
     {
-        services.AddAzureClients(
-            azureClientFactoryBuilder =>
+        services.AddAzureClients(azureClientFactoryBuilder =>
             {
-                azureClientFactoryBuilder.AddClient<BlobServiceClient, BlobClientOptions>(
-                    (_, serviceProvider) =>
+                azureClientFactoryBuilder.AddClient<BlobServiceClient, BlobClientOptions>((_, serviceProvider) =>
                     {
                         AzureStorageAccountOptions options = serviceProvider
                             .GetRequiredService<IOptions<AzureStorageAccountOptions>>()
@@ -106,6 +106,14 @@ internal static class ServiceCollectionExtensions
                 },
                 name: "azureblobstorage:outputcontainer"
             );
+
+        return services;
+    }
+
+    private static IServiceCollection AddJobsQueue(this IServiceCollection services)
+    {
+        services.AddServiceBusQueueSender<IJobsQueueSender, JobsQueueSender, JobMessage, AzureServiceBusOptions>();
+        services.AddQueueCreator<AzureServiceBusOptions>();
 
         return services;
     }
