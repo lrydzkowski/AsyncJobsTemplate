@@ -1,4 +1,3 @@
-using System.Text.Json;
 using AsyncJobsTemplate.Infrastructure.Db.Entities;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Common.TestCases;
 

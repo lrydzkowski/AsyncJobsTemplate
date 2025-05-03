@@ -12,7 +12,7 @@ internal static class JobsData
         int jsonIndentationLength = 10
     )
     {
-        List<JobEntity>? jobs = await scope.Db.Context.Jobs.Select(
+        List<JobEntity> jobs = await scope.Db.Context.Jobs.Select(
                 job => new JobEntity
                 {
                     RecId = job.RecId,
