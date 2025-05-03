@@ -1,10 +1,20 @@
-﻿namespace AsyncJobsTemplate.Infrastructure.Azure.Options;
+﻿using AsyncJobsTemplate.Infrastructure.Azure.ServiceBus.Common.Options;
 
-public class AzureServiceBusOptions
+namespace AsyncJobsTemplate.Infrastructure.Azure.Options;
+
+public class AzureServiceBusOptions : IQueueOptions
 {
     public const string Position = "AzureServiceBus";
 
-    public string HostAddress { get; init; } = "";
+    public bool IsEnabled { get; init; }
 
-    public string JobQueueName { get; init; } = "";
+    public string? ConnectionString { get; init; }
+
+    public string? HostAddress { get; init; }
+
+    public string QueueName { get; init; } = "";
+
+    public bool CreateQueueOnStartup { get; init; }
+
+    public bool UseMachineNameAsQueueSuffix { get; init; }
 }

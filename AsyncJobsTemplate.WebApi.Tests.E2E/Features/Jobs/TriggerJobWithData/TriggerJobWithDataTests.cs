@@ -65,7 +65,7 @@ public class TriggerJobWithDataTests
     private async Task<TriggerJobWithDataTestResult> RunAsync(TestCaseData testCase)
     {
         WebApplicationFactory<Program>? webApiFactory = _webApiFactory.WithCustomUserEmail(testCase.UserEmail)
-            .WithJobsQueueMock(out IJobsQueue jobsQueue);
+            .WithJobsQueueMock(out IJobsQueueSender jobsQueueSender);
         await using TestContextScope contextScope = new(webApiFactory, _logMessages);
 
         HttpClient client = webApiFactory
@@ -79,7 +79,7 @@ public class TriggerJobWithDataTests
         TriggerJobWithDataTestResult result = new()
         {
             JobEntitiesDb = await contextScope.GetJobsAsync(),
-            SendMessageCalls = jobsQueue.GetReceivedMethodCalls() ?? [],
+            SendMessageCalls = jobsQueueSender.GetReceivedMethodCalls() ?? [],
             TestCaseId = testCase.TestCaseId,
             StatusCode = responseMessage.StatusCode,
             Response = response.PrettifyJson(4),

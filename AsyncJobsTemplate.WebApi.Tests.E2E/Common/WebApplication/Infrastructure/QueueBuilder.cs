@@ -8,9 +8,9 @@ internal static class QueueBuilder
 {
     public static WebApplicationFactory<Program> MockJobsQueue(
         this WebApplicationFactory<Program> webApiFactory,
-        IJobsQueue jobsQueue
+        IJobsQueueSender jobsQueueSender
     )
     {
-        return webApiFactory.ReplaceService(jobsQueue, ServiceLifetime.Scoped);
+        return webApiFactory.ReplaceService(jobsQueueSender, ServiceLifetime.Scoped);
     }
 }

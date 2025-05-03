@@ -12,9 +12,7 @@ using AsyncJobsTemplate.WebApi.Tests.E2E.Common.WebApplication.Infrastructure;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Features.Jobs.ConsumeJob.Job1.Data;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Features.Jobs.ConsumeJob.Job1.Data.CorrectTestCases;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Features.Jobs.ConsumeJob.Job1.Data.IncorrectTestCases;
-using MassTransit;
 using Microsoft.AspNetCore.Mvc.Testing;
-using NSubstitute;
 using Testcontainers.MsSql;
 
 namespace AsyncJobsTemplate.WebApi.Tests.E2E.Features.Jobs.ConsumeJob.Job1;
@@ -70,11 +68,8 @@ public class ConsumeJob1Tests
             await contextScope.CreateJobsAsync(testCase);
         }
 
-        ConsumeContext<JobMessage>? context = Substitute.For<ConsumeContext<JobMessage>>()!;
-        context.Message.Returns(new JobMessage { JobId = testCase.JobId });
-
-        JobsConsumer jobsConsumer = contextScope.GetRequiredService<JobsConsumer>();
-        await jobsConsumer.Consume(context);
+        JobMessage jobMessage = new() { JobId = testCase.JobId };
+        await contextScope.GetRequiredService<JobsQueueConsumer>().ConsumeMessageAsync(jobMessage);
 
         ConsumeJob1MessageTestResult result = new()
         {

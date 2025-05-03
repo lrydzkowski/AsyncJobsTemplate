@@ -73,7 +73,7 @@ public class TriggerJobWithFileTests
     private async Task<TriggerJobWithFileTestResult> RunAsync(TestCaseData testCase)
     {
         WebApplicationFactory<Program> webApiFactory = _webApiFactory.WithCustomUserEmail(testCase.UserEmail)
-            .WithJobsQueueMock(out IJobsQueue jobsQueue);
+            .WithJobsQueueMock(out IJobsQueueSender jobsQueueSender);
         await using TestContextScope contextScope = new(webApiFactory, _logMessages);
 
         HttpClient client = webApiFactory
@@ -87,7 +87,7 @@ public class TriggerJobWithFileTests
         {
             JobEntitiesDb = await contextScope.GetJobsAsync(),
             InputFilesStorageAccount = await contextScope.GetInputFilesAsync(),
-            SendMessageCalls = jobsQueue.GetReceivedMethodCalls() ?? [],
+            SendMessageCalls = jobsQueueSender.GetReceivedMethodCalls() ?? [],
             TestCaseId = testCase.TestCaseId,
             StatusCode = responseMessage.StatusCode,
             Response = response.PrettifyJson(4),
@@ -97,17 +97,17 @@ public class TriggerJobWithFileTests
         return result;
     }
 
-    private HttpRequestMessage BuildRequestMessage(TestCaseData testCAse)
+    private HttpRequestMessage BuildRequestMessage(TestCaseData testCase)
     {
-        HttpRequestMessage? requestMessage = new(HttpMethod.Post, BuildUrl(testCAse));
+        HttpRequestMessage? requestMessage = new(HttpMethod.Post, BuildUrl(testCase));
         byte[] file = EmbeddedFile.Get(
-            $"Features/Jobs/TriggerJobWithFile/Data/Assets/{testCAse.FileToSend}",
+            $"Features/Jobs/TriggerJobWithFile/Data/Assets/{testCase.FileToSend}",
             Assembly.GetExecutingAssembly()
         );
         MultipartFormDataContent formData = new();
         ByteArrayContent fileContent = new(file);
         fileContent.Headers.Add(HeaderNames.ContentType, MediaTypeNames.Text.Csv);
-        formData.Add(fileContent, "file", testCAse.FileToSend);
+        formData.Add(fileContent, "file", testCase.FileToSend);
         requestMessage.Content = formData;
 
         return requestMessage;

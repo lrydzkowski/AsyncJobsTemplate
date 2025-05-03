@@ -21,11 +21,11 @@ internal static class JobsBuilder
 
     public static WebApplicationFactory<Program> WithJobsQueueMock(
         this WebApplicationFactory<Program> webApiFactory,
-        out IJobsQueue jobsQueue
+        out IJobsQueueSender jobsQueueSender
     )
     {
-        jobsQueue = Substitute.For<IJobsQueue>();
+        jobsQueueSender = Substitute.For<IJobsQueueSender>();
 
-        return webApiFactory.ReplaceService(jobsQueue, ServiceLifetime.Scoped);
+        return webApiFactory.ReplaceService(jobsQueueSender, ServiceLifetime.Scoped);
     }
 }

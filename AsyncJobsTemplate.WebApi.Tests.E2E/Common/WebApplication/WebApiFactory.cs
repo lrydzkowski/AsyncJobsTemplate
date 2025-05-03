@@ -1,9 +1,7 @@
 using AsyncJobsTemplate.Infrastructure.Azure;
 using AsyncJobsTemplate.Infrastructure.Azure.Options;
-using AsyncJobsTemplate.Infrastructure.Azure.ServiceBus;
 using AsyncJobsTemplate.Infrastructure.Db;
 using AsyncJobsTemplate.Infrastructure.Db.Options;
-using AsyncJobsTemplate.WebApi.Options;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Common.Extensions;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Common.Logging;
 using Microsoft.AspNetCore.Hosting;
@@ -60,11 +58,10 @@ public class WebApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
 
     protected override IHost CreateHost(IHostBuilder builder)
     {
-        builder.ConfigureHostConfiguration(
-            configBuilder =>
+        builder.ConfigureHostConfiguration(configBuilder =>
             {
                 SetDatabaseConnectionString(configBuilder);
-                EnableQueueInMemory(configBuilder);
+                DisableJobsQueueConsumer(configBuilder);
                 SetAzureStorageAccountConnectionString(configBuilder);
             }
         );
@@ -81,8 +78,7 @@ public class WebApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
 
     private void DisableLogging(IWebHostBuilder builder)
     {
-        builder.ConfigureLogging(
-            loggingBuilder =>
+        builder.ConfigureLogging(loggingBuilder =>
             {
                 loggingBuilder.ClearProviders();
                 loggingBuilder.AddProvider(new TestLoggerProvider(LogMessages.Get()));
@@ -92,12 +88,14 @@ public class WebApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
 
     private static void DisableUserSecrets(IWebHostBuilder builder)
     {
-        builder.ConfigureAppConfiguration(
-            (_, configBuilder) =>
+        builder.ConfigureAppConfiguration((_, configBuilder) =>
             {
-                IConfigurationSource? userSecretsSource = configBuilder.Sources.FirstOrDefault(
-                    source => source is JsonConfigurationSource { Path: "secrets.json" }
-                );
+                IConfigurationSource? userSecretsSource =
+                    configBuilder.Sources.FirstOrDefault(source => source is JsonConfigurationSource
+                        {
+                            Path: "secrets.json"
+                        }
+                    );
                 if (userSecretsSource is not null)
                 {
                     configBuilder.Sources.Remove(userSecretsSource);
@@ -108,8 +106,10 @@ public class WebApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
 
     private static void ConfigureHttpsPort(IWebHostBuilder builder)
     {
-        builder.ConfigureServices(
-            services => { services.PostConfigure<HttpsRedirectionOptions>(options => { options.HttpsPort = 443; }); }
+        builder.ConfigureServices(services =>
+            {
+                services.PostConfigure<HttpsRedirectionOptions>(options => { options.HttpsPort = 443; });
+            }
         );
     }
 
@@ -124,12 +124,12 @@ public class WebApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
         );
     }
 
-    private void EnableQueueInMemory(IConfigurationBuilder configBuilder)
+    private void DisableJobsQueueConsumer(IConfigurationBuilder configBuilder)
     {
         configBuilder.AddInMemoryCollection(
             new Dictionary<string, string?>
             {
-                [$"{QueueOptions.Position}:{nameof(QueueOptions.Type)}"] = QueueTypes.InMemory
+                [$"{AzureServiceBusOptions.Position}:{nameof(AzureServiceBusOptions.IsEnabled)}"] = false.ToString()
             }
         );
     }
