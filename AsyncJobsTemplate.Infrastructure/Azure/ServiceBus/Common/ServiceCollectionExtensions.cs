@@ -5,6 +5,7 @@ using AsyncJobsTemplate.Infrastructure.Azure.ServiceBus.Common.Senders;
 using AsyncJobsTemplate.Infrastructure.Azure.ServiceBus.Common.Services;
 using Azure.Core;
 using Azure.Messaging.ServiceBus;
+using Azure.Messaging.ServiceBus.Administration;
 using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -94,17 +95,25 @@ public static class ServiceCollectionExtensions
     }
 
     public static IServiceCollection AddQueueCreator<TOptions>(this IServiceCollection services)
-        where TOptions : class, IQueueOptions
+        where TOptions : class, IQueueOptions, new()
     {
-        services.AddSingleton<IInfrastructureManager, QueueInfrastructureManager<TOptions>>();
+        string name = typeof(TOptions).Name;
+        services.ConfigureServiceBusAdministrationClient<TOptions>(name);
+        services.AddSingleton<IInfrastructureManager>(serviceProvider =>
+            ActivatorUtilities.CreateInstance<QueueInfrastructureManager<TOptions>>(serviceProvider, name)
+        );
 
         return services;
     }
 
     public static IServiceCollection AddTopicCreator<TOptions>(this IServiceCollection services)
-        where TOptions : class, ITopicOptions
+        where TOptions : class, ITopicOptions, new()
     {
-        services.AddSingleton<IInfrastructureManager, TopicInfrastructureManager<TOptions>>();
+        string name = typeof(TOptions).Name;
+        services.ConfigureServiceBusAdministrationClient<TOptions>(name);
+        services.AddSingleton<IInfrastructureManager>(serviceProvider =>
+            ActivatorUtilities.CreateInstance<TopicInfrastructureManager<TOptions>>(serviceProvider, name)
+        );
 
         return services;
     }
@@ -144,6 +153,48 @@ public static class ServiceCollectionExtensions
                             }
 
                             return new ServiceBusClient(options.HostAddress, tokenCredential);
+                        }
+                    )
+                    .WithName(name);
+            }
+        );
+
+        return services;
+    }
+
+    private static IServiceCollection ConfigureServiceBusAdministrationClient<TOptions>(
+        this IServiceCollection services,
+        string name
+    )
+        where TOptions : class, IServiceBusOptions, new()
+    {
+        services.AddAzureClients(azureClientFactoryBuilder =>
+            {
+                azureClientFactoryBuilder
+                    .AddClient<ServiceBusAdministrationClient, ServiceBusAdministrationClientOptions>((
+                            _,
+                            serviceProvider
+                        ) =>
+                        {
+                            TOptions options = serviceProvider.GetRequiredService<IOptions<TOptions>>().Value;
+                            if (!options.IsEnabled)
+                            {
+                                return null!;
+                            }
+
+                            if (string.IsNullOrWhiteSpace(options.HostAddress))
+                            {
+                                return new ServiceBusAdministrationClient(options.ConnectionString);
+                            }
+
+                            IConfiguration configuration = serviceProvider.GetRequiredService<IConfiguration>();
+                            TokenCredential? tokenCredential = TokenCredentialProvider.Provide(configuration);
+                            if (tokenCredential is null)
+                            {
+                                throw new InvalidOperationException("TokenCredential is not provided");
+                            }
+
+                            return new ServiceBusAdministrationClient(options.HostAddress, tokenCredential);
                         }
                     )
                     .WithName(name);
