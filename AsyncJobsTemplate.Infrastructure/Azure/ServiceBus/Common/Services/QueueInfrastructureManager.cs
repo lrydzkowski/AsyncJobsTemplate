@@ -1,10 +1,8 @@
-using AsyncJobsTemplate.Infrastructure.Azure.Authentication;
 using AsyncJobsTemplate.Infrastructure.Azure.ServiceBus.Common.Options;
 using Azure;
-using Azure.Core;
 using Azure.Messaging.ServiceBus;
 using Azure.Messaging.ServiceBus.Administration;
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -13,22 +11,23 @@ namespace AsyncJobsTemplate.Infrastructure.Azure.ServiceBus.Common.Services;
 internal class QueueInfrastructureManager<TOptions> : IInfrastructureManager
     where TOptions : class, IQueueOptions
 {
-    private readonly IConfiguration _configuration;
+    private readonly ServiceBusAdministrationClient _adminClient;
     private readonly ILogger<IInfrastructureManager> _logger;
     private readonly INamesResolver _namesResolver;
     private readonly TOptions _options;
 
     public QueueInfrastructureManager(
+        IAzureClientFactory<ServiceBusAdministrationClient> clientFactory,
+        string serviceBusClientName,
         IOptions<TOptions> options,
         INamesResolver namesResolver,
-        ILogger<QueueInfrastructureManager<TOptions>> logger,
-        IConfiguration configuration
+        ILogger<QueueInfrastructureManager<TOptions>> logger
     )
     {
+        _adminClient = clientFactory.CreateClient(serviceBusClientName);
         _options = options.Value;
         _namesResolver = namesResolver;
         _logger = logger;
-        _configuration = configuration;
     }
 
     public async Task CreateInfrastructureAsync(CancellationToken cancellationToken = default)
@@ -45,7 +44,7 @@ internal class QueueInfrastructureManager<TOptions> : IInfrastructureManager
 
     private async Task CreateQueueAsync(IQueueOptions queueOptions, CancellationToken cancellationToken)
     {
-        if (!queueOptions.CreateQueueOnStartup)
+        if (!queueOptions.IsEnabled || !queueOptions.CreateQueueOnStartup)
         {
             return;
         }
@@ -56,8 +55,7 @@ internal class QueueInfrastructureManager<TOptions> : IInfrastructureManager
 
         try
         {
-            ServiceBusAdministrationClient client = BuildServiceBusAdministrationClient(queueOptions);
-            Response<bool>? queueExists = await client.QueueExistsAsync(queueName, cancellationToken);
+            Response<bool>? queueExists = await _adminClient.QueueExistsAsync(queueName, cancellationToken);
             if (queueExists?.Value == true)
             {
                 _logger.LogInformation("Queue already exists: {QueueName}", queueName);
@@ -65,7 +63,7 @@ internal class QueueInfrastructureManager<TOptions> : IInfrastructureManager
                 return;
             }
 
-            await client.CreateQueueAsync(queueName, cancellationToken);
+            await _adminClient.CreateQueueAsync(queueName, cancellationToken);
             _logger.LogInformation("Queue created: {QueueName}", queueName);
         }
         catch (ServiceBusException ex) when (ex.Reason == ServiceBusFailureReason.MessagingEntityAlreadyExists)
@@ -76,21 +74,5 @@ internal class QueueInfrastructureManager<TOptions> : IInfrastructureManager
         {
             _logger.LogError(ex, "Failed to create queue: {QueueName}", queueName);
         }
-    }
-
-    private ServiceBusAdministrationClient BuildServiceBusAdministrationClient(IQueueOptions queueOptions)
-    {
-        if (string.IsNullOrWhiteSpace(queueOptions.HostAddress))
-        {
-            return new ServiceBusAdministrationClient(queueOptions.ConnectionString);
-        }
-
-        TokenCredential? tokenCredential = TokenCredentialProvider.Provide(_configuration);
-        if (tokenCredential is null)
-        {
-            throw new InvalidOperationException("TokenCredential is not provided");
-        }
-
-        return new ServiceBusAdministrationClient(queueOptions.HostAddress, tokenCredential);
     }
 }
