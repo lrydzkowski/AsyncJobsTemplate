@@ -1,0 +1,44 @@
+﻿[
+  {
+    RequestHttpMethod: {
+      Method: GET
+    },
+    RequestPath: /health-check,
+    ResponseStatusCode: Unauthorized
+  },
+  {
+    RequestHttpMethod: {
+      Method: GET
+    },
+    RequestPath: /jobs,
+    ResponseStatusCode: Unauthorized
+  },
+  {
+    RequestHttpMethod: {
+      Method: GET
+    },
+    RequestPath: /jobs/test,
+    ResponseStatusCode: Unauthorized
+  },
+  {
+    RequestHttpMethod: {
+      Method: POST
+    },
+    RequestPath: /jobs/test,
+    ResponseStatusCode: Unauthorized
+  },
+  {
+    RequestHttpMethod: {
+      Method: GET
+    },
+    RequestPath: /jobs/test/file,
+    ResponseStatusCode: Unauthorized
+  },
+  {
+    RequestHttpMethod: {
+      Method: POST
+    },
+    RequestPath: /jobs/test/file,
+    ResponseStatusCode: Unauthorized
+  }
+]

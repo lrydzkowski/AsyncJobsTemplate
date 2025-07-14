@@ -21,6 +21,8 @@ internal static class EndpointHelpers
             .Where(endpoint => HasAuthPolicy(endpoint, policyName))
             .SelectMany(MapToEndpointsInfo)
             .Where(endpoint => FilterIgnoredEndpoints(ignoredEndpoints, endpoint))
+            .OrderBy(endpoint => endpoint.Path)
+            .ThenBy(endpoint => endpoint.HttpMethod.ToString())
             .ToList();
 
         return endpoints;
@@ -74,9 +76,9 @@ internal static class EndpointHelpers
 
     private static bool FilterIgnoredEndpoints(IReadOnlyList<EndpointInfo> ignoredEndpoints, EndpointInfo endpoint)
     {
-        return !ignoredEndpoints.Any(
-            ignoredEndpoint => ignoredEndpoint.Path.Equals(endpoint.Path, StringComparison.InvariantCultureIgnoreCase)
-                               && ignoredEndpoint.HttpMethod == endpoint.HttpMethod
+        return !ignoredEndpoints.Any(ignoredEndpoint =>
+            ignoredEndpoint.Path.Equals(endpoint.Path, StringComparison.InvariantCultureIgnoreCase)
+            && ignoredEndpoint.HttpMethod == endpoint.HttpMethod
         );
     }
 }
