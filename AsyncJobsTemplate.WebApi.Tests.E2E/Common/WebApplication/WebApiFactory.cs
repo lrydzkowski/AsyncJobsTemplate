@@ -5,11 +5,9 @@ using AsyncJobsTemplate.Infrastructure.Db.Options;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Common.Extensions;
 using AsyncJobsTemplate.WebApi.Tests.E2E.Common.Logging;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Json;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Testcontainers.Azurite;
@@ -73,7 +71,6 @@ public class WebApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
     {
         DisableLogging(builder);
         DisableUserSecrets(builder);
-        ConfigureHttpsPort(builder);
     }
 
     private void DisableLogging(IWebHostBuilder builder)
@@ -100,15 +97,6 @@ public class WebApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
                 {
                     configBuilder.Sources.Remove(userSecretsSource);
                 }
-            }
-        );
-    }
-
-    private static void ConfigureHttpsPort(IWebHostBuilder builder)
-    {
-        builder.ConfigureServices(services =>
-            {
-                services.PostConfigure<HttpsRedirectionOptions>(options => { options.HttpsPort = 443; });
             }
         );
     }
